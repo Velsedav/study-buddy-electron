@@ -1,6 +1,6 @@
 {
   "name": "study-buddy-electron",
-  "version": "1.8.9",
+  "version": "1.9.0",
   "private": true,
   "author": {
     "name": "Velsedav",
@@ -38,7 +38,7 @@
     ],
     "linux": {
       "target": ["deb", "AppImage"],
-      "icon": "src/public/icon.png",
+      "icon": "build/icons",
       "category": "Education"
     },
     "win": {
