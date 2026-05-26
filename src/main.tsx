@@ -20,10 +20,6 @@ import BingoObjectivePage from './pages/bingoals/BingoObjectivePage.tsx'
 import './styles/bingoals.css'
 import './styles/linux-perf.css'
 
-if ((window as any).electronAPI?.platform === 'linux') {
-  document.documentElement.classList.add('linux-perf')
-}
-
 // CTRL+Scroll: scale font-size
 let rootFontScale = 1.0;
 document.addEventListener('wheel', (e) => {

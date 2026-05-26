@@ -17,7 +17,10 @@ interface Settings {
     language: string;
     zoomLevel: number;
     metacognitionDay: MetacognitionDay;
+    performanceMode: boolean;
 }
+
+const isLinux = (window as any).electronAPI?.platform === 'linux';
 
 const defaultSettings: Settings = {
     theme: 'pastel',
@@ -25,6 +28,7 @@ const defaultSettings: Settings = {
     language: 'en',
     zoomLevel: 100,
     metacognitionDay: 'saturday',
+    performanceMode: isLinux,
 };
 
 interface SettingsContextType extends Settings {
@@ -34,6 +38,7 @@ interface SettingsContextType extends Settings {
     setLanguage: (l: string) => void;
     setZoomLevel: (z: number) => void;
     setMetacognitionDay: (d: MetacognitionDay) => void;
+    setPerformanceMode: (v: boolean) => void;
     updateSetting: <K extends keyof Settings>(key: K, value: Settings[K]) => void;
 }
 
@@ -55,13 +60,10 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     useEffect(() => {
         localStorage.setItem('study-buddy-settings', JSON.stringify(settings));
 
-        // Apply theme map
         document.documentElement.setAttribute('data-theme', settings.theme);
         setAudioTheme(settings.theme);
-
-        // Apply zoom using the zoom CSS property
-        // The zoom property expects a number where 1 is 100%, 1.5 is 150%, etc.
         (document.body.style as any).zoom = (settings.zoomLevel / 100).toString();
+        document.documentElement.classList.toggle('linux-perf', settings.performanceMode);
     }, [settings]);
 
     // Global Ctrl+Scroll listener
@@ -95,6 +97,7 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
             setLanguage: (l) => updateSetting('language', l),
             setZoomLevel: (z) => updateSetting('zoomLevel', z),
             setMetacognitionDay: (d) => updateSetting('metacognitionDay', d),
+            setPerformanceMode: (v) => updateSetting('performanceMode', v),
             updateSetting
         }}>
             {children}

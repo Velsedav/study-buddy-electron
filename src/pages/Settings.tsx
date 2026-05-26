@@ -1,7 +1,7 @@
 import { useSettings } from '../lib/settings';
 import type { Theme, WeekStart, MetacognitionDay } from '../lib/settings';
 import { useState, useEffect } from 'react';
-import { Palette, Calendar, Keyboard, Globe, Database, AlertTriangle, Trash2, Volume2, Play, Brain, Power, Settings as SettingsIcon, FolderOpen, X } from 'lucide-react';
+import { Palette, Calendar, Keyboard, Globe, Database, AlertTriangle, Trash2, Volume2, Play, Brain, Power, Zap, Settings as SettingsIcon, FolderOpen, X } from 'lucide-react';
 import { useTranslation } from '../lib/i18n';
 import { deleteAllData } from '../lib/db';
 import { getDefaultSpacing, setDefaultSpacing, parseSpacing, DEFAULT_SPACING } from '../lib/chapters';
@@ -23,7 +23,8 @@ export default function SettingsTab() {
         theme, setTheme,
         weekStart, setWeekStart,
         language, setLanguage,
-        metacognitionDay, setMetacognitionDay
+        metacognitionDay, setMetacognitionDay,
+        performanceMode, setPerformanceMode,
     } = useSettings();
     const { t } = useTranslation();
     const [showDeleteModal, setShowDeleteModal] = useState(false);
@@ -356,6 +357,19 @@ export default function SettingsTab() {
                                 style={{ marginLeft: 'auto', width: 18, height: 18, accentColor: 'var(--primary)', cursor: 'pointer' }}
                             />
                         </label>
+                    </div>
+                    <div className="form-group" style={{ marginTop: 16, paddingTop: 16, borderTop: '1px solid var(--glass-border)' }}>
+                        <label style={{ display: 'flex', alignItems: 'center', gap: 10, cursor: 'pointer' }}>
+                            <Zap size={15} className="text-muted" />
+                            {t('settings.performance_mode')}
+                            <input
+                                type="checkbox"
+                                checked={performanceMode}
+                                onChange={(e) => setPerformanceMode(e.target.checked)}
+                                style={{ marginLeft: 'auto', width: 18, height: 18, accentColor: 'var(--primary)', cursor: 'pointer' }}
+                            />
+                        </label>
+                        <p className="settings-hint">{t('settings.performance_mode_hint')}</p>
                     </div>
                 </div>
 
