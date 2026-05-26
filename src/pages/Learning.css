@@ -1,0 +1,756 @@
+/* Learning.css */
+.learning-page {
+    display: flex;
+    flex-direction: column;
+}
+
+.learning-tab {
+    max-width: 80%;
+    margin: auto;
+}
+
+.learning-lightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
+    background: rgba(0, 0, 0, 0.85);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: zoom-out;
+    animation: fadeIn 0.2s ease;
+    backdrop-filter: blur(4px);
+}
+
+.learning-lightbox-img {
+    max-width: 90vw;
+    max-height: 90vh;
+    border-radius: 16px;
+    box-shadow: 0 8px 40px rgba(0, 0, 0, 0.5);
+    animation: scaleIn 0.25s ease;
+}
+
+.learning-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 32px;
+}
+
+.learning-header-btn {
+    background: var(--card-bg);
+    border: 1px solid var(--glass-border);
+}
+
+.learning-header-title-container {
+    flex: 1;
+}
+
+.learning-header-title {
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.learning-header-icon {
+    font-size: 1.5rem;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 12px;
+    color: #fff;
+}
+
+.learning-header-desc {
+    margin: 4px 0 0 0;
+    color: var(--text-muted);
+    max-width: 60ch;
+}
+
+.learning-content {
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+}
+
+.learning-chapter-title {
+    border-bottom: 2px solid var(--glass-border);
+    padding-bottom: 8px;
+    margin-bottom: 16px;
+}
+
+.learning-lessons-list {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.lesson-card {
+    padding: 24px;
+    border-radius: 16px;
+    container-type: inline-size;
+}
+
+.lesson-card.solved {
+    border: 2px solid var(--success);
+    background: linear-gradient(145deg, rgba(34, 197, 94, 0.05), rgba(34, 197, 94, 0.02));
+    animation: solvedGlow 0.6s ease;
+}
+
+@keyframes solvedGlow {
+    0%   { box-shadow: 0 4px 20px rgba(34, 197, 94, 0.05); }
+    40%  { box-shadow: 0 4px 32px rgba(34, 197, 94, 0.4); }
+    100% { box-shadow: 0 4px 20px rgba(34, 197, 94, 0.05); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .lesson-card.solved { animation: none; }
+}
+
+.lesson-card-title {
+    margin-bottom: 12px;
+    font-size: 1.1rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.lesson-card-title-icon {
+    color: var(--success);
+}
+
+/* ── Two-column lesson card layout ── */
+/* No image: text (left) | quiz (right)  */
+/* Has image: text+quiz stacked (left) | image (right) */
+.lesson-card-columns {
+    display: grid;
+    grid-template-columns: 1fr minmax(220px, 280px);
+    gap: 28px;
+    align-items: start;
+}
+
+/* Has image — same 2-col, but image gets more horizontal room */
+.lesson-card-columns.has-image {
+    grid-template-columns: 1fr minmax(260px, 380px);
+    gap: 16px;
+}
+
+/* Left column when image is present: stacks text + quiz */
+.lesson-card-left-col {
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    min-width: 0;
+}
+
+.lesson-card-content {
+    min-width: 0;
+    max-width: 60ch;
+}
+
+/* Image column — right side when has-image */
+.lesson-card-image-col {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+    position: sticky;
+    top: 80px;
+}
+
+.lesson-card-quiz-col {
+    min-width: 0;
+}
+
+/* Stack all columns when the card is very narrow (< 380px) */
+@container (max-width: 380px) {
+
+    .lesson-card-columns,
+    .lesson-card-columns.has-image {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ── Lesson card body: just description (image is now in its own column) ── */
+.lesson-card-body {
+    margin-bottom: 0;
+}
+
+.lesson-card-desc {
+    line-height: 1.6;
+    color: var(--text-dark);
+    white-space: pre-line;
+    margin: 0;
+}
+
+.lesson-mascot-container {
+    text-align: center;
+}
+
+.lesson-mascot-img {
+    max-width: 100%;
+    width: auto;
+    max-height: 55vh;
+    /* Prevents image from taking more than half the screen height */
+    object-fit: contain;
+    border-radius: 16px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+    cursor: zoom-in;
+    transition: transform 0.2s ease;
+}
+
+.lesson-mascot-img.full-width {
+    max-width: 100%;
+    border-radius: 12px;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+}
+
+.lesson-mascot-caption {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    margin-top: 10px;
+    font-style: italic;
+}
+
+.lesson-mascot-caption.small {
+    font-size: 0.78rem;
+    line-height: 1.4;
+    margin-top: 8px;
+}
+
+.lesson-mascot-caption-action {
+    color: var(--primary);
+    font-weight: 600;
+}
+
+.lesson-modes-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 16px;
+}
+
+.lesson-modes-item {
+    text-align: center;
+}
+
+.concept-check-container {
+    background: rgba(0, 0, 0, 0.03);
+    padding: 20px;
+    border-radius: 12px;
+    border: 1px solid var(--glass-border);
+    border-top: 2px solid rgba(var(--primary-rgb), 0.5);
+    max-width: 60ch;
+}
+
+/* Stick quiz to viewport top only when it's the right column (no image) */
+.lesson-card-columns:not(.has-image) .lesson-card-quiz-col .concept-check-container {
+    position: sticky;
+    top: 80px;
+}
+
+.concept-check-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 16px;
+    color: var(--primary);
+    font-size: 1rem;
+    font-weight: 600;
+}
+
+.concept-check-question {
+    font-weight: 500;
+    margin-bottom: 16px;
+}
+
+.concept-check-options {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+
+.learning-tab-desc {
+    color: var(--text-muted);
+}
+
+.learning-grid {
+    margin-top: 16px;
+    padding-top: 24px;
+    border-top: 1px solid var(--glass-border);
+}
+
+.learning-section-card-desc {
+    line-height: 1.5;
+}
+
+.learning-section-card-action {
+    margin-top: auto;
+    align-self: flex-start;
+}
+
+/* ── Lesson view layout (nav + content) ── */
+
+.lesson-view-layout {
+    display: flex;
+    gap: 28px;
+    align-items: flex-start;
+}
+
+.lesson-nav {
+    width: 200px;
+    flex-shrink: 0;
+    position: sticky;
+    top: 80px;
+    max-height: calc(100vh - 140px);
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    padding: 4px 0;
+}
+
+.lesson-view-layout .learning-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.lesson-nav-chapter {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.lesson-nav-chapter-title {
+    font-size: 0.68rem;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color: var(--text-muted);
+    padding: 2px 10px 6px;
+    font-weight: 600;
+}
+
+.lesson-nav-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 10px;
+    border-radius: 8px;
+    border: none;
+    background: none;
+    cursor: pointer;
+    text-align: left;
+    width: 100%;
+    transition: background 0.15s, color 0.15s;
+    color: var(--text-muted);
+    font-size: 0.82rem;
+    line-height: 1.3;
+}
+
+.lesson-nav-item:hover {
+    background: rgba(var(--primary-rgb), 0.08);
+    color: var(--text-dark);
+}
+
+.lesson-nav-item.active {
+    background: rgba(var(--primary-rgb), 0.12);
+    color: var(--primary);
+    font-weight: 600;
+}
+
+.lesson-nav-item-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    background: var(--glass-border);
+    transition: background 0.2s;
+}
+
+.lesson-nav-item.status-correct .lesson-nav-item-dot {
+    background: var(--success);
+}
+
+.lesson-nav-item.status-wrong .lesson-nav-item-dot {
+    background: var(--danger);
+}
+
+.lesson-nav-item.active .lesson-nav-item-dot {
+    background: var(--primary);
+}
+
+.lesson-nav-item.active.status-correct .lesson-nav-item-dot {
+    background: var(--success);
+}
+
+.lesson-nav-item.active.status-wrong .lesson-nav-item-dot {
+    background: var(--danger);
+}
+
+.lesson-nav-item-title {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* Image hover via CSS (no inline onMouseEnter/Leave) */
+
+.lesson-mascot-img:hover {
+    transform: scale(1.02);
+}
+
+.lesson-mascot-img.full-width:hover {
+    transform: scale(1.01);
+}
+
+/* ── Horizontal Lesson Carousel ── */
+
+.lesson-carousel-wrapper {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Perspective container — overflow hidden clips the angled side panels */
+.lesson-carousel-viewport {
+    position: relative;
+    perspective: 1600px;
+    perspective-origin: 50% 25%;
+    height: var(--carousel-height, 640px);
+    transition: height 0.2s ease;
+    overflow: hidden;
+}
+
+/* Every lesson is a panel, absolutely positioned inside the viewport */
+.lesson-panel {
+    position: absolute;
+    top: 0;
+    left: 8%;
+    width: 84%;
+    transition: transform 0.45s cubic-bezier(0.4, 0, 0.2, 1),
+        opacity 0.4s ease;
+    transform-origin: center center;
+    will-change: transform, opacity;
+}
+
+/* Active panel — centered, flat, full opacity */
+.lesson-panel.panel-active {
+    transform: translateX(0) rotateY(0deg) scale(1);
+    opacity: 1;
+    z-index: 3;
+    pointer-events: all;
+}
+
+@keyframes lessonContentEnter {
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.panel-active .lesson-card-content {
+    animation: lessonContentEnter 0.35s cubic-bezier(0.16, 1, 0.3, 1) 0.12s both;
+}
+
+.panel-active .concept-check-container {
+    animation: lessonContentEnter 0.35s cubic-bezier(0.16, 1, 0.3, 1) 0.22s both;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .panel-active .lesson-card-content,
+    .panel-active .concept-check-container {
+        animation: none;
+    }
+}
+
+/* Previous panel — peeks in from left, angled away */
+.lesson-panel.panel-prev {
+    transform: translateX(-83%) rotateY(42deg) scale(0.82);
+    opacity: 0.1;
+    filter: blur(0.5px);
+    z-index: 2;
+    pointer-events: auto;
+    cursor: pointer;
+}
+
+.lesson-panel.panel-prev:hover {
+    opacity: 0.45;
+    filter: blur(0px);
+    transform: translateX(-80%) rotateY(36deg) scale(0.84);
+}
+
+/* Next panel — peeks in from right, angled away */
+.lesson-panel.panel-next {
+    transform: translateX(83%) rotateY(-42deg) scale(0.82);
+    opacity: 0.1;
+    filter: blur(0.5px);
+    z-index: 2;
+    pointer-events: auto;
+    cursor: pointer;
+}
+
+.lesson-panel.panel-next:hover {
+    opacity: 0.45;
+    filter: blur(0px);
+    transform: translateX(80%) rotateY(-36deg) scale(0.84);
+}
+
+/* Prevent quiz/image clicks from firing inside non-active panels */
+.lesson-panel.panel-prev *,
+.lesson-panel.panel-next * {
+    pointer-events: none;
+}
+
+/* Further panels — fully hidden off-screen */
+.lesson-panel.panel-hidden-left {
+    transform: translateX(-160%) rotateY(58deg) scale(0.65);
+    opacity: 0;
+    z-index: 1;
+    pointer-events: none;
+}
+
+.lesson-panel.panel-hidden-right {
+    transform: translateX(160%) rotateY(-58deg) scale(0.65);
+    opacity: 0;
+    z-index: 1;
+    pointer-events: none;
+}
+
+/* Chapter label above the lesson title inside each panel */
+.lesson-panel-chapter-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--chapter-color, var(--text-muted));
+    margin-bottom: 10px;
+    opacity: 0.85;
+}
+
+/* Carousel navigation row — sits above the viewport */
+.lesson-carousel-nav {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    padding: 4px 0 8px;
+}
+
+.lesson-carousel-btn:disabled {
+    opacity: 0.25;
+    cursor: not-allowed;
+}
+
+/* Progress dot track */
+.lesson-progress-dots {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    flex-wrap: wrap;
+    justify-content: center;
+    max-width: 360px;
+}
+
+.lesson-progress-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    border: none;
+    padding: 0;
+    background: var(--glass-border);
+    cursor: pointer;
+    transition: transform 0.18s ease, background 0.18s ease, width 0.18s ease;
+    flex-shrink: 0;
+}
+
+.lesson-progress-dot.dot-active {
+    width: 20px;
+    border-radius: 4px;
+    background: var(--primary);
+    transform: scale(1);
+}
+
+.lesson-progress-dot.dot-solved {
+    background: var(--success);
+}
+
+.lesson-progress-dot.dot-wrong {
+    background: var(--danger);
+}
+
+.lesson-progress-dot:not(.dot-active):hover {
+    transform: scale(1.4);
+}
+/* ── Observation Journal ── */
+
+.observation-panel {
+    margin-top: 14px;
+    padding-top: 12px;
+    border-top: 1px solid var(--glass-border);
+}
+
+.observation-prompt {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    font-style: italic;
+    margin-bottom: 8px;
+}
+
+.observation-add-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.78rem;
+    color: var(--primary);
+    background: none;
+    border: none;
+    cursor: pointer;
+    padding: 2px 0;
+    opacity: 0.8;
+    transition: opacity 0.15s;
+}
+
+.observation-add-btn:hover {
+    opacity: 1;
+}
+
+.observation-log {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    margin-bottom: 8px;
+}
+
+.observation-entry {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    font-size: 0.8rem;
+    flex-wrap: wrap;
+}
+
+.observation-noticed-badge {
+    font-size: 0.7rem;
+    font-weight: 700;
+    padding: 1px 7px;
+    border-radius: 10px;
+    flex-shrink: 0;
+}
+
+.observation-noticed-badge.yes {
+    background: rgba(var(--success-rgb, 34 197 94), 0.15);
+    color: var(--success);
+}
+
+.observation-noticed-badge.no {
+    background: rgba(var(--danger-rgb), 0.12);
+    color: var(--danger);
+}
+
+.observation-noticed-badge.neutral {
+    background: var(--glass-border);
+    color: var(--text-muted);
+}
+
+.observation-date {
+    color: var(--text-muted);
+    font-size: 0.72rem;
+    flex-shrink: 0;
+    margin-top: 1px;
+}
+
+.observation-note {
+    color: var(--text-dark);
+    font-style: italic;
+    line-height: 1.4;
+}
+
+/* Form */
+
+.observation-form {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-top: 4px;
+}
+
+.observation-form-noticed {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.observation-form-label {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+}
+
+.observation-noticed-btns {
+    display: flex;
+    gap: 6px;
+}
+
+.btn-noticed {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border: 1px solid var(--glass-border);
+    background: var(--card-bg);
+    color: var(--text-muted);
+    cursor: pointer;
+    transition: all 0.15s;
+}
+
+.btn-noticed:hover {
+    border-color: var(--primary);
+    color: var(--primary);
+}
+
+.btn-noticed.active-yes {
+    background: rgba(var(--success-rgb, 34 197 94), 0.15);
+    border-color: var(--success);
+    color: var(--success);
+}
+
+.btn-noticed.active-no {
+    background: rgba(var(--danger-rgb), 0.12);
+    border-color: var(--danger);
+    color: var(--danger);
+}
+
+.observation-textarea {
+    width: 100%;
+    resize: vertical;
+    min-height: 56px;
+    padding: 8px 12px;
+    border: 1px solid var(--glass-border);
+    border-radius: var(--border-radius);
+    background: var(--card-bg);
+    color: var(--text-dark);
+    font-size: 0.85rem;
+    line-height: 1.5;
+    font-family: inherit;
+    transition: border-color 0.15s;
+}
+
+.observation-textarea:focus {
+    outline: none;
+    border-color: var(--primary);
+}
+
+.observation-form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 8px;
+}

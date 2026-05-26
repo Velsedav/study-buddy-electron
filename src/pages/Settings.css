@@ -1,0 +1,296 @@
+/* Settings.css */
+.btn-danger-outline {
+    border: 2px solid var(--danger);
+    background: white;
+    color: var(--danger);
+    transition: all 0.2s ease;
+}
+
+.btn-danger-outline:hover {
+    background: var(--danger);
+    color: white;
+}
+
+.btn-danger-outline-solid {
+    background: var(--danger);
+    color: white;
+}
+
+.danger-modal {
+    border: 2px solid var(--danger);
+}
+
+.danger-modal-header {
+    border-bottom-color: var(--danger);
+    color: var(--danger);
+}
+
+.danger-modal-text {
+    margin: 16px 0;
+    line-height: 1.5;
+}
+
+.danger-modal-input {
+    width: 100%;
+    margin-bottom: 16px;
+    border: 2px solid var(--danger);
+}
+
+.danger-modal-actions {
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+}
+
+.settings-section-base {
+    position: relative;
+}
+
+.settings-section-appearance {
+    --animation-order: 0;
+}
+
+.settings-section-preferences {
+    z-index: 10;
+    --animation-order: 1;
+}
+
+.settings-section-language {
+    z-index: 9;
+    --animation-order: 2;
+}
+
+.settings-section-shortcuts {
+    z-index: 8;
+    --animation-order: 3;
+}
+
+.settings-section-audio {
+    --animation-order: 4;
+}
+
+.settings-section-data {
+    --animation-order: 5;
+}
+
+.settings-section-danger {
+    border: 1px solid var(--danger);
+    --animation-order: 6;
+}
+
+.settings-danger-header {
+    border-bottom-color: var(--danger);
+}
+
+.settings-danger-icon {
+    color: var(--danger);
+}
+
+.settings-danger-title {
+    color: var(--danger);
+}
+
+.settings-danger-desc {
+    color: var(--text-dark);
+}
+
+.theme-selector-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 16px;
+}
+
+.shortcut-btn {
+    margin-top: 8px;
+}
+
+.audio-master-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    margin-bottom: 4px;
+}
+
+.form-group .audio-header-label {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 1;
+}
+
+.audio-master-val {
+    font-weight: 700;
+    color: var(--primary);
+    min-width: 40px;
+    text-align: right;
+}
+
+.audio-reset-all-btn {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    background: none;
+    border: 1px solid var(--glass-border);
+    border-radius: var(--border-radius);
+    padding: 2px 8px;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: color 150ms ease, border-color 150ms ease;
+}
+
+.audio-reset-all-btn:hover {
+    color: var(--primary);
+    border-color: var(--primary);
+}
+
+/* ── Audio groups ── */
+
+.audio-individual-list {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    margin-top: 12px;
+}
+
+.audio-group {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.audio-group-header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 4px 0 6px;
+    border-bottom: 1px solid var(--glass-border);
+    margin-bottom: 4px;
+}
+
+.audio-group-icon {
+    font-size: 0.85rem;
+    line-height: 1;
+}
+
+.audio-group-name {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.07em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+}
+
+.audio-group-items {
+    display: flex;
+    flex-direction: column;
+}
+
+.delete-all-btn {
+    margin-top: 8px;
+}
+
+/* ── Export / Save Locations ── */
+
+.export-locations {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    margin-bottom: 12px;
+}
+
+.export-locations-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    margin-bottom: 2px;
+}
+
+.export-path-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    min-width: 0;
+}
+
+.export-path-tag {
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    white-space: nowrap;
+    min-width: 90px;
+}
+
+.export-path-value {
+    flex: 1;
+    font-size: 0.78rem;
+    color: var(--text-dark);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    opacity: 0.75;
+    min-width: 0;
+}
+
+.export-path-btn {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.78rem;
+    padding: 4px 10px;
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.export-clear-btn {
+    flex-shrink: 0;
+    opacity: 0.5;
+    padding: 3px;
+    line-height: 1;
+}
+
+.export-clear-btn:hover {
+    opacity: 1;
+}
+
+.export-auto-note {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin: 0;
+    padding-top: 2px;
+}
+
+.export-status {
+    font-size: 0.82rem;
+    font-weight: 600;
+    margin: 0 0 8px;
+    padding: 6px 10px;
+    border-radius: var(--border-radius);
+}
+
+.export-status-success {
+    color: var(--success);
+    background: color-mix(in srgb, var(--success) 12%, transparent);
+}
+
+.export-status-error {
+    color: var(--danger);
+    background: color-mix(in srgb, var(--danger) 12%, transparent);
+}
+
+.export-last-time {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin: 0 0 10px;
+}
+
+.settings-version {
+    margin: 12px 0 0;
+    text-align: center;
+    font-size: 0.72rem;
+    color: var(--text-muted);
+    opacity: 0.4;
+}

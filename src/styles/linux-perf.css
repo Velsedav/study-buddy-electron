@@ -1,0 +1,80 @@
+/*
+ * Linux performance overrides — injected via .linux-perf on <html>.
+ *
+ * Context: WebKitGTK has no GPU process (unlike WebView2 on Windows) so
+ * compositing is CPU-side even on Wayland+DMABUF. Every pixel at 4K = CPU work.
+ * Strategy: minimize paint triggers, frames, and repaint area.
+ */
+
+/* ── 1. Kill all CSS transitions ── */
+/* Transitions fire repaints on every interpolation step. At 4K each step is
+   expensive. Remove them entirely — state changes become instant. */
+.linux-perf * {
+  transition: none !important;
+  transition-duration: 0s !important;
+}
+
+/* ── 2. Kill all animations ── */
+/* animation-iteration-count: 1 stops infinite loops — they were still firing
+   per-frame style recalculation even at 1ms duration. Match prefers-reduced-motion
+   pattern from index.css. animation-fill-mode preserved so elements land in final state. */
+.linux-perf *,
+.linux-perf *::before,
+.linux-perf *::after {
+  animation-duration: 0.01ms !important;
+  animation-delay: 0s !important;
+  animation-iteration-count: 1 !important;
+}
+
+/* Higher-specificity override for elements with animation: ... infinite !important */
+.linux-perf .btn-start-session-full {
+  animation-duration: 0.01ms !important;
+  animation-iteration-count: 1 !important;
+}
+
+/* ── 3. Disable backdrop-filter ── */
+/* Each blur requires a compositing pass — disabled since we have no GPU compositor. */
+.linux-perf * {
+  backdrop-filter: none !important;
+  -webkit-backdrop-filter: none !important;
+}
+
+/* ── 4. Kill filter animations explicitly (terminal theme nav glitch) ── */
+/* filter: brightness + drop-shadow on terminal-glitch-* trigger paint per frame. */
+.linux-perf .terminal-glitch-a,
+.linux-perf .terminal-glitch-b,
+.linux-perf .terminal-glitch-c {
+  filter: none !important;
+}
+
+.linux-perf .terminal-glitch-a::before,
+.linux-perf .terminal-glitch-a::after,
+.linux-perf .terminal-glitch-b::before,
+.linux-perf .terminal-glitch-b::after,
+.linux-perf .terminal-glitch-c::before,
+.linux-perf .terminal-glitch-c::after {
+  display: none !important;
+}
+
+/* ── 5. Promote scroll containers to compositor layers ── */
+/* will-change: transform creates a separate backing store per container.
+   On scroll, WebKit composites the layer rather than repainting the full page. */
+.linux-perf .lesson-nav,
+.linux-perf .planner-subjects-panel,
+.linux-perf .plan-tag-filter-list,
+.linux-perf .chapter-picker-list,
+.linux-perf .subject-editor-body,
+.linux-perf .subject-editor-details-col,
+.linux-perf .subject-editor-chapters-col,
+.linux-perf .mc-mention-dropdown {
+  will-change: transform;
+}
+
+/* ── 6. Static fallbacks for animated box-shadows ── */
+.linux-perf .streak-rainbow {
+  box-shadow: 0 0 0 2px var(--primary);
+}
+
+.linux-perf .recommendation-highlight {
+  box-shadow: 0 0 0 4px rgba(139, 92, 246, 0.35);
+}

@@ -1,0 +1,557 @@
+import { useState, useMemo, useRef } from 'react';
+import { CalendarDays, ChevronLeft, ChevronRight, X, Flag, Trash2 } from 'lucide-react';
+import type { Session, Subject, SessionBlock } from '../lib/db';
+import type { Chapter } from '../lib/chapters';
+import { getChaptersForSubject } from '../lib/chapters';
+import { useSettings } from '../lib/settings';
+import { useTranslation } from '../lib/i18n';
+import { playSFX } from '../lib/sounds';
+import { formatHM } from '../lib/time';
+import './CalendarPanel.css';
+
+// ── Goal Dates ──
+type DeadlineType = 'exam' | 'deadline' | 'challenge';
+
+interface GoalDate {
+    id: string;
+    date: string;
+    label: string;
+    type?: DeadlineType;
+    subject_id?: string;
+    chapter_name?: string;
+}
+
+const GOAL_DATES_KEY = 'study-buddy-goal-dates';
+
+const DEADLINE_ICONS: Record<DeadlineType, string> = {
+    exam: '🎓',
+    deadline: '📋',
+    challenge: '⚡',
+};
+
+function getDeadlineIcon(type?: DeadlineType): string {
+    return DEADLINE_ICONS[type ?? 'deadline'];
+}
+
+function loadGoalDates(): GoalDate[] {
+    try {
+        const saved = localStorage.getItem(GOAL_DATES_KEY);
+        if (saved) {
+            const parsed = JSON.parse(saved);
+            return parsed.map((g: GoalDate) => ({ ...g, type: g.type ?? 'deadline' }));
+        }
+    } catch { }
+    return [];
+}
+
+function saveGoalDates(goals: GoalDate[]) {
+    localStorage.setItem(GOAL_DATES_KEY, JSON.stringify(goals));
+}
+
+// ── Helpers ──
+function toLocalDateStr(date: Date): string {
+    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+}
+
+function getIntensityClass(mins: number) {
+    if (mins === 0) return 'h-level-0';
+    if (mins < 30) return 'h-level-1';
+    if (mins < 60) return 'h-level-2';
+    if (mins < 120) return 'h-level-3';
+    return 'h-level-4';
+}
+
+// ── Props ──
+interface CalendarPanelProps {
+    sessions: Session[];
+    blocks: SessionBlock[];
+    subjects: Subject[];
+    allChapters: Chapter[];
+    /** If true, show the weekly active days for rainbow/flame logic. Pass weeklyActiveDays from parent. */
+    weeklyActiveDays?: number;
+}
+
+export default function CalendarPanel({
+    sessions,
+    blocks,
+    subjects,
+    allChapters,
+    weeklyActiveDays = 0,
+}: CalendarPanelProps) {
+    const { weekStart, theme } = useSettings();
+    const { t } = useTranslation();
+
+    const [currentHeatmapMonth, setCurrentHeatmapMonth] = useState(() => {
+        const d = new Date();
+        d.setDate(1);
+        d.setHours(0, 0, 0, 0);
+        return d;
+    });
+    const [selectedLogDate, setSelectedLogDate] = useState<Date | null>(null);
+    const [goalDates, setGoalDates] = useState<GoalDate[]>(loadGoalDates);
+    const [showGoalModal, setShowGoalModal] = useState(false);
+    const [newGoalDate, setNewGoalDate] = useState('');
+    const [newGoalLabel, setNewGoalLabel] = useState('');
+    const [newGoalType, setNewGoalType] = useState<DeadlineType>('deadline');
+    const [newGoalSubjectQuery, setNewGoalSubjectQuery] = useState('');
+    const [newGoalSubjectId, setNewGoalSubjectId] = useState<string | null>(null);
+    const [showSubjectDropdown, setShowSubjectDropdown] = useState(false);
+    const [newGoalChapterName, setNewGoalChapterName] = useState<string | null>(null);
+    const [removedGoalToast, setRemovedGoalToast] = useState<GoalDate | null>(null);
+    const removeToastTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+    const updateGoalDates = (next: GoalDate[]) => {
+        setGoalDates(next);
+        saveGoalDates(next);
+    };
+
+    const addGoalDate = () => {
+        if (!newGoalDate || !newGoalLabel.trim()) return;
+        const entry: GoalDate = {
+            id: crypto.randomUUID(),
+            date: newGoalDate,
+            label: newGoalLabel.trim(),
+            type: newGoalType,
+            ...(newGoalSubjectId ? { subject_id: newGoalSubjectId } : {}),
+            ...(newGoalChapterName ? { chapter_name: newGoalChapterName } : {}),
+        };
+        updateGoalDates([...goalDates, entry]);
+        setNewGoalDate('');
+        setNewGoalLabel('');
+        setNewGoalType('deadline');
+        setNewGoalSubjectQuery('');
+        setNewGoalSubjectId(null);
+        setNewGoalChapterName(null);
+        setShowGoalModal(false);
+    };
+
+    const filteredSubjects = newGoalSubjectQuery.trim().length > 0
+        ? subjects.filter(s => s.name.toLowerCase().includes(newGoalSubjectQuery.toLowerCase()))
+        : [];
+
+    const removeGoalDate = (id: string) => {
+        const removed = goalDates.find(g => g.id === id);
+        updateGoalDates(goalDates.filter(g => g.id !== id));
+        if (removed) {
+            setRemovedGoalToast(removed);
+            if (removeToastTimerRef.current) clearTimeout(removeToastTimerRef.current);
+            removeToastTimerRef.current = setTimeout(() => setRemovedGoalToast(null), 5000);
+        }
+    };
+
+    const undoRemoveGoal = () => {
+        if (!removedGoalToast) return;
+        updateGoalDates([...goalDates, removedGoalToast].sort((a, b) => a.date.localeCompare(b.date)));
+        if (removeToastTimerRef.current) clearTimeout(removeToastTimerRef.current);
+        setRemovedGoalToast(null);
+    };
+
+    // ── Heatmap ──
+    const heatmapData = useMemo(() => {
+        const year = currentHeatmapMonth.getFullYear();
+        const month = currentHeatmapMonth.getMonth();
+        const monthDays: Date[] = [];
+        let itr = new Date(year, month, 1);
+        const nextMonth = new Date(year, month + 1, 1);
+        while (itr < nextMonth) {
+            monthDays.push(new Date(itr));
+            itr.setDate(itr.getDate() + 1);
+        }
+
+        return monthDays.map(date => {
+            const dateStr = toLocalDateStr(date);
+            const daySessions = sessions.filter(s => toLocalDateStr(new Date(s.started_at)) === dateStr);
+            let dayMin = 0;
+            daySessions.forEach(s => { if (s.actual_minutes) dayMin += s.actual_minutes; });
+            let tooltip = date.toLocaleDateString();
+            tooltip += dayMin > 0 ? ` - ${dayMin} minutes (${daySessions.length} sessions)` : ' - No sessions';
+            return { date, mins: dayMin, tooltip, sessions: daySessions };
+        });
+    }, [sessions, currentHeatmapMonth]);
+
+    const goalDateSet = useMemo(() => {
+        const map: Record<string, GoalDate> = {};
+        for (const g of goalDates) map[g.date] = g;
+        return map;
+    }, [goalDates]);
+
+    // ── Day log data ──
+    const sessionsForSelectedDate = useMemo(() => {
+        if (!selectedLogDate) return [];
+        const targetStr = toLocalDateStr(selectedLogDate);
+        return (heatmapData.find(d => toLocalDateStr(d.date) === targetStr)?.sessions || [])
+            .map((session: Session) => {
+                const sessionBlocks = blocks.filter(b => b.session_id === session.id && b.subject_id);
+                const subjectIds = [...new Set(sessionBlocks.map(b => b.subject_id).filter((id): id is string => !!id))];
+                const subjectNames = subjectIds.map(id => subjects.find(s => s.id === id)?.name).filter(Boolean);
+                return { ...session, subject_name: subjectNames.length > 0 ? subjectNames.join(', ') : 'Non spécifié' };
+            });
+    }, [selectedLogDate, heatmapData, blocks, subjects]);
+
+    // ── Deadlines ──
+    const allDeadlines = useMemo(() => [
+        ...goalDates.map(g => ({ ...g, sourceType: 'manual' as const, deadlineType: (g.type ?? 'deadline') as DeadlineType, result: null })),
+        ...subjects.filter(s => s.deadline).map(s => ({
+            id: s.id, label: s.name, date: s.deadline!, sourceType: 'subject' as const, deadlineType: 'exam' as DeadlineType, result: s.result
+        }))
+    ], [goalDates, subjects]);
+
+    const todayStr = toLocalDateStr(new Date());
+    const upcoming = allDeadlines
+        .filter(g => new Date(g.date + 'T00:00:00') >= new Date(todayStr + 'T00:00:00'))
+        .sort((a, b) => a.date.localeCompare(b.date));
+    const pastWithResults = allDeadlines
+        .filter(g => g.result && new Date(g.date + 'T00:00:00') < new Date(todayStr + 'T00:00:00'))
+        .sort((a, b) => b.date.localeCompare(a.date));
+
+    // ── Prefix for calendar grid ──
+    const firstDayOfMonthDate = new Date(currentHeatmapMonth.getFullYear(), currentHeatmapMonth.getMonth(), 1);
+    const firstDayOfWeek = firstDayOfMonthDate.getDay();
+    const emptyPrefixCount = weekStart === 'monday'
+        ? (firstDayOfWeek === 0 ? 6 : firstDayOfWeek - 1)
+        : firstDayOfWeek;
+
+    return (
+        <>
+            {/* ── Day Log Modal ── */}
+            {selectedLogDate && (
+                <div className="modal-overlay" onClick={() => setSelectedLogDate(null)}>
+                    <div className="modal-content modal-content-analytics" role="dialog" aria-modal="true" aria-labelledby="day-log-modal-title" onClick={e => e.stopPropagation()}>
+                        <div className="modal-header">
+                            <h2 id="day-log-modal-title" className="modal-title">
+                                {t('calendar.day_log_title').replace('{date}', selectedLogDate.toLocaleDateString(undefined, { month: 'long', day: 'numeric', year: 'numeric' }))}
+                            </h2>
+                            <button className="btn btn-icon" aria-label={t('home.cancel')} onClick={() => setSelectedLogDate(null)}>
+                                <X size={20} />
+                            </button>
+                        </div>
+                        {sessionsForSelectedDate.length === 0 ? (
+                            <p className="text-muted text-center">{t('calendar.no_sessions')}</p>
+                        ) : (
+                            <div className="modal-body">
+                                {sessionsForSelectedDate.map((session: any) => (
+                                    <div key={session.id} className="glass log-item">
+                                        <div className="log-item-title">{session.subject_name}</div>
+                                        <div className="log-item-time">{formatHM(session.actual_minutes)}</div>
+                                    </div>
+                                ))}
+                            </div>
+                        )}
+                        {(() => {
+                            const targetStr = toLocalDateStr(selectedLogDate);
+                            const studied = allChapters.filter(ch =>
+                                ch.lastStudiedAt && toLocalDateStr(new Date(ch.lastStudiedAt)) === targetStr
+                            );
+                            if (studied.length === 0) return null;
+                            return (
+                                <div className="log-modal-chapters">
+                                    <div className="log-modal-chapters-title">{t('calendar.chapters_reviewed')}</div>
+                                    {studied.map(ch => {
+                                        const sub = subjects.find(s => s.id === ch.subjectId);
+                                        return (
+                                            <div key={ch.id} className="log-modal-chapter-item">
+                                                <span className="log-modal-chapter-name">{ch.name}</span>
+                                                {sub && <span className="log-modal-chapter-subject">{sub.name}</span>}
+                                                <span className="log-modal-chapter-count">{ch.studyCount}/3</span>
+                                            </div>
+                                        );
+                                    })}
+                                </div>
+                            );
+                        })()}
+                    </div>
+                </div>
+            )}
+
+            {/* ── Goal Date Modal ── */}
+            {showGoalModal && (
+                <div className="modal-overlay" onClick={() => setShowGoalModal(false)}>
+                    <div className="modal-content calendar-goal-modal" role="dialog" aria-modal="true" aria-labelledby="goal-modal-title" onClick={e => e.stopPropagation()}>
+                        <div className="modal-header">
+                            <h2 id="goal-modal-title" className="modal-title-small"><Flag size={20} /> {t('calendar.add_deadline_title')}</h2>
+                            <button className="btn btn-icon" aria-label={t('home.cancel')} onClick={() => setShowGoalModal(false)}><X size={20} /></button>
+                        </div>
+                        <div className="modal-body-form">
+                            <div className="form-group">
+                                <label>{t('calendar.type_label')}</label>
+                                <div className="goal-type-picker">
+                                    {(['exam', 'deadline', 'challenge'] as const).map(type => (
+                                        <button
+                                            key={type}
+                                            type="button"
+                                            className={`goal-type-btn goal-type-btn-${type}${newGoalType === type ? ' active' : ''}`}
+                                            onClick={() => setNewGoalType(type)}
+                                        >
+                                            <span className="goal-type-icon">{DEADLINE_ICONS[type]}</span>
+                                            <span>{t(`calendar.type_${type}`)}</span>
+                                        </button>
+                                    ))}
+                                </div>
+                            </div>
+                            <div className="form-group">
+                                <label>{t('calendar.subject_label')}</label>
+                                <div className="goal-subject-search-wrapper">
+                                    <input
+                                        type="text"
+                                        value={newGoalSubjectQuery}
+                                        onChange={e => {
+                                            setNewGoalSubjectQuery(e.target.value);
+                                            setNewGoalSubjectId(null);
+                                            setNewGoalChapterName(null);
+                                            setShowSubjectDropdown(true);
+                                        }}
+                                        onFocus={() => setShowSubjectDropdown(true)}
+                                        onBlur={() => setTimeout(() => setShowSubjectDropdown(false), 150)}
+                                        placeholder={t('calendar.subject_placeholder')}
+                                        className={`form-input-full${newGoalSubjectId ? ' goal-subject-linked' : ''}`}
+                                    />
+                                    {newGoalSubjectId && (
+                                        <button
+                                            type="button"
+                                            className="goal-subject-clear"
+                                            onClick={() => { setNewGoalSubjectId(null); setNewGoalSubjectQuery(''); setNewGoalChapterName(null); }}
+                                            aria-label="Clear subject"
+                                        >×</button>
+                                    )}
+                                    {showSubjectDropdown && filteredSubjects.length > 0 && (
+                                        <div className="goal-subject-dropdown">
+                                            {filteredSubjects.map(s => (
+                                                <div
+                                                    key={s.id}
+                                                    className="goal-subject-dropdown-item"
+                                                    onMouseDown={() => {
+                                                        setNewGoalSubjectId(s.id);
+                                                        setNewGoalSubjectQuery(s.name);
+                                                        if (!newGoalLabel.trim()) setNewGoalLabel(s.name);
+                                                        setShowSubjectDropdown(false);
+                                                    }}
+                                                >
+                                                    {s.name}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                            {newGoalSubjectId && (() => {
+                                const subjectChapters = getChaptersForSubject(newGoalSubjectId);
+                                if (subjectChapters.length === 0) return null;
+                                return (
+                                    <div className="form-group">
+                                        <label>{t('calendar.chapter_label')}</label>
+                                        <div className="goal-chapter-list">
+                                            <div
+                                                className={`goal-chapter-item${!newGoalChapterName ? ' active' : ''}`}
+                                                onClick={() => setNewGoalChapterName(null)}
+                                            >
+                                                —
+                                            </div>
+                                            {subjectChapters.map(ch => (
+                                                <div
+                                                    key={ch.id}
+                                                    className={`goal-chapter-item${newGoalChapterName === ch.name ? ' active' : ''}`}
+                                                    onClick={() => setNewGoalChapterName(ch.name)}
+                                                >
+                                                    {ch.name}
+                                                </div>
+                                            ))}
+                                        </div>
+                                    </div>
+                                );
+                            })()}
+                            <div className="form-group">
+                                <label htmlFor="goal-label-input">{t('calendar.label_label')}</label>
+                                <input id="goal-label-input" type="text" value={newGoalLabel} onChange={e => setNewGoalLabel(e.target.value)}
+                                    placeholder={t('calendar.label_placeholder')} className="form-input-full" />
+                            </div>
+                            <div className="form-group">
+                                <label htmlFor="goal-date-input">{t('calendar.date_label')}</label>
+                                <input id="goal-date-input" type="date" value={newGoalDate} onChange={e => setNewGoalDate(e.target.value)}
+                                    className="form-input-full" />
+                            </div>
+                            <button className="btn btn-primary w-full" onMouseEnter={() => playSFX('glass_ui_hover', theme)} onClick={addGoalDate}
+                                disabled={!newGoalDate || !newGoalLabel.trim()}>
+                                {t('calendar.add_goal_btn')}
+                            </button>
+                        </div>
+                        {goalDates.length > 0 && (
+                            <div className="existing-goals-container">
+                                <h4 className="existing-goals-title">{t('calendar.existing_goals')}</h4>
+                                <div className="goals-list">
+                                    {goalDates.sort((a, b) => a.date.localeCompare(b.date)).map(g => (
+                                        <div key={g.id} className={`goal-item goal-item-${g.type ?? 'deadline'}`}>
+                                            <div>
+                                                <span className="goal-item-icon">{getDeadlineIcon(g.type)}</span>
+                                                <strong>{g.label}</strong>
+                                                <span className="goal-item-date">{new Date(g.date + 'T00:00:00').toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}</span>
+                                            </div>
+                                            <button className="btn-icon goal-remove-btn" onMouseEnter={() => playSFX('glass_ui_hover', theme)} onClick={() => removeGoalDate(g.id)} aria-label={`${t('calendar.remove_goal')}: ${g.label}`}>
+                                                <Trash2 size={14} />
+                                            </button>
+                                        </div>
+                                    ))}
+                                </div>
+                            </div>
+                        )}
+                    </div>
+                </div>
+            )}
+
+            {/* ── Main panels ── */}
+            <div className="analytics-main-panel">
+                {/* Heatmap */}
+                <div className="heatmap-section heatmap-section-wrapper">
+                    <div className="heatmap-header analytics-header calendar-header">
+                        <h3 className="calendar-month-title">
+                            <CalendarDays size={20} className="icon-blue" />
+                            {currentHeatmapMonth.toLocaleString(undefined, { month: 'long', year: 'numeric' })}
+                        </h3>
+                        <div className="heatmap-nav">
+                            <button className="btn btn-secondary add-deadline-btn" onMouseEnter={() => playSFX('glass_ui_hover', theme)} onClick={() => setShowGoalModal(true)}>
+                                <span className="add-deadline-plus">+</span> {t('calendar.add_deadline')}
+                            </button>
+                            <button className="btn btn-icon glass heatmap-nav-btn"
+                                aria-label="Previous month"
+                                onMouseEnter={() => playSFX('glass_ui_hover', theme)}
+                                onClick={() => setCurrentHeatmapMonth(prev => new Date(prev.getFullYear(), prev.getMonth() - 1, 1))}>
+                                <ChevronLeft size={18} />
+                            </button>
+                            <button className="btn btn-icon glass heatmap-nav-btn"
+                                aria-label="Next month"
+                                onMouseEnter={() => playSFX('glass_ui_hover', theme)}
+                                onClick={() => setCurrentHeatmapMonth(prev => new Date(prev.getFullYear(), prev.getMonth() + 1, 1))}>
+                                <ChevronRight size={18} />
+                            </button>
+                        </div>
+                    </div>
+
+                    <div className="heatmap-grid">
+                        {weekStart === 'monday' ? (
+                            <>
+                                <div className="calendar-day-header">Mon</div>
+                                <div className="calendar-day-header">Tue</div>
+                                <div className="calendar-day-header">Wed</div>
+                                <div className="calendar-day-header">Thu</div>
+                                <div className="calendar-day-header">Fri</div>
+                                <div className="calendar-day-header">Sat</div>
+                                <div className="calendar-day-header">Sun</div>
+                            </>
+                        ) : (
+                            <>
+                                <div className="calendar-day-header">Sun</div>
+                                <div className="calendar-day-header">Mon</div>
+                                <div className="calendar-day-header">Tue</div>
+                                <div className="calendar-day-header">Wed</div>
+                                <div className="calendar-day-header">Thu</div>
+                                <div className="calendar-day-header">Fri</div>
+                                <div className="calendar-day-header">Sat</div>
+                            </>
+                        )}
+                        {Array.from({ length: emptyPrefixCount }).map((_, i) => (
+                            <div key={`empty-${i}`} className="heatmap-cell empty" />
+                        ))}
+                        {heatmapData.map((d, i) => {
+                            const isRainbow = d.mins > 0 && weeklyActiveDays === 7;
+                            const isFlame = d.mins > 0 && weeklyActiveDays >= 5 && weeklyActiveDays < 7;
+                            const dateStr = toLocalDateStr(d.date);
+                            const goal = goalDateSet[dateStr];
+                            return (
+                                <div
+                                    key={i}
+                                    className={`heatmap-cell ${getIntensityClass(d.mins)} ${isRainbow ? 'streak-rainbow' : isFlame ? 'streak-flame' : ''} ${goal ? 'goal-cell' : ''} ${d.mins > 0 || goal ? 'heatmap-cell-interactive' : ''}`}
+                                    title={goal ? `${getDeadlineIcon(goal.type)} ${goal.label} • ${d.tooltip}` : d.tooltip}
+                                    onMouseEnter={() => { if (d.mins > 0 || goal) playSFX('glass_ui_hover', theme); }}
+                                    onClick={() => { if (d.mins > 0) setSelectedLogDate(d.date); }}
+                                >
+                                    {d.date.getDate()}
+                                    {goal && <span className={`goal-flag goal-flag-${goal.type ?? 'deadline'}`} title={goal.label}>{getDeadlineIcon(goal.type)}</span>}
+                                </div>
+                            );
+                        })}
+                    </div>
+                    <div className="heatmap-legend">
+                        Less <span className="heatmap-cell h-level-0" />
+                        <span className="heatmap-cell h-level-1" />
+                        <span className="heatmap-cell h-level-2" />
+                        <span className="heatmap-cell h-level-3" />
+                        <span className="heatmap-cell h-level-4" /> More
+                        <span className="heatmap-legend-goal">📋 {t('calendar.goal_marker')}</span>
+                    </div>
+                </div>
+
+                {/* Deadlines */}
+                <div className="glass deadlines-panel">
+                    <h3 className="panel-header"><Flag size={18} /> {t('calendar.upcoming_deadlines')}</h3>
+                    {upcoming.length === 0 ? (
+                        <p className="empty-state-text">{t('calendar.no_deadlines')}<br />{t('calendar.no_deadlines_hint')}</p>
+                    ) : (
+                        <div className="upcoming-list">
+                            {upcoming.map((g, idx) => {
+                                const goalDate = new Date(g.date + 'T00:00:00');
+                                const now = new Date(); now.setHours(0, 0, 0, 0);
+                                const totalDays = Math.ceil((goalDate.getTime() - now.getTime()) / (1000 * 60 * 60 * 24));
+                                const months = Math.floor(totalDays / 30);
+                                const weeks = Math.floor((totalDays % 30) / 7);
+                                const days = totalDays % 7;
+                                const countdown = totalDays === 0 ? t('calendar.today') : [
+                                    months > 0 && `${months}mo`,
+                                    weeks > 0 && `${weeks}w`,
+                                    days > 0 && `${days}d`,
+                                ].filter(Boolean).join(' ');
+
+                                let cardClass = `deadline-card deadline-type-${g.deadlineType}`;
+                                if (totalDays <= 7) cardClass += ' urgent';
+                                else if (totalDays <= 30) cardClass += ' soon';
+
+                                const linkedSubject = 'subject_id' in g && g.subject_id ? subjects.find(s => s.id === g.subject_id) : null;
+                                return (
+                                    <div key={`${g.id}-${idx}`} className={cardClass}>
+                                        <div className="deadline-card-title">{getDeadlineIcon(g.deadlineType)} {g.label}</div>
+                                        {linkedSubject && <div className="deadline-card-subject">{linkedSubject.name}{'chapter_name' in g && g.chapter_name ? ` › ${g.chapter_name}` : ''}</div>}
+                                        <div className="deadline-card-date">{new Date(g.date + 'T00:00:00').toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}</div>
+                                        <div className="deadline-card-countdown">{countdown}</div>
+                                        {g.sourceType === 'manual' && (
+                                            <button className="btn-icon remove-deadline-btn deadline-remove-btn" onClick={() => removeGoalDate(g.id)} aria-label={`${t('calendar.remove_deadline')}: ${g.label}`}>
+                                                <Trash2 size={14} />
+                                            </button>
+                                        )}
+                                    </div>
+                                );
+                            })}
+                        </div>
+                    )}
+                    {pastWithResults.length > 0 && (
+                        <div className="past-results-container">
+                            <h4 className="past-results-title">{t('calendar.past_results')}</h4>
+                            <div className="goals-list">
+                                {pastWithResults.map((p, idx) => (
+                                    <div key={`past-${p.id}-${idx}`} className="past-result-item">
+                                        <div>
+                                            <div className="past-result-label">{p.label}</div>
+                                            <div className="past-result-date">{new Date(p.date + 'T00:00:00').toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}</div>
+                                        </div>
+                                        <div className="past-result-score">{p.result}</div>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+                </div>
+            </div>
+
+            {/* ── Deadline removed undo toast ── */}
+            {removedGoalToast && (
+                <div className="soft-delete-toast glass" role="status" aria-live="polite">
+                    <span>{t('calendar.remove_deadline')}: <strong>{removedGoalToast.label}</strong></span>
+                    <button className="btn btn-secondary trash-toast-undo-btn" onClick={undoRemoveGoal}>
+                        {t('home.restore')}
+                    </button>
+                    <button className="btn-icon" onClick={() => setRemovedGoalToast(null)} aria-label={t('home.cancel')}>
+                        <X size={16} />
+                    </button>
+                </div>
+            )}
+
+        </>
+    );
+}

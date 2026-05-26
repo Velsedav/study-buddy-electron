@@ -1,0 +1,288 @@
+/* ChapterPickerModal.css */
+
+.chapter-picker-modal {
+    max-width: 600px;
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+    position: relative;
+}
+
+.chapter-picker-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+
+.chapter-picker-header h2 {
+    margin: 0;
+}
+
+.chapter-picker-list {
+    overflow-y: auto;
+    padding: 4px 12px 4px 4px;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.chapter-picker-empty {
+    padding: 24px;
+    text-align: center;
+    color: var(--text-muted);
+    font-style: italic;
+}
+
+.chapter-picker-item {
+    padding: 16px;
+    cursor: pointer;
+    border: 2px solid transparent;
+    transition: all 0.2s ease;
+    border-radius: var(--border-radius);
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    position: relative;
+}
+
+.chapter-picker-item.sub-chapter {
+    padding: 10px 14px;
+    margin-left: 24px;
+    border-left: 3px solid var(--glass-border);
+}
+
+.chapter-picker-item.selected {
+    border-color: var(--primary);
+}
+
+.chapter-picker-item.recommended {
+    border-color: #8b5cf6;
+}
+
+.chapter-picker-item.sub-chapter.recommended {
+    border-left-width: 4px;
+    border-left-color: #8b5cf6;
+}
+
+.chapter-picker-item-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.chapter-picker-item-labels {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.chapter-picker-item-name {
+    font-weight: 600;
+    font-size: 1.05rem;
+}
+
+.chapter-picker-item-name.sub-chapter {
+    font-weight: 400;
+    font-size: 0.95rem;
+}
+
+.chapter-picker-focus-badge {
+    background: var(--badge-bg);
+    color: #fff;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 0.7rem;
+    font-weight: bold;
+    letter-spacing: 0.3px;
+}
+
+.chapter-picker-dots {
+    display: flex;
+    gap: 4px;
+}
+
+.chapter-picker-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: rgba(0, 0, 0, 0.1);
+}
+
+.chapter-picker-dot.filled {
+    background: var(--success);
+}
+
+.chapter-picker-study-count {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+}
+
+.chapter-picker-piece-badge {
+    background: rgba(var(--primary-rgb), 0.15);
+    color: var(--primary);
+    padding: 2px 8px;
+    border-radius: 99px;
+    font-size: 0.72rem;
+    font-weight: 600;
+    white-space: nowrap;
+}
+
+.chapter-picker-measure-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 2px;
+}
+
+.chapter-picker-measure-label {
+    font-size: 0.8rem;
+    color: var(--text-muted);
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+
+.chapter-picker-measure-bar {
+    flex: 1;
+    height: 5px;
+    background: rgba(var(--primary-rgb), 0.12);
+    border-radius: 3px;
+    overflow: hidden;
+}
+
+.chapter-picker-measure-fill {
+    height: 100%;
+    width: var(--measure-pct, 0%);
+    background: var(--primary);
+    border-radius: 3px;
+}
+
+.chapter-picker-item.piece {
+    border-left: 3px solid var(--primary);
+}
+
+/* Pre-recall overlay */
+.pre-recall-overlay {
+    position: absolute;
+    inset: 0;
+    background: rgba(var(--card-bg-rgb, 20, 16, 28), 0.92);
+    backdrop-filter: blur(8px);
+    border-radius: var(--border-radius);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10;
+}
+
+.pre-recall-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+    padding: 32px 24px;
+    text-align: center;
+    max-width: 380px;
+}
+
+.pre-recall-title {
+    font-size: 1rem;
+    color: var(--text-muted);
+    margin: 0;
+}
+
+.pre-recall-chapter-name {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--text-dark);
+    margin: 0;
+}
+
+.pre-recall-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    width: 100%;
+}
+
+.pre-recall-btn {
+    padding: 10px 8px;
+    font-size: 0.85rem;
+    background: rgba(var(--primary-rgb), 0.12);
+    border: 1px solid rgba(var(--primary-rgb), 0.25);
+    border-radius: var(--border-radius);
+    color: var(--text-dark);
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s;
+}
+
+.pre-recall-btn:hover {
+    background: rgba(var(--primary-rgb), 0.25);
+    border-color: var(--primary);
+}
+
+.pre-recall-skip {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    cursor: pointer;
+    text-decoration: underline;
+    padding: 4px 8px;
+}
+
+.pre-recall-skip:hover {
+    color: var(--text-dark);
+}
+
+/* ── Sources in picker ── */
+.chapter-picker-sources {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-top: 4px;
+}
+
+.chapter-picker-sources-toggle {
+    background: rgba(var(--primary-rgb), 0.1);
+    border: 1px solid rgba(var(--primary-rgb), 0.2);
+    border-radius: 99px;
+    padding: 2px 10px;
+    font-size: 0.75rem;
+    cursor: pointer;
+    color: var(--primary);
+    font-weight: 600;
+    transition: background 0.15s;
+}
+
+.chapter-picker-sources-toggle:hover,
+.chapter-picker-sources-toggle.open {
+    background: rgba(var(--primary-rgb), 0.2);
+}
+
+.chapter-picker-sources-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    width: 100%;
+}
+
+.chapter-picker-source-btn {
+    background: rgba(var(--primary-rgb), 0.08);
+    border: 1px solid rgba(var(--primary-rgb), 0.18);
+    border-radius: 6px;
+    padding: 3px 10px;
+    font-size: 0.78rem;
+    cursor: pointer;
+    color: var(--text-dark);
+    transition: background 0.15s, border-color 0.15s;
+    text-align: left;
+}
+
+.chapter-picker-source-btn:hover {
+    background: rgba(var(--primary-rgb), 0.18);
+    border-color: var(--primary);
+    color: var(--primary);
+}
