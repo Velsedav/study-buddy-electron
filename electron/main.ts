@@ -3,6 +3,15 @@ import path from 'path'
 import fs from 'fs'
 import Database from 'better-sqlite3'
 
+// ── Linux GPU fixes ───────────────────────────────────────────────────────────
+// White screen on Debian/GNOME caused by DMABUF buffer sharing failing in
+// Chromium's GPU process. Force desktop GL path and X11 ozone platform.
+if (process.platform === 'linux') {
+  app.commandLine.appendSwitch('use-gl', 'desktop')
+  app.commandLine.appendSwitch('ozone-platform', 'x11')
+  app.commandLine.appendSwitch('disable-features', 'UseChromeOSDirectVideoDecoder,VaapiVideoDecoder,VaapiVideoEncoder')
+}
+
 // ── SQLite setup ──────────────────────────────────────────────────────────────
 
 const userData = app.getPath('userData')
