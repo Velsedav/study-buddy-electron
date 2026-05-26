@@ -449,6 +449,7 @@ export async function deleteAllData() {
     'study-buddy-workout-log', 'study-buddy-goal-dates',
     'study-buddy-chapters', 'study-buddy-custom-prep',
     'study-buddy-custom-break', 'activeSession',
+    'study-buddy-mastery-ratings', 'study-buddy-pre-recall',
   ]
   keysToRemove.forEach(k => localStorage.removeItem(k))
 }

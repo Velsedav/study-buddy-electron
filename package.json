@@ -9,8 +9,41 @@
     "build": "electron-vite build --config electron-vite.config.mjs",
     "preview": "electron-vite preview --config electron-vite.config.mjs",
     "postinstall": "electron-rebuild -f -w better-sqlite3",
+    "dist": "npm run build && electron-builder",
     "test": "vitest",
     "test:run": "vitest run"
+  },
+  "build": {
+    "appId": "com.velsedav.study-buddy",
+    "productName": "Study Buddy",
+    "directories": {
+      "output": "release"
+    },
+    "files": [
+      "out/**/*",
+      "node_modules/**/*",
+      "package.json"
+    ],
+    "extraResources": [
+      { "from": "src/public", "to": "public" }
+    ],
+    "linux": {
+      "target": ["deb", "AppImage"],
+      "icon": "src/public/icon.png",
+      "category": "Education"
+    },
+    "win": {
+      "target": "nsis",
+      "icon": "src/public/icon.png"
+    },
+    "mac": {
+      "target": "dmg",
+      "icon": "src/public/icon.png"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowToChangeInstallationDirectory": true
+    }
   },
   "dependencies": {
     "better-sqlite3": "^12.10.0",
