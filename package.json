@@ -2,6 +2,10 @@
   "name": "study-buddy-electron",
   "version": "1.8.3",
   "private": true,
+  "author": {
+    "name": "Velsedav",
+    "email": "velasquez.sebastien@gmail.com"
+  },
   "type": "module",
   "main": "out/main/index.js",
   "scripts": {
