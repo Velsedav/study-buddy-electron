@@ -1,6 +1,6 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
+import { HashRouter, Routes, Route } from 'react-router-dom'
 import './index.css'
 
 import { SettingsProvider } from './lib/settings.tsx'
@@ -66,7 +66,7 @@ new MutationObserver(clearNativeZoom).observe(document.body, { attributes: true,
 createRoot(document.getElementById('root')!).render(
   <StrictMode>
     <SettingsProvider>
-      <BrowserRouter>
+      <HashRouter>
         <Routes>
           <Route path="/" element={<Layout />}>
             <Route index element={<Home />} />
@@ -82,7 +82,7 @@ createRoot(document.getElementById('root')!).render(
             <Route path="bingoals/objective/:id" element={<BingoObjectivePage />} />
           </Route>
         </Routes>
-      </BrowserRouter>
+      </HashRouter>
     </SettingsProvider>
   </StrictMode>,
 )
