@@ -47,4 +47,6 @@ contextBridge.exposeInMainWorld('electronAPI', {
     setEnabled: (enabled: boolean): Promise<void> =>
       ipcRenderer.invoke('autostart:setEnabled', enabled),
   },
+
+  platform: process.platform,
 })
