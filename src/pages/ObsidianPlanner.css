@@ -290,7 +290,6 @@
   border: 1px solid var(--border-color, #30363d);
   background: var(--card-bg, #161b22);
   border-left: 3px solid var(--block-accent);
-  overflow: hidden;
   transition: border-color 0.15s;
 }
 
