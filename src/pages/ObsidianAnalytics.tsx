@@ -9,7 +9,7 @@ import {
   computeStreaks, computeWeeklyStats, computeSubjectBreakdown,
   computeDeadlineUrgency, computeFocusTypeBreakdown, computeTechTierBreakdown,
   computeTimeOfDay, computeTimeline, computeCalibration, computeTagBreakdown,
-  computeWeekTrend,
+  computeWeekTrend, ANALYTICS_CATEGORY_COLORS,
   type SubjectRow, type DeadlineRow, type TierBreakdown, type FocusBreakdown,
   type TimelineResult, type CalibrationResult, type TagBreakdown as TagBreakdownData,
   type TimeOfDay, type Streaks, type WeeklyStats, type WeekTrend,
@@ -272,6 +272,58 @@ function ActivityTimeline({
 }
 
 export { StatStrip, ActivityTimeline, formatTime, TIMELINE_OPTIONS }
+
+type SubjectPeriod = 'month' | '3months' | 'alltime'
+
+function SubjectBalance({ derived, sessions }: { derived: DerivedAnalytics; sessions: Session[] }) {
+  const [period, setPeriod] = useState<SubjectPeriod>('month')
+
+  const periodStart = useMemo(() => {
+    const d = new Date()
+    if (period === 'month') { d.setMonth(d.getMonth() - 1) }
+    else if (period === '3months') { d.setMonth(d.getMonth() - 3) }
+    else { return undefined }
+    d.setHours(0, 0, 0, 0)
+    return d
+  }, [period])
+
+  const rows = useMemo(
+    () => computeSubjectBreakdown(derived.blocks, derived.subjects, sessions, periodStart),
+    [derived.blocks, derived.subjects, sessions, periodStart]
+  )
+
+  return (
+    <div className="oa-panel">
+      <div className="oa-subject-balance-header">
+        <span className="oa-panel-header" style={{ marginBottom: 0 }}>Subject balance</span>
+        <select
+          className="oa-timeline-select"
+          value={period}
+          onChange={e => setPeriod(e.target.value as SubjectPeriod)}
+        >
+          <option value="month">This month</option>
+          <option value="3months">Last 3 months</option>
+          <option value="alltime">All time</option>
+        </select>
+      </div>
+      {rows.length === 0 ? (
+        <div className="oa-empty">No study data for this period</div>
+      ) : (
+        <div className="oa-subject-list">
+          {rows.map(row => (
+            <div key={row.subjectId} className={`oa-subject-row${row.isHyperfocus ? ' oa-subject-row--hyperfocus' : ''}`}>
+              <div className="oa-subject-name" title={row.name}>{row.name}</div>
+              <div className="oa-subject-bar-track">
+                <div className="oa-subject-bar" style={{ width: `${row.pct}%` }} />
+              </div>
+              <div className="oa-subject-time">{formatTime(row.minutes)}</div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
 
 function CommandView(_p: { derived: DerivedAnalytics; timelineFilter: number; onTimelineChange: (v: number) => void }) {
   return <div className="oa-view-placeholder">Command view coming soon</div>
