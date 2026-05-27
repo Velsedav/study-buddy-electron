@@ -83,24 +83,31 @@ describe('retentionColor', () => {
 // ── buildQuickStartSession ────────────────────────────────────────────────────
 
 describe('buildQuickStartSession', () => {
-  it('builds a valid activeSession object', () => {
+  it('starts with a 5-min PREP block then the WORK block', () => {
     const session = buildQuickStartSession('sub-1', 25, 't1', 'Chapter 3')
+    expect(session.draft).toHaveLength(2)
+    expect(session.draft[0].type).toBe('PREP')
+    expect(session.draft[0].minutes).toBe(5)
+    expect(session.draft[0].subject_id).toBeNull()
+    expect(session.draft[1].type).toBe('WORK')
+    expect(session.draft[1].subject_id).toBe('sub-1')
+    expect(session.draft[1].minutes).toBe(25)
+    expect(session.draft[1].technique_id).toBe('t1')
+    expect(session.draft[1].chapter_name).toBe('Chapter 3')
+  })
+
+  it('starts timer at PREP duration, not work duration', () => {
+    const session = buildQuickStartSession('sub-1', 25, null, null)
     expect(session.nowBlockIdx).toBe(0)
     expect(session.paused).toBe(false)
-    expect(session.remainingSeconds).toBe(25 * 60)
-    expect(session.plannedMinutes).toBe(25)
-    expect(session.draft).toHaveLength(1)
-    expect(session.draft[0].type).toBe('WORK')
-    expect(session.draft[0].subject_id).toBe('sub-1')
-    expect(session.draft[0].minutes).toBe(25)
-    expect(session.draft[0].technique_id).toBe('t1')
-    expect(session.draft[0].chapter_name).toBe('Chapter 3')
+    expect(session.remainingSeconds).toBe(5 * 60)
+    expect(session.plannedMinutes).toBe(5 + 25)
   })
 
   it('handles null technique and chapter', () => {
     const session = buildQuickStartSession('sub-1', 50, null, null)
-    expect(session.draft[0].technique_id).toBeNull()
-    expect(session.draft[0].chapter_name).toBeNull()
+    expect(session.draft[1].technique_id).toBeNull()
+    expect(session.draft[1].chapter_name).toBeNull()
   })
 
   it('sets template to Custom and repeats to 1', () => {
