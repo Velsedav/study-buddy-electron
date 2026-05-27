@@ -383,3 +383,83 @@
   color: var(--text-muted, #7d8590);
   white-space: nowrap;
 }
+
+/* ── TechTierBreakdown ── */
+.oa-tier-container {
+  display: flex;
+  gap: 16px;
+  align-items: center;
+}
+
+.oa-tier-pie {
+  width: 80px;
+  height: 80px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.oa-tier-pie-center {
+  width: 52px;
+  height: 52px;
+  background: var(--card-bg, #161b22);
+  border-radius: 50%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-dark, #e6edf3);
+  line-height: 1;
+}
+
+.oa-tier-pie-sub {
+  font-size: 7px;
+  color: var(--text-muted, #7d8590);
+  font-family: inherit;
+}
+
+.oa-tier-legend {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.oa-tier-legend-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 12px;
+}
+
+.oa-tier-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+
+.oa-tier-label {
+  flex: 1;
+  color: var(--text-dark, #e6edf3);
+}
+
+.oa-tier-pct {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--text-muted, #7d8590);
+}
+
+.oa-tier-warning {
+  margin-top: 10px;
+  font-size: 11px;
+  color: var(--danger, #f85149);
+  background: rgba(248, 81, 73, 0.08);
+  border-radius: 4px;
+  padding: 6px 8px;
+}

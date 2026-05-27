@@ -325,6 +325,53 @@ function SubjectBalance({ derived, sessions }: { derived: DerivedAnalytics; sess
   )
 }
 
+function TechTierBreakdown({ derived }: { derived: DerivedAnalytics }) {
+  const { techTiers } = derived
+  if (techTiers.total === 0) {
+    return (
+      <div className="oa-panel">
+        <div className="oa-panel-header">Technique tiers</div>
+        <div className="oa-empty">No technique data yet</div>
+      </div>
+    )
+  }
+
+  const gradient = techTiers.data.reduce((acc, slice, idx) => {
+    const prev = idx === 0 ? 0 : techTiers.data.slice(0, idx).reduce((s, d) => s + d.pct, 0)
+    const end = prev + slice.pct
+    const color = slice.color.startsWith('var(') ? slice.color : slice.color
+    return acc + (idx > 0 ? ', ' : '') + `${color} ${prev}% ${end}%`
+  }, '')
+
+  return (
+    <div className="oa-panel">
+      <div className="oa-panel-header">Technique tiers</div>
+      <div className="oa-tier-container">
+        <div className="oa-tier-pie" style={{ background: `conic-gradient(${gradient})` }}>
+          <div className="oa-tier-pie-center">
+            {techTiers.data[0]?.tier}
+            <span className="oa-tier-pie-sub">top tier</span>
+          </div>
+        </div>
+        <div className="oa-tier-legend">
+          {techTiers.data.map(slice => (
+            <div key={slice.tier} className="oa-tier-legend-row">
+              <div className="oa-tier-dot" style={{ background: slice.color }} />
+              <span className="oa-tier-label">Tier {slice.tier}</span>
+              <span className="oa-tier-pct">{slice.pct}%</span>
+            </div>
+          ))}
+        </div>
+      </div>
+      {techTiers.dfRatio >= 30 && (
+        <div className="oa-tier-warning">
+          ⚠ {techTiers.dfRatio}% low-quality technique time (D/E/F)
+        </div>
+      )}
+    </div>
+  )
+}
+
 function DeadlineUrgency({ derived }: { derived: DerivedAnalytics }) {
   const { deadlineRows } = derived
   if (deadlineRows.length === 0) return null
