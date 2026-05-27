@@ -172,6 +172,13 @@
   transition: color 0.1s, background 0.1s;
 }
 
+.obsidian-nav-link .nav-review-dot {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  margin-left: 0;
+}
+
 .obsidian-nav-link:hover {
   color: #e6edf3;
   background: #21262d;

@@ -396,10 +396,10 @@ export default function Layout() {
 
                 {navWarningStep !== 'none' && (
                     <div className="modal-overlay" onClick={() => { setNavWarningStep('none'); setPendingNavPath(null); }}>
-                        <div className="modal-content confirm-modal-content" role="dialog" aria-modal="true" onClick={e => e.stopPropagation()}>
+                        <div className="modal-content confirm-modal-content" role="dialog" aria-modal="true" aria-labelledby="obsidian-nav-confirm-title" onClick={e => e.stopPropagation()}>
                             {navWarningStep === 'confirm-stop' && (
                                 <>
-                                    <h2 className="confirm-modal-title">⏸️ Stop studying?</h2>
+                                    <h2 id="obsidian-nav-confirm-title" className="confirm-modal-title">⏸️ Stop studying?</h2>
                                     <p className="confirm-modal-text">Are you sure you want to end this session early?</p>
                                     <div className="confirm-modal-actions">
                                         <button className="btn btn-primary" onClick={() => { setNavWarningStep('none'); setPendingNavPath(null); }}>Keep studying</button>
