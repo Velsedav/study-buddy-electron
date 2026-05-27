@@ -17,20 +17,27 @@ describe('generateBlocks', () => {
   })
   it('sets correct minutes on each block type', () => {
     const blocks = generateBlocks(SHAPE_25_5, 1)
-    expect(blocks.find(b => b.type === 'PREP')!.minutes).toBe(5)
-    expect(blocks.find(b => b.type === 'WORK')!.minutes).toBe(25)
-    expect(blocks.find(b => b.type === 'BREAK')!.minutes).toBe(5)
+    const prep = blocks.find(b => b.type === 'PREP')
+    expect(prep).toBeDefined()
+    expect(prep!.minutes).toBe(5)
+    const work = blocks.find(b => b.type === 'WORK')
+    expect(work).toBeDefined()
+    expect(work!.minutes).toBe(25)
+    const brk = blocks.find(b => b.type === 'BREAK')
+    expect(brk).toBeDefined()
+    expect(brk!.minutes).toBe(5)
   })
   it('preserves WORK block assignments from existing blocks at matching index', () => {
     const existing: PlannerBlock[] = [
       { id: 'x', type: 'WORK', minutes: 25, subject_id: 'sub-1', technique_id: 'tech-1', chapter_name: 'Ch1', objective: 'learn', cycle_id: undefined },
     ]
     const blocks = generateBlocks(SHAPE_25_5, 1, existing)
-    const work = blocks.find(b => b.type === 'WORK')!
-    expect(work.subject_id).toBe('sub-1')
-    expect(work.technique_id).toBe('tech-1')
-    expect(work.chapter_name).toBe('Ch1')
-    expect(work.objective).toBe('learn')
+    const work = blocks.find(b => b.type === 'WORK')
+    expect(work).toBeDefined()
+    expect(work!.subject_id).toBe('sub-1')
+    expect(work!.technique_id).toBe('tech-1')
+    expect(work!.chapter_name).toBe('Ch1')
+    expect(work!.objective).toBe('learn')
   })
   it('extra repeats get empty WORK blocks when existing is shorter', () => {
     const existing: PlannerBlock[] = [

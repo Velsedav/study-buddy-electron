@@ -75,8 +75,7 @@ export function formatSessionSummary(blocks: PlannerBlock[]): string {
   const h = Math.floor(total / 60)
   const m = total % 60
   const timeStr = h > 0 ? `${h}h ${m}m` : `${m}m`
-  const end = new Date()
-  end.setMinutes(end.getMinutes() + total)
+  const end = new Date(Date.now() + total * 60000)
   const endStr = end.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
   return `${timeStr} · ends ${endStr}`
 }
