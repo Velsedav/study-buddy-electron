@@ -19,6 +19,7 @@ function useObsidianData() {
   const [loading, setLoading] = useState(true)
 
   useEffect(() => {
+    let mounted = true
     async function load() {
       const [subs, fetchedSessions] = await Promise.all([getSubjects(), getSessions()])
       const withTags = await Promise.all(
@@ -27,14 +28,19 @@ function useObsidianData() {
           tags: await getSubjectTags(s.id),
         }))
       )
+      if (!mounted) return
       const pinned = withTags.filter(s => s.pinned)
       const unpinned = withTags.filter(s => !s.pinned)
       setSubjects([...pinned, ...unpinned])
+      if (!mounted) return
       setSessions(fetchedSessions)
+      if (!mounted) return
       setAllChapters(getAllChapters())
+      if (!mounted) return
       setLoading(false)
     }
     load()
+    return () => { mounted = false }
   }, [])
 
   return { subjects, sessions, allChapters, loading, setSubjects }
@@ -68,7 +74,7 @@ function formatH(h: number): string {
   return `${hh}h ${mm}m`
 }
 
-export function getSubjectRetention(subjectId: string, chapters: Chapter[]): number | null {
+function getSubjectRetention(subjectId: string, chapters: Chapter[]): number | null {
   const subjectChapters = chapters.filter(c => c.subjectId === subjectId && c.studyCount > 0)
   if (subjectChapters.length === 0) return null
   const percents = subjectChapters.map(c => getRetentionPercent(c)).filter((p): p is number => p !== null)
@@ -227,8 +233,8 @@ function ListView({ subjects, allChapters, onStart, onEdit }: ListViewProps) {
         cmp = a.name.localeCompare(b.name)
       } else if (sortKey === 'last_studied_at') {
         const da = a.last_studied_at ? new Date(a.last_studied_at).getTime() : 0
-        const db_ = b.last_studied_at ? new Date(b.last_studied_at).getTime() : 0
-        cmp = da - db_
+        const dbTime = b.last_studied_at ? new Date(b.last_studied_at).getTime() : 0
+        cmp = da - dbTime
       } else if (sortKey === 'total_minutes') {
         cmp = a.total_minutes - b.total_minutes
       } else if (sortKey === 'retention') {
@@ -243,11 +249,19 @@ function ListView({ subjects, allChapters, onStart, onEdit }: ListViewProps) {
   function SortHeader({ label, k }: { label: string; k: SortKey }) {
     const active = sortKey === k
     return (
-      <th className={`ohi-th${active ? ' ohi-th-active' : ''}`} onClick={() => handleSort(k)}>
+      <th
+        className={`ohi-th${active ? ' ohi-th-active' : ''}`}
+        role="button"
+        tabIndex={0}
+        onClick={() => handleSort(k)}
+        onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleSort(k) } }}
+      >
         {label}{active ? (sortDir === 'asc' ? ' ↑' : ' ↓') : ''}
       </th>
     )
   }
+
+  const COL_COUNT = 6
 
   return (
     <div className="ohi-list-wrap">
@@ -265,12 +279,18 @@ function ListView({ subjects, allChapters, onStart, onEdit }: ListViewProps) {
         <tbody>
           {sorted.map(subject => {
             const retention = getSubjectRetention(subject.id, allChapters)
-            const hours = (subject.total_minutes / 60).toFixed(1)
             const lastStudied = subject.last_studied_at
               ? formatRelativeDate(subject.last_studied_at)
               : 'never'
             return (
-              <tr key={subject.id} className="ohi-row" onClick={() => onEdit(subject)}>
+              <tr
+                key={subject.id}
+                className="ohi-row"
+                role="button"
+                tabIndex={0}
+                onClick={() => onEdit(subject)}
+                onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); onEdit(subject) } }}
+              >
                 <td className="ohi-td ohi-td-name">{subject.name}</td>
                 <td className="ohi-td ohi-td-tags">
                   {subject.tags.map(t => (
@@ -278,7 +298,7 @@ function ListView({ subjects, allChapters, onStart, onEdit }: ListViewProps) {
                   ))}
                 </td>
                 <td className="ohi-td ohi-td-date">{lastStudied}</td>
-                <td className="ohi-td ohi-td-mono">{hours}h</td>
+                <td className="ohi-td ohi-td-mono">{formatH(subject.total_minutes / 60)}</td>
                 <td className="ohi-td ohi-td-mono" style={{ color: retentionColor(retention) }}>
                   {retention !== null ? `${retention}%` : '—'}
                 </td>
@@ -289,7 +309,7 @@ function ListView({ subjects, allChapters, onStart, onEdit }: ListViewProps) {
             )
           })}
           {sorted.length === 0 && (
-            <tr><td colSpan={6} className="ohi-empty">No subjects match your filter.</td></tr>
+            <tr><td colSpan={COL_COUNT} className="ohi-empty">No subjects match your filter.</td></tr>
           )}
         </tbody>
       </table>
@@ -334,7 +354,7 @@ function BoardView({ subjects, allChapters, onStart }: BoardViewProps) {
         const isCollapsed = collapsed.has(group.tagName)
         return (
           <div key={group.tagName} className="ohi-board-group">
-            <button className="ohi-board-group-header" onClick={() => toggleGroup(group.tagName)}>
+            <button className="ohi-board-group-header" aria-expanded={!isCollapsed} onClick={() => toggleGroup(group.tagName)}>
               <span className="ohi-board-caret">{isCollapsed ? '▶' : '▼'}</span>
               <span className="ohi-board-group-name">#{group.tagName}</span>
               <span className="ohi-board-group-count">({group.subjects.length})</span>
@@ -373,10 +393,15 @@ interface SplitViewProps {
 }
 
 function SplitView({ subjects, allChapters, onStart, onEdit }: SplitViewProps) {
-  const [selectedId, setSelectedId] = useState<string | null>(() => {
-    const pinned = subjects.find(s => s.pinned)
-    return pinned?.id ?? subjects[0]?.id ?? null
-  })
+  const [selectedId, setSelectedId] = useState<string | null>(null)
+
+  useEffect(() => {
+    if (selectedId === null && subjects.length > 0) {
+      const pinned = subjects.find(s => s.pinned)
+      const fallback = [...subjects].sort((a, b) => a.name.localeCompare(b.name))[0]
+      setSelectedId(pinned?.id ?? fallback?.id ?? null)
+    }
+  }, [subjects, selectedId])
 
   const selected = useMemo(() => subjects.find(s => s.id === selectedId) ?? null, [subjects, selectedId])
 
