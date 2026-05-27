@@ -100,11 +100,12 @@ export default function ObsidianPlanner() {
 
   const initialized = useRef(false)
   useEffect(() => {
-    if (!initialized.current && blocks.length === 0) {
+    if (!initialized.current) {
       initialized.current = true
       setBlocks(generateBlocks(activeShape, repeats))
     }
-  })
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [])
 
   function changeShape(name: PlannerShapeName) {
     setShapeName(name)
@@ -409,6 +410,7 @@ function PlanBlock({
   const [chapters, setChapters] = useState<Chapter[]>([])
   const [subjectQuery, setSubjectQuery] = useState(subject?.name ?? '')
   const [showSubjectDropdown, setShowSubjectDropdown] = useState(false)
+  const blurTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   useEffect(() => {
     setSubjectQuery(subject?.name ?? '')
@@ -421,6 +423,12 @@ function PlanBlock({
       setChapters([])
     }
   }, [block.subject_id])
+
+  useEffect(() => {
+    return () => {
+      if (blurTimeoutRef.current) clearTimeout(blurTimeoutRef.current)
+    }
+  }, [])
 
   const filteredSubjects = subjects.filter(s =>
     s.name.toLowerCase().includes(subjectQuery.toLowerCase())
@@ -482,7 +490,9 @@ function PlanBlock({
                 value={subjectQuery}
                 onChange={e => { setSubjectQuery(e.target.value); setShowSubjectDropdown(true) }}
                 onFocus={() => setShowSubjectDropdown(true)}
-                onBlur={() => setTimeout(() => setShowSubjectDropdown(false), 150)}
+                onBlur={() => {
+                  blurTimeoutRef.current = setTimeout(() => setShowSubjectDropdown(false), 150)
+                }}
                 onKeyDown={e => {
                   if (e.key === 'Enter' && filteredSubjects.length > 0) selectSubject(filteredSubjects[0])
                   if (e.key === 'Escape') setShowSubjectDropdown(false)
@@ -621,6 +631,7 @@ function SplitView({ blocks, setBlocks, subjects, allTags: _allTags, subjectTags
   const [menuId, setMenuId] = useState<string | null>(null)
   const [pulsingId, setPulsingId] = useState<string | null>(null)
   const blockRefs = useRef<Map<string, HTMLDivElement>>(new Map())
+  const pulseTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null)
 
   useEffect(() => {
     const close = () => setMenuId(null)
@@ -632,6 +643,12 @@ function SplitView({ blocks, setBlocks, subjects, allTags: _allTags, subjectTags
     const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') setExpandedId(null) }
     window.addEventListener('keydown', onKey)
     return () => window.removeEventListener('keydown', onKey)
+  }, [])
+
+  useEffect(() => {
+    return () => {
+      if (pulseTimeoutRef.current) clearTimeout(pulseTimeoutRef.current)
+    }
   }, [])
 
   const filteredSubjects = subjects.filter(s => {
@@ -646,7 +663,8 @@ function SplitView({ blocks, setBlocks, subjects, allTags: _allTags, subjectTags
     const targetId = blocks[nextEmptyWork].id
     setBlocks(updateBlock(blocks, targetId, { subject_id: subject.id }))
     setPulsingId(targetId)
-    setTimeout(() => setPulsingId(null), 800)
+    if (pulseTimeoutRef.current) clearTimeout(pulseTimeoutRef.current)
+    pulseTimeoutRef.current = setTimeout(() => setPulsingId(null), 800)
     const el = blockRefs.current.get(targetId)
     if (el) el.scrollIntoView({ behavior: 'smooth', block: 'nearest' })
   }
@@ -688,7 +706,13 @@ function SplitView({ blocks, setBlocks, subjects, allTags: _allTags, subjectTags
       <div className="op-timeline" style={{ flex: 1 }}>
         {blocks.length === 0 && <div className="op-empty">No blocks yet.</div>}
         {blocks.map((block, idx) => (
-          <div key={block.id} ref={el => { if (el) blockRefs.current.set(block.id, el) }}>
+          <div key={block.id} ref={el => {
+            if (el) {
+              blockRefs.current.set(block.id, el)
+            } else {
+              blockRefs.current.delete(block.id)
+            }
+          }}>
             <PlanBlock
               block={block}
               subjects={subjects}
