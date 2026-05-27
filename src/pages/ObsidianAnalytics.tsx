@@ -325,6 +325,52 @@ function SubjectBalance({ derived, sessions }: { derived: DerivedAnalytics; sess
   )
 }
 
+function FocusTypeSplit({ derived }: { derived: DerivedAnalytics }) {
+  const { focusBreakdown } = derived
+  const total = focusBreakdown.comprendre + focusBreakdown.memoriser + focusBreakdown.faire
+
+  if (total === 0) {
+    return (
+      <div className="oa-panel">
+        <div className="oa-panel-header">Focus type split</div>
+        <div className="oa-empty">No categorised techniques yet</div>
+      </div>
+    )
+  }
+
+  const rows: { key: keyof FocusBreakdown; label: string }[] = [
+    { key: 'comprendre', label: 'Savoir Comprendre' },
+    { key: 'memoriser',  label: 'Savoir Mémoriser' },
+    { key: 'faire',      label: 'Savoir Faire' },
+  ]
+
+  return (
+    <div className="oa-panel">
+      <div className="oa-panel-header">Focus type split</div>
+      <div className="oa-focus-list">
+        {rows.map(({ key, label }) => {
+          const mins = focusBreakdown[key]
+          const pct = total > 0 ? Math.round((mins / total) * 100) : 0
+          return (
+            <div key={key} className="oa-focus-row">
+              <div className="oa-focus-label-row">
+                <span className="oa-focus-name" style={{ color: ANALYTICS_CATEGORY_COLORS[key] }}>{label}</span>
+                <span className="oa-focus-time">{formatTime(mins)} · {pct}%</span>
+              </div>
+              <div className="oa-focus-bar-track">
+                <div
+                  className="oa-focus-bar"
+                  style={{ width: `${pct}%`, background: ANALYTICS_CATEGORY_COLORS[key] }}
+                />
+              </div>
+            </div>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
 function TechTierBreakdown({ derived }: { derived: DerivedAnalytics }) {
   const { techTiers } = derived
   if (techTiers.total === 0) {

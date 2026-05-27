@@ -463,3 +463,46 @@
   border-radius: 4px;
   padding: 6px 8px;
 }
+
+/* ── FocusTypeSplit ── */
+.oa-focus-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.oa-focus-row {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.oa-focus-label-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.oa-focus-name {
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.oa-focus-time {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--text-muted, #7d8590);
+}
+
+.oa-focus-bar-track {
+  height: 6px;
+  background: var(--surface-raised, #21262d);
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.oa-focus-bar {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 0.3s ease;
+}
