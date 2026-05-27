@@ -302,6 +302,11 @@
 .op-block-work  { --block-accent: #58a6ff; }
 .op-block-break { --block-accent: #3fb950; }
 
+.op-block-next-target {
+  border-color: var(--primary, #58a6ff);
+  box-shadow: 0 0 0 2px rgba(88, 166, 255, 0.2);
+}
+
 .op-block-collapsed {
   display: flex;
   align-items: center;
@@ -678,9 +683,20 @@
   transition: border-color 0.1s, background 0.1s;
 }
 
-.op-subject-item:hover {
+.op-subject-item:hover:not(.op-subject-item-disabled) {
   border-color: var(--primary, #58a6ff);
   background: rgba(88, 166, 255, 0.05);
+}
+
+.op-subject-item-disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.op-split-hint {
+  font-size: 11px;
+  color: var(--text-muted, #7d8590);
+  font-style: italic;
 }
 
 @keyframes op-block-pulse {

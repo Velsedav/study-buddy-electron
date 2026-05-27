@@ -388,6 +388,7 @@ interface PlanBlockProps {
   isExpanded: boolean
   isMenuOpen: boolean
   isPulsing: boolean
+  isNextTarget?: boolean
   onToggleExpand: () => void
   onMenuToggle: (e: React.MouseEvent) => void
   onUpdate: (updated: PlannerBlock) => void
@@ -400,7 +401,7 @@ interface PlanBlockProps {
 }
 
 function PlanBlock({
-  block, subjects, isExpanded, isMenuOpen, isPulsing,
+  block, subjects, isExpanded, isMenuOpen, isPulsing, isNextTarget = false,
   onToggleExpand, onMenuToggle, onUpdate,
   onDuplicate, onDelete, onMoveUp, onMoveDown, canMoveUp, canMoveDown,
 }: PlanBlockProps) {
@@ -445,7 +446,7 @@ function PlanBlock({
   const typeClass = { PREP: 'op-block-prep', WORK: 'op-block-work', BREAK: 'op-block-break' }[block.type]
 
   return (
-    <div className={`op-block ${typeClass}${isPulsing ? ' op-block-pulsing' : ''}`}>
+    <div className={`op-block ${typeClass}${isPulsing ? ' op-block-pulsing' : ''}${isNextTarget ? ' op-block-next-target' : ''}`}>
       <div className="op-block-collapsed" onClick={onToggleExpand}>
         <span className="op-block-type-icon">{typeIcon}</span>
         <span className="op-block-type-label">{typeLabel}</span>
@@ -453,7 +454,9 @@ function PlanBlock({
         {block.type === 'WORK' && (
           subject
             ? <span className="op-block-subject">{subject.name}</span>
-            : <span className="op-block-subject op-block-subject-empty">+ Assign subject</span>
+            : <span className="op-block-subject op-block-subject-empty">
+                {isNextTarget ? '← click a subject' : '+ Assign subject'}
+              </span>
         )}
         {block.type !== 'WORK' && <span className="op-block-spacer" />}
         {block.type === 'WORK' && subject && (tech || block.chapter_name) && (
@@ -673,6 +676,9 @@ function SplitView({ blocks, setBlocks, subjects, allTags: _allTags, subjectTags
     Array.from(subjectTagsMap.values()).flat()
   )).sort()
 
+  const nextEmptyWorkId = blocks.find(b => b.type === 'WORK' && !b.subject_id)?.id ?? null
+  const hasEmptySlot = nextEmptyWorkId !== null
+
   return (
     <div className="op-split">
       <div className="op-subject-panel">
@@ -691,13 +697,16 @@ function SplitView({ blocks, setBlocks, subjects, allTags: _allTags, subjectTags
             <option value="">All tags</option>
             {tagOptions.map(t => <option key={t} value={t}>{t}</option>)}
           </select>
+          <span className="op-split-hint">
+            {hasEmptySlot ? '← click to fill highlighted slot' : 'All slots filled'}
+          </span>
         </div>
         <div className="op-subject-list">
           {filteredSubjects.length === 0 && (
             <div className="op-empty" style={{ padding: '20px 8px' }}>No subjects found</div>
           )}
           {filteredSubjects.map(s => (
-            <div key={s.id} className="op-subject-item" onClick={() => assignSubject(s)}>
+            <div key={s.id} className={`op-subject-item${!hasEmptySlot ? ' op-subject-item-disabled' : ''}`} onClick={() => assignSubject(s)}>
               {s.name}
             </div>
           ))}
@@ -719,6 +728,7 @@ function SplitView({ blocks, setBlocks, subjects, allTags: _allTags, subjectTags
               isExpanded={expandedId === block.id}
               isMenuOpen={menuId === block.id}
               isPulsing={pulsingId === block.id}
+              isNextTarget={block.id === nextEmptyWorkId}
               onToggleExpand={() => setExpandedId(expandedId === block.id ? null : block.id)}
               onMenuToggle={e => { e.stopPropagation(); setMenuId(menuId === block.id ? null : block.id) }}
               onUpdate={updated => setBlocks(updateBlock(blocks, block.id, updated))}
