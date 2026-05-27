@@ -37,8 +37,13 @@ function getWeekStart(date: Date): Date {
 }
 
 export default function AnalyticsTab() {
-    const { weekStart, theme } = useSettings();
+    const { theme } = useSettings();
     if (theme === 'obsidian') return <ObsidianAnalytics />;
+    return <DefaultAnalytics />;
+}
+
+function DefaultAnalytics() {
+    const { weekStart } = useSettings();
     const { t } = useTranslation();
     const [sessions, setSessions] = useState<Session[]>([]);
     const [blocks, setBlocks] = useState<SessionBlock[]>([]);
