@@ -212,10 +212,18 @@
 
 .obsidian-main-wrapper .main-content {
   flex: 1;
+  display: flex;
+  flex-direction: column;
   overflow-y: auto;
   background: var(--bg-color, #0d1117);
   min-height: 0; /* override global min-height: 100vh so quote bar stays in viewport */
   padding: 0;
+}
+
+.obsidian-main-wrapper .page-route-transition {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
 }
 
 .obsidian-main-wrapper .top-decoration {

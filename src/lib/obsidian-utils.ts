@@ -7,9 +7,9 @@ export interface TagGroup {
 
 export interface QuickStartBlock {
   id: string
-  type: 'WORK'
+  type: 'PREP' | 'WORK'
   minutes: number
-  subject_id: string
+  subject_id: string | null
   technique_id: string | null
   chapter_name: string | null
   objective: string
@@ -61,32 +61,45 @@ export function retentionColor(pct: number | null): string {
   return 'var(--danger)'
 }
 
+const QUICK_START_PREP_MINUTES = 5
+
 export function buildQuickStartSession(
   subjectId: string,
   minutes: number,
   techniqueId: string | null,
   chapterName: string | null,
 ): QuickStartSession {
-  const blockId = crypto.randomUUID()
   const sessionId = crypto.randomUUID()
-  return {
-    sessionId,
-    startedAt: new Date().toISOString(),
-    nowBlockIdx: 0,
-    remainingSeconds: minutes * 60,
-    paused: false,
-    draft: [{
-      id: blockId,
+  const draft: QuickStartBlock[] = [
+    {
+      id: crypto.randomUUID(),
+      type: 'PREP',
+      minutes: QUICK_START_PREP_MINUTES,
+      subject_id: null,
+      technique_id: null,
+      chapter_name: null,
+      objective: '',
+    },
+    {
+      id: crypto.randomUUID(),
       type: 'WORK',
       minutes,
       subject_id: subjectId,
       technique_id: techniqueId,
       chapter_name: chapterName,
       objective: '',
-    }],
+    },
+  ]
+  return {
+    sessionId,
+    startedAt: new Date().toISOString(),
+    nowBlockIdx: 0,
+    remainingSeconds: QUICK_START_PREP_MINUTES * 60,
+    paused: false,
+    draft,
     template: 'Custom',
     repeats: 1,
-    plannedMinutes: minutes,
+    plannedMinutes: QUICK_START_PREP_MINUTES + minutes,
     fiveMinAlert: false,
   }
 }
