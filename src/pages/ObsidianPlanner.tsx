@@ -390,6 +390,12 @@ function ConfigStrip({
 const TIER_ORDER: TierType[] = ['S', 'A', 'B', 'C', 'D', 'E', 'F']
 const CATEGORY_ORDER: TechCategory[] = ['comprendre', 'memoriser', 'faire']
 
+const PICKER_CATEGORY_COLORS: Record<TechCategory, string> = {
+  comprendre: '#38bdf8',  // sky — distinct from navy bg
+  memoriser:  '#f472b6',  // pink/rose
+  faire:      '#34d399',  // emerald
+}
+
 function InlineTechniquePicker({ currentId, onSelect, onClose }: {
   currentId: string | null
   onSelect: (id: string | null) => void
@@ -439,10 +445,11 @@ function InlineTechniquePicker({ currentId, onSelect, onClose }: {
               className={`op-inline-tech-item${t.id === currentId ? ' op-inline-tech-active' : ''}`}
               onClick={() => { onSelect(t.id); onClose() }}
             >
+              <span className="op-inline-tech-check">{t.id === currentId && <Check size={10} />}</span>
               <span className="op-inline-tech-tier" style={{ color: getTierColor(t.tier) }}>{t.tier}</span>
               <span className="op-inline-tech-name">{t.name}</span>
               {t.category && (
-                <span className="op-inline-tech-cat" style={{ color: CATEGORY_COLORS[t.category] }}>
+                <span className="op-inline-tech-cat" style={{ color: PICKER_CATEGORY_COLORS[t.category] }}>
                   {CATEGORY_LABELS[t.category]}
                 </span>
               )}
@@ -457,7 +464,7 @@ function InlineTechniquePicker({ currentId, onSelect, onClose }: {
               .sort((a, b) => TIER_ORDER.indexOf(a.tier) - TIER_ORDER.indexOf(b.tier))
             return (
               <div key={cat} className="op-inline-picker-col">
-                <div className="op-inline-picker-col-header" style={{ color: CATEGORY_COLORS[cat] }}>
+                <div className="op-inline-picker-col-header" style={{ color: PICKER_CATEGORY_COLORS[cat] }}>
                   {CATEGORY_LABELS[cat]}
                 </div>
                 {techs.map(t => (
@@ -466,6 +473,7 @@ function InlineTechniquePicker({ currentId, onSelect, onClose }: {
                     className={`op-inline-tech-item${t.id === currentId ? ' op-inline-tech-active' : ''}`}
                     onClick={() => { onSelect(t.id); onClose() }}
                   >
+                    <span className="op-inline-tech-check">{t.id === currentId && <Check size={10} />}</span>
                     <span className="op-inline-tech-tier" style={{ color: getTierColor(t.tier) }}>{t.tier}</span>
                     <span className="op-inline-tech-name">{t.name}</span>
                   </button>
