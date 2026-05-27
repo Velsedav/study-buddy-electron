@@ -15,6 +15,7 @@ import TechniquePickerModal from '../components/TechniquePickerModal';
 import { CustomSelect } from '../components/CustomSelect';
 import { playSFX, SFX } from '../lib/sounds';
 import { getRecommendations, getAllChapters, getRetentionPercent, type Recommendation, type Chapter } from '../lib/chapters';
+import ObsidianHome from './ObsidianHome';
 import './Home.css';
 
 function formatHoursDisplay(h: number): string {
@@ -453,6 +454,10 @@ export default function Home() {
                 <MetacognitionMode onComplete={handleMetacognitionComplete} />
             </div>
         );
+    }
+
+    if (theme === 'obsidian') {
+        return <ObsidianHome />;
     }
 
     return (
