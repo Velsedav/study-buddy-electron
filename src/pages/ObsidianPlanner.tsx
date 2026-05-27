@@ -313,44 +313,50 @@ function ConfigStrip({
         </div>
         {shapeName === 'Custom' && (
           <div className="op-custom-fields">
-            <input
-              className="op-custom-input"
-              type="number"
-              min={1}
-              max={240}
-              value={customShape.work}
-              onChange={e => {
-                const v = Math.max(1, parseInt(e.target.value) || 1)
-                onCustomShapeChange({ ...customShape, work: v })
-              }}
-              title="Work minutes"
-            />
+            <label className="op-custom-field-group">
+              <span className="op-custom-field-label">Work</span>
+              <input
+                className="op-custom-input"
+                type="number"
+                min={1}
+                max={240}
+                value={customShape.work}
+                onChange={e => {
+                  const v = Math.max(1, parseInt(e.target.value) || 1)
+                  onCustomShapeChange({ ...customShape, work: v })
+                }}
+              />
+            </label>
             <span className="op-custom-sep">/</span>
-            <input
-              className="op-custom-input"
-              type="number"
-              min={1}
-              max={60}
-              value={customShape.break}
-              onChange={e => {
-                const v = Math.max(1, parseInt(e.target.value) || 1)
-                onCustomShapeChange({ ...customShape, break: v })
-              }}
-              title="Break minutes"
-            />
+            <label className="op-custom-field-group">
+              <span className="op-custom-field-label">Break</span>
+              <input
+                className="op-custom-input"
+                type="number"
+                min={1}
+                max={60}
+                value={customShape.break}
+                onChange={e => {
+                  const v = Math.max(1, parseInt(e.target.value) || 1)
+                  onCustomShapeChange({ ...customShape, break: v })
+                }}
+              />
+            </label>
             <span className="op-custom-sep">/</span>
-            <input
-              className="op-custom-input"
-              type="number"
-              min={0}
-              max={30}
-              value={customShape.prep}
-              onChange={e => {
-                const v = Math.max(0, parseInt(e.target.value) || 0)
-                onCustomShapeChange({ ...customShape, prep: v })
-              }}
-              title="Prep minutes"
-            />
+            <label className="op-custom-field-group">
+              <span className="op-custom-field-label">Prep</span>
+              <input
+                className="op-custom-input"
+                type="number"
+                min={0}
+                max={30}
+                value={customShape.prep}
+                onChange={e => {
+                  const v = Math.max(0, parseInt(e.target.value) || 0)
+                  onCustomShapeChange({ ...customShape, prep: v })
+                }}
+              />
+            </label>
           </div>
         )}
       </div>

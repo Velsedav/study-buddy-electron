@@ -143,6 +143,22 @@
   gap: 6px;
 }
 
+.op-custom-field-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  cursor: default;
+}
+
+.op-custom-field-label {
+  font-size: 9px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--text-muted, #7d8590);
+}
+
 .op-custom-input {
   width: 52px;
   padding: 4px 6px;
