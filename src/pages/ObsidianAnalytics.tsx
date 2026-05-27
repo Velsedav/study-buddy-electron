@@ -153,6 +153,126 @@ export default function ObsidianAnalytics() {
   )
 }
 
+function formatTime(mins: number): string {
+  const h = Math.floor(mins / 60)
+  const m = Math.round(mins % 60)
+  return h > 0 ? `${h}h ${m}m` : `${m}m`
+}
+
+const TIMELINE_OPTIONS = [
+  { value: 0.25, label: 'Last week' },
+  { value: 0.5,  label: 'Last 2 weeks' },
+  { value: 1,    label: 'Last month' },
+  { value: 2,    label: 'Last 2 months' },
+  { value: 3,    label: 'Last 3 months' },
+  { value: 6,    label: 'Last 6 months' },
+  { value: 12,   label: 'Last 12 months' },
+]
+
+function StatStrip({ derived }: { derived: DerivedAnalytics }) {
+  const { weekly, trend, streaks, avgSession } = derived
+  return (
+    <div className="oa-stat-strip">
+      <div className="oa-stat-pill">
+        <span className="oa-stat-value">
+          {formatTime(weekly.minutes)}
+          {trend.weekMinutesDelta !== null && (
+            <span className={`oa-trend-badge ${trend.weekMinutesDelta >= 0 ? 'oa-trend-up' : 'oa-trend-down'}`}>
+              {trend.weekMinutesDelta >= 0 ? '▲' : '▼'}{Math.abs(trend.weekMinutesDelta)}%
+            </span>
+          )}
+        </span>
+        <span className="oa-stat-label">This week</span>
+      </div>
+      <div className="oa-stat-pill">
+        <span className="oa-stat-value">{weekly.count}</span>
+        <span className="oa-stat-label">Sessions</span>
+      </div>
+      <div className="oa-stat-pill">
+        <span className="oa-stat-value">{streaks.current} <span className="oa-stat-suffix">days</span></span>
+        <span className="oa-stat-label">Streak</span>
+      </div>
+      <div className="oa-stat-pill">
+        <span className="oa-stat-value">{formatTime(avgSession)}</span>
+        <span className="oa-stat-label">Avg session</span>
+      </div>
+    </div>
+  )
+}
+
+function ActivityTimeline({
+  derived,
+  timelineFilter,
+  onTimelineChange,
+  tall = false,
+}: {
+  derived: DerivedAnalytics
+  timelineFilter: number
+  onTimelineChange: (v: number) => void
+  tall?: boolean
+}) {
+  const { timeline } = derived
+  const [hoveredIdx, setHoveredIdx] = useState<number | null>(null)
+  const todayStr = (() => {
+    const d = new Date()
+    return `${d.getFullYear()}-${String(d.getMonth()+1).padStart(2,'0')}-${String(d.getDate()).padStart(2,'0')}`
+  })()
+
+  return (
+    <div className={`oa-panel oa-timeline-panel${tall ? ' oa-timeline-panel--tall' : ''}`}>
+      <div className="oa-timeline-header">
+        <span className="oa-panel-header" style={{ marginBottom: 0 }}>Activity</span>
+        <div className="oa-timeline-meta">
+          <span className="oa-timeline-summary">
+            {timeline.studiedDays} days · {formatTime(timeline.totalPeriodMinutes)}
+          </span>
+          <select
+            className="oa-timeline-select"
+            value={String(timelineFilter)}
+            onChange={e => onTimelineChange(parseFloat(e.target.value))}
+          >
+            {TIMELINE_OPTIONS.map(o => (
+              <option key={o.value} value={String(o.value)}>{o.label}</option>
+            ))}
+          </select>
+        </div>
+      </div>
+      <div className="oa-bars-wrap">
+        {timeline.data.map((day, i) => {
+          const heightPct = Math.max((day.minutes / timeline.maxMins) * 100, day.minutes > 0 ? 2 : 0)
+          const isToday = day.dateStr === todayStr
+          const isHovered = hoveredIdx === i
+          const label = day.date.toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' })
+          return (
+            <div
+              key={i}
+              className="oa-bar-col"
+              onMouseEnter={() => setHoveredIdx(i)}
+              onMouseLeave={() => setHoveredIdx(null)}
+            >
+              {isHovered && day.minutes > 0 && (
+                <div className="oa-bar-tooltip">
+                  {formatTime(day.minutes)}
+                  <div className="oa-bar-tooltip-date">{label}</div>
+                </div>
+              )}
+              <div
+                className={`oa-bar${isToday ? ' oa-bar--today' : ''}${isHovered ? ' oa-bar--hovered' : ''}${day.minutes === 0 ? ' oa-bar--empty' : ''}`}
+                style={{ height: `${heightPct}%` }}
+              />
+              {timeline.data.length <= 14 && (
+                <div className="oa-bar-xlabel">{day.date.getDate()}</div>
+              )}
+            </div>
+          )
+        })}
+      </div>
+    </div>
+  )
+}
+
+export { StatStrip, ActivityTimeline, formatTime, TIMELINE_OPTIONS }
+
 function CommandView(_p: { derived: DerivedAnalytics; timelineFilter: number; onTimelineChange: (v: number) => void }) {
   return <div className="oa-view-placeholder">Command view coming soon</div>
 }
