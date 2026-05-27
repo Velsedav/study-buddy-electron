@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { Palette, Calendar, Keyboard, Globe, Database, AlertTriangle, Trash2, Volume2, Play, Brain, Power, Zap, Settings as SettingsIcon, FolderOpen, X } from 'lucide-react';
 import { useTranslation } from '../lib/i18n';
 import { deleteAllData } from '../lib/db';
+import { deleteAllBingoData } from '../lib/bingoals/db';
 import { getDefaultSpacing, setDefaultSpacing, parseSpacing, DEFAULT_SPACING } from '../lib/chapters';
 import { getAutostart, setAutostart } from '../lib/autostart';
 import { CustomSelect } from '../components/CustomSelect';
@@ -29,6 +30,8 @@ export default function SettingsTab() {
     const { t } = useTranslation();
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [deleteInput, setDeleteInput] = useState('');
+    const [showDeleteBingoModal, setShowDeleteBingoModal] = useState(false);
+    const [deleteBingoInput, setDeleteBingoInput] = useState('');
     const [volumeSettings, setVolumeSettings] = useState<VolumeSettings>(loadVolumeSettings);
     const [defaultSpacing, setDefaultSpacingState] = useState(() => getDefaultSpacing());
     const [spacingError, setSpacingError] = useState('');
@@ -151,6 +154,17 @@ export default function SettingsTab() {
                 { id: 'ai-pro', name: 'AI Pro', color: '#7c3aed', background: 'linear-gradient(135deg, #070b14 0%, #1a0a3d 50%, #06b6d4 100%)' },
                 { id: 'cyber-scan', name: 'Cyber Scan', color: '#b8ff00', background: 'linear-gradient(135deg, #050510 0%, #0a0830 50%, #b8ff00 100%)' },
             ]
+        },
+        {
+            name: 'Redesign',
+            themes: [
+                {
+                    id: 'obsidian' as Theme,
+                    name: 'Obsidian',
+                    color: '#58a6ff',
+                    background: 'linear-gradient(135deg, #0d1117 0%, #161b22 50%, #58a6ff 100%)'
+                }
+            ]
         }
     ] as const;
 
@@ -226,6 +240,17 @@ export default function SettingsTab() {
         }
     };
 
+    const handleDeleteBingo = async () => {
+        if (deleteBingoInput.toLowerCase() === t('settings.delete_bingo_keyword').toLowerCase()) {
+            playSFX('glass_ui_cancel', theme);
+            await deleteAllBingoData();
+            alert("Bingoals data cleared!");
+            window.location.reload();
+        } else {
+            alert("Keyword didn't match.");
+        }
+    };
+
     return (
         <div className="settings-tab fade-in">
             <div className="page-header">
@@ -263,6 +288,44 @@ export default function SettingsTab() {
                                 disabled={deleteInput.toLowerCase() !== t('settings.delete_keyword').toLowerCase()}
                                 onMouseEnter={() => playSFX(SFX.HOVER)}
                                 onClick={handleDeleteAll}
+                            >
+                                <Trash2 size={18} style={{ marginRight: '8px' }} />
+                                {t('settings.confirm_delete')}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {showDeleteBingoModal && (
+                <div className="modal-overlay">
+                    <div className="modal-content danger-modal">
+                        <div className="settings-header danger-modal-header">
+                            <AlertTriangle size={24} />
+                            <h2>{t('settings.danger_zone')}</h2>
+                        </div>
+                        <p className="danger-modal-text">
+                            {t('settings.delete_bingo_data_desc')}
+                            <br /><br />
+                            <strong>{t('settings.delete_bingo_keyword')}</strong>
+                        </p>
+                        <input
+                            type="text"
+                            value={deleteBingoInput}
+                            onChange={(e) => setDeleteBingoInput(e.target.value)}
+                            placeholder={t('settings.delete_bingo_keyword')}
+                            className="danger-modal-input"
+                        />
+                        <div className="danger-modal-actions">
+                            <button className="btn btn-secondary" onMouseEnter={() => playSFX(SFX.HOVER)} onClick={() => {
+                                setShowDeleteBingoModal(false);
+                                setDeleteBingoInput('');
+                            }}>{t('settings.cancel')}</button>
+                            <button
+                                className="btn btn-danger-outline btn-danger-outline-solid"
+                                disabled={deleteBingoInput.toLowerCase() !== t('settings.delete_bingo_keyword').toLowerCase()}
+                                onMouseEnter={() => playSFX(SFX.HOVER)}
+                                onClick={handleDeleteBingo}
                             >
                                 <Trash2 size={18} style={{ marginRight: '8px' }} />
                                 {t('settings.confirm_delete')}
@@ -608,7 +671,7 @@ export default function SettingsTab() {
                         <AlertTriangle size={18} className="settings-danger-icon" />
                         <h3 className="settings-danger-title">{t('settings.danger_zone')}</h3>
                     </div>
-                    <p className="settings-desc settings-danger-desc">{t('settings.delete_all_data')}</p>
+                    <p className="settings-desc settings-danger-desc">{t('settings.delete_all_data_desc')}</p>
                     <button
                         className="btn btn-danger-outline w-full delete-all-btn"
                         onMouseEnter={() => playSFX(SFX.HOVER)}
@@ -616,6 +679,15 @@ export default function SettingsTab() {
                     >
                         <Trash2 size={18} style={{ marginRight: '8px' }} />
                         {t('settings.delete_all_data')}
+                    </button>
+                    <p className="settings-desc settings-danger-desc" style={{ marginTop: '16px' }}>{t('settings.delete_bingo_data_desc')}</p>
+                    <button
+                        className="btn btn-danger-outline w-full delete-all-btn"
+                        onMouseEnter={() => playSFX(SFX.HOVER)}
+                        onClick={() => setShowDeleteBingoModal(true)}
+                    >
+                        <Trash2 size={18} style={{ marginRight: '8px' }} />
+                        {t('settings.delete_bingo_data')}
                     </button>
                 </div>
 
