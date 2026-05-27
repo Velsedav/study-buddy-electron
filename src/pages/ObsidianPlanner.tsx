@@ -4,7 +4,7 @@ import { Play, AlignJustify, Columns2, Wand2, Undo2, Redo2, Bell, BellOff, Plus,
 import { getSubjects, getAllTags, getAllSubjectTagsMap } from '../lib/db'
 import type { Subject, Tag } from '../lib/db'
 import { getChaptersForSubject } from '../lib/chapters'
-import type { Chapter } from '../lib/chapters'
+import type { Chapter, FocusType } from '../lib/chapters'
 import { TECHNIQUES, CATEGORY_LABELS, CATEGORY_COLORS, getTierColor, type TierType, type TechCategory } from '../lib/techniques'
 import { useUndoRedo } from '../lib/undo'
 import {
@@ -396,8 +396,15 @@ const PICKER_CATEGORY_COLORS: Record<TechCategory, string> = {
   faire:      '#34d399',  // emerald
 }
 
-function InlineTechniquePicker({ currentId, onSelect, onClose }: {
+const FOCUS_TO_CATEGORY: Record<NonNullable<FocusType>, TechCategory> = {
+  skill:         'faire',
+  comprehension: 'comprendre',
+  memorisation:  'memoriser',
+}
+
+function InlineTechniquePicker({ currentId, suggestedCategory, onSelect, onClose }: {
   currentId: string | null
+  suggestedCategory: TechCategory | null
   onSelect: (id: string | null) => void
   onClose: () => void
 }) {
@@ -463,9 +470,18 @@ function InlineTechniquePicker({ currentId, onSelect, onClose }: {
               .filter(t => t.category === cat)
               .sort((a, b) => TIER_ORDER.indexOf(a.tier) - TIER_ORDER.indexOf(b.tier))
             return (
-              <div key={cat} className="op-inline-picker-col">
-                <div className="op-inline-picker-col-header" style={{ color: PICKER_CATEGORY_COLORS[cat] }}>
+              <div key={cat} className={`op-inline-picker-col${cat === suggestedCategory ? ' op-inline-picker-col-suggested' : ''}`}>
+                <div
+                  className="op-inline-picker-col-header"
+                  style={{
+                    color: PICKER_CATEGORY_COLORS[cat],
+                    borderBottom: cat === suggestedCategory
+                      ? `2px solid ${PICKER_CATEGORY_COLORS[cat]}`
+                      : undefined,
+                  }}
+                >
                   {CATEGORY_LABELS[cat]}
+                  {cat === suggestedCategory && <span className="op-inline-picker-suggested-badge">★</span>}
                 </div>
                 {techs.map(t => (
                   <button
@@ -541,6 +557,10 @@ function PlanBlock({
       if (blurTimeoutRef.current) clearTimeout(blurTimeoutRef.current)
     }
   }, [])
+
+  const currentChapter = chapters.find(c => c.name === block.chapter_name)
+  const suggestedCategory: TechCategory | null =
+    currentChapter?.focusType ? (FOCUS_TO_CATEGORY[currentChapter.focusType] ?? null) : null
 
   const filteredSubjects = subjects.filter(s =>
     s.name.toLowerCase().includes(subjectQuery.toLowerCase())
@@ -643,6 +663,7 @@ function PlanBlock({
             {pickerOpen ? (
               <InlineTechniquePicker
                 currentId={block.technique_id ?? null}
+                suggestedCategory={suggestedCategory}
                 onSelect={id => onUpdate({ ...block, technique_id: id })}
                 onClose={() => setPickerOpen(false)}
               />

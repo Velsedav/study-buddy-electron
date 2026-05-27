@@ -940,6 +940,16 @@
   border-right: none;
 }
 
+.op-inline-picker-col-suggested {
+  background: rgba(255, 255, 255, 0.03);
+}
+
+.op-inline-picker-suggested-badge {
+  margin-left: 4px;
+  font-size: 9px;
+  opacity: 0.9;
+}
+
 .op-inline-picker-col-header {
   font-size: 10px;
   font-weight: 700;
