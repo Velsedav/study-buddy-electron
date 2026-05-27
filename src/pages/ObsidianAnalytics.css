@@ -110,12 +110,6 @@
   padding: 24px 0;
 }
 
-/* ── Placeholder (removed after Tasks 11-13) ── */
-.oa-view-placeholder {
-  padding: 32px;
-  color: var(--text-muted, #7d8590);
-  font-size: 14px;
-}
 
 /* ── StatStrip ── */
 .oa-stat-strip {
@@ -602,4 +596,92 @@
   font-size: 9px;
   color: var(--text-muted, #7d8590);
   text-align: center;
+}
+
+/* ── CommandView ── */
+.oa-command-view {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+}
+
+/* ── NarrativeView ── */
+.oa-narrative-view {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 16px;
+}
+
+.oa-narrative-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.oa-narrative-question {
+  font-size: 14px;
+  font-weight: 700;
+  color: var(--primary, #58a6ff);
+  letter-spacing: 0.01em;
+}
+
+.oa-narrative-week {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.oa-narrative-big-numbers {
+  display: flex;
+  gap: 12px;
+}
+
+.oa-narrative-hero {
+  flex: 1;
+  background: var(--card-bg, #161b22);
+  border: 1px solid var(--border-color, #30363d);
+  border-radius: 8px;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.oa-narrative-hero-value {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--text-dark, #e6edf3);
+  line-height: 1;
+}
+
+.oa-narrative-hero-label {
+  font-size: 12px;
+  color: var(--text-muted, #7d8590);
+}
+
+/* ── MinimalView ── */
+.oa-minimal-view {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding: 16px;
+}
+
+.oa-minimal-numbers {
+  display: flex;
+  gap: 12px;
+}
+
+.oa-minimal-hero {
+  flex: 1;
+  background: var(--card-bg, #161b22);
+  border: 1px solid var(--border-color, #30363d);
+  border-radius: 8px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
 }

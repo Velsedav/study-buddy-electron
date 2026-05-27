@@ -542,12 +542,121 @@ function DeadlineUrgency({ derived }: { derived: DerivedAnalytics }) {
   )
 }
 
-function CommandView(_p: { derived: DerivedAnalytics; timelineFilter: number; onTimelineChange: (v: number) => void }) {
-  return <div className="oa-view-placeholder">Command view coming soon</div>
+function CommandView({
+  derived,
+  timelineFilter,
+  onTimelineChange,
+}: {
+  derived: DerivedAnalytics
+  timelineFilter: number
+  onTimelineChange: (v: number) => void
+}) {
+  return (
+    <div className="oa-command-view">
+      <StatStrip derived={derived} />
+      <ActivityTimeline derived={derived} timelineFilter={timelineFilter} onTimelineChange={onTimelineChange} tall />
+      <div className="oa-two-col">
+        <SubjectBalance derived={derived} sessions={derived.sessions} />
+        <DeadlineUrgency derived={derived} />
+      </div>
+      <div className="oa-two-col">
+        <TechTierBreakdown derived={derived} />
+        <FocusTypeSplit derived={derived} />
+      </div>
+      <div className="oa-two-col">
+        <CalibrationPanel derived={derived} />
+        <TagBreakdown derived={derived} />
+      </div>
+    </div>
+  )
 }
-function NarrativeView(_p: { derived: DerivedAnalytics; timelineFilter: number; onTimelineChange: (v: number) => void }) {
-  return <div className="oa-view-placeholder">Narrative view coming soon</div>
+
+function NarrativeView({
+  derived,
+  timelineFilter,
+  onTimelineChange,
+}: {
+  derived: DerivedAnalytics
+  timelineFilter: number
+  onTimelineChange: (v: number) => void
+}) {
+  return (
+    <div className="oa-narrative-view">
+      <div className="oa-narrative-section">
+        <div className="oa-narrative-question">How did your week go?</div>
+        <div className="oa-narrative-week">
+          <div className="oa-narrative-big-numbers">
+            <div className="oa-narrative-hero">
+              <span className="oa-narrative-hero-value">{formatTime(derived.weekly.minutes)}</span>
+              <span className="oa-narrative-hero-label">Focus time</span>
+              {derived.trend.weekMinutesDelta !== null && (
+                <span className={`oa-trend-badge ${derived.trend.weekMinutesDelta >= 0 ? 'oa-trend-up' : 'oa-trend-down'}`}>
+                  {derived.trend.weekMinutesDelta >= 0 ? '▲' : '▼'}{Math.abs(derived.trend.weekMinutesDelta)}% vs last week
+                </span>
+              )}
+            </div>
+            <div className="oa-narrative-hero">
+              <span className="oa-narrative-hero-value">{derived.streaks.current} <span className="oa-stat-suffix">days</span></span>
+              <span className="oa-narrative-hero-label">Current streak</span>
+            </div>
+          </div>
+          <TimeOfDayPanel derived={derived} />
+        </div>
+      </div>
+
+      <div className="oa-narrative-section">
+        <div className="oa-narrative-question">What are you working on?</div>
+        <SubjectBalance derived={derived} sessions={derived.sessions} />
+        {derived.deadlineRows.length > 0 && <DeadlineUrgency derived={derived} />}
+      </div>
+
+      <div className="oa-narrative-section">
+        <div className="oa-narrative-question">How well are you studying?</div>
+        <div className="oa-two-col">
+          <TechTierBreakdown derived={derived} />
+          <FocusTypeSplit derived={derived} />
+        </div>
+        <CalibrationPanel derived={derived} />
+      </div>
+
+      <div className="oa-narrative-section">
+        <div className="oa-narrative-question">What does your pattern look like?</div>
+        <ActivityTimeline derived={derived} timelineFilter={timelineFilter} onTimelineChange={onTimelineChange} tall />
+      </div>
+    </div>
+  )
 }
-function MinimalView(_p: { derived: DerivedAnalytics; timelineFilter: number; onTimelineChange: (v: number) => void }) {
-  return <div className="oa-view-placeholder">Minimal view coming soon</div>
+
+function MinimalView({
+  derived,
+  timelineFilter,
+  onTimelineChange,
+}: {
+  derived: DerivedAnalytics
+  timelineFilter: number
+  onTimelineChange: (v: number) => void
+}) {
+  return (
+    <div className="oa-minimal-view">
+      <div className="oa-minimal-numbers">
+        <div className="oa-minimal-hero">
+          <span className="oa-narrative-hero-value">{formatTime(derived.weekly.minutes)}</span>
+          <span className="oa-narrative-hero-label">This week</span>
+        </div>
+        <div className="oa-minimal-hero">
+          <span className="oa-narrative-hero-value">{derived.streaks.current} <span className="oa-stat-suffix">days</span></span>
+          <span className="oa-narrative-hero-label">Streak</span>
+        </div>
+        <div className="oa-minimal-hero">
+          <span className="oa-narrative-hero-value">{formatTime(derived.avgSession)}</span>
+          <span className="oa-narrative-hero-label">Avg session</span>
+        </div>
+      </div>
+      <ActivityTimeline derived={derived} timelineFilter={timelineFilter} onTimelineChange={onTimelineChange} tall />
+      <div className="oa-two-col">
+        <SubjectBalance derived={derived} sessions={derived.sessions} />
+        <TechTierBreakdown derived={derived} />
+      </div>
+    </div>
+  )
 }
