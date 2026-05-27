@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { X, ChevronDown } from 'lucide-react'
-import { TECHNIQUES } from '../lib/techniques'
+import { X, Zap } from 'lucide-react'
+import { TECHNIQUES, CATEGORY_LABELS, CATEGORY_COLORS, getTierColor } from '../lib/techniques'
 import { getChaptersForSubject } from '../lib/chapters'
 import type { Chapter } from '../lib/chapters'
 import type { Subject } from '../lib/db'
@@ -112,16 +112,6 @@ export default function ObsidianQuickStart({ subject, onClose }: Props) {
         </div>
 
         <div className="oqs-field">
-          <label className="oqs-label">Technique</label>
-          <button className="oqs-technique-btn" onClick={() => setPickerOpen(true)}>
-            <span className="oqs-technique-name">
-              {techniqueId ? (TECHNIQUES.find(t => t.id === techniqueId)?.name ?? '— none —') : '— none —'}
-            </span>
-            <ChevronDown size={14} />
-          </button>
-        </div>
-
-        <div className="oqs-field">
           <label className="oqs-label" htmlFor="oqs-chapter">Chapter <span className="oqs-optional">(optional)</span></label>
           <select
             id="oqs-chapter"
@@ -134,6 +124,33 @@ export default function ObsidianQuickStart({ subject, onClose }: Props) {
               <option key={c.id} value={c.name}>{c.name}</option>
             ))}
           </select>
+        </div>
+
+        <div className="oqs-field">
+          <label className="oqs-label">Technique</label>
+          {(() => {
+            const tech = TECHNIQUES.find(t => t.id === techniqueId)
+            return (
+              <button className="oqs-technique-card" onClick={() => setPickerOpen(true)} aria-label="Open technique picker">
+                {tech ? (
+                  <div className="oqs-tech-info">
+                    <span className="oqs-tech-name">{tech.name}</span>
+                    <div className="oqs-tech-meta">
+                      <span className="oqs-tech-tier" style={{ color: getTierColor(tech.tier) }}>Tier {tech.tier}</span>
+                      {tech.category && (
+                        <span className="oqs-tech-cat" style={{ color: CATEGORY_COLORS[tech.category] }}>
+                          {CATEGORY_LABELS[tech.category]}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                ) : (
+                  <span className="oqs-tech-none">No technique selected</span>
+                )}
+                <span className="oqs-tech-change"><Zap size={12} /> Browse</span>
+              </button>
+            )
+          })()}
         </div>
 
         <button className="oqs-launch" onClick={launch}>
