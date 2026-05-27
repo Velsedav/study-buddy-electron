@@ -340,3 +340,46 @@
   color: var(--text-muted, #7d8590);
   white-space: nowrap;
 }
+
+/* ── DeadlineUrgency ── */
+.oa-deadline-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.oa-deadline-row {
+  display: grid;
+  grid-template-columns: 10px 1fr auto auto;
+  align-items: center;
+  gap: 8px;
+}
+
+.oa-deadline-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.oa-deadline-name {
+  font-size: 12px;
+  color: var(--text-dark, #e6edf3);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.oa-deadline-days {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.oa-deadline-studied {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 11px;
+  color: var(--text-muted, #7d8590);
+  white-space: nowrap;
+}

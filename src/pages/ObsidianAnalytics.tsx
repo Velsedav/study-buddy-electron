@@ -325,6 +325,33 @@ function SubjectBalance({ derived, sessions }: { derived: DerivedAnalytics; sess
   )
 }
 
+function DeadlineUrgency({ derived }: { derived: DerivedAnalytics }) {
+  const { deadlineRows } = derived
+  if (deadlineRows.length === 0) return null
+
+  const URGENCY_COLORS = { red: 'var(--danger, #f85149)', amber: '#f59e0b', green: 'var(--success, #3fb950)' }
+
+  return (
+    <div className="oa-panel">
+      <div className="oa-panel-header">Deadlines</div>
+      <div className="oa-deadline-list">
+        {deadlineRows.map(row => (
+          <div key={row.subjectId} className="oa-deadline-row">
+            <span className="oa-deadline-dot" style={{ background: URGENCY_COLORS[row.urgency] }} />
+            <span className="oa-deadline-name" title={row.name}>{row.name}</span>
+            <span className="oa-deadline-days" style={{ color: URGENCY_COLORS[row.urgency] }}>
+              {row.daysRemaining < 0
+                ? `${Math.abs(row.daysRemaining)}d overdue`
+                : `${row.daysRemaining}d`}
+            </span>
+            <span className="oa-deadline-studied">{row.hoursStudied}h</span>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
+
 function CommandView(_p: { derived: DerivedAnalytics; timelineFilter: number; onTimelineChange: (v: number) => void }) {
   return <div className="oa-view-placeholder">Command view coming soon</div>
 }
