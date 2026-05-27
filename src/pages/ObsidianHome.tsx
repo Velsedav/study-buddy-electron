@@ -1,5 +1,5 @@
 import { useState, useEffect, useMemo } from 'react'
-import { List, LayoutGrid, Columns, Search } from 'lucide-react'
+import { List, LayoutGrid, Columns, Search, Plus } from 'lucide-react'
 import type { Subject, Tag, Session } from '../lib/db'
 import { getSubjects, getSubjectTags, getSessions } from '../lib/db'
 import { getAllChapters, getRetentionPercent } from '../lib/chapters'
@@ -89,9 +89,10 @@ interface TopBarProps {
   onFilterChange: (v: string) => void
   view: ViewMode
   onViewChange: (v: ViewMode) => void
+  onAdd: () => void
 }
 
-function TopBar({ todayHours, weekHours, filter, onFilterChange, view, onViewChange }: TopBarProps) {
+function TopBar({ todayHours, weekHours, filter, onFilterChange, view, onViewChange, onAdd }: TopBarProps) {
   return (
     <div className="ohi-topbar">
       <div className="ohi-stats">
@@ -114,6 +115,9 @@ function TopBar({ todayHours, weekHours, filter, onFilterChange, view, onViewCha
         <button className={`ohi-view-btn${view === 'board' ? ' ohi-view-active' : ''}`} title="Board view" aria-label="Board view" onClick={() => onViewChange('board')}><LayoutGrid size={16} /></button>
         <button className={`ohi-view-btn${view === 'split' ? ' ohi-view-active' : ''}`} title="Split view" aria-label="Split view" onClick={() => onViewChange('split')}><Columns size={16} /></button>
       </div>
+      <button className="ohi-add-btn" title="Add subject" aria-label="Add subject" onClick={onAdd}>
+        <Plus size={16} />
+      </button>
     </div>
   )
 }
@@ -126,6 +130,7 @@ export default function ObsidianHome() {
   const [filter, setFilter] = useState('')
   const [quickStartSubject, setQuickStartSubject] = useState<Subject | null>(null)
   const [editingSubject, setEditingSubject] = useState<(Subject & { tags: Tag[] }) | null>(null)
+  const [createOpen, setCreateOpen] = useState(false)
 
   const { todayHours, weekHours } = useMemo(() => computeStats(sessions), [sessions])
 
@@ -162,6 +167,7 @@ export default function ObsidianHome() {
         onFilterChange={setFilter}
         view={view}
         onViewChange={handleViewChange}
+        onAdd={() => setCreateOpen(true)}
       />
 
       <div className="ohi-content">
@@ -203,6 +209,16 @@ export default function ObsidianHome() {
           onClose={() => setEditingSubject(null)}
           onSaved={() => {
             setEditingSubject(null)
+            reloadSubjects()
+          }}
+        />
+      )}
+
+      {createOpen && (
+        <SubjectEditorModal
+          onClose={() => setCreateOpen(false)}
+          onSaved={() => {
+            setCreateOpen(false)
             reloadSubjects()
           }}
         />

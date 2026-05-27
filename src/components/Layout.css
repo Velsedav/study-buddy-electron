@@ -214,6 +214,8 @@
   flex: 1;
   overflow-y: auto;
   background: var(--bg-color, #0d1117);
+  min-height: 0; /* override global min-height: 100vh so quote bar stays in viewport */
+  padding: 0;
 }
 
 .obsidian-main-wrapper .top-decoration {

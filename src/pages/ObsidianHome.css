@@ -108,6 +108,24 @@
   background: rgba(88, 166, 255, 0.1);
 }
 
+.ohi-add-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 28px;
+  height: 28px;
+  border-radius: 6px;
+  border: 1px solid var(--primary, #58a6ff);
+  background: none;
+  color: var(--primary, #58a6ff);
+  cursor: pointer;
+  transition: background 0.1s;
+}
+
+.ohi-add-btn:hover {
+  background: rgba(88, 166, 255, 0.15);
+}
+
 .ohi-content {
   flex: 1;
   overflow: hidden;
