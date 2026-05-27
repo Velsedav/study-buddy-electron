@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
+import ObsidianPlanner from './ObsidianPlanner'
 import { getSubjects, getMetacognitionLogs, getAllSubjectTagsMap, getAllTags, getBlockCountForChapter, getErrorLogEntries } from '../lib/db';
 import type { Subject, Tag, ErrorLogEntry } from '../lib/db';
 import { useUndoRedo } from '../lib/undo';
@@ -522,6 +523,10 @@ export default function Plan() {
         document.addEventListener('mousedown', handleClickOutside);
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, [tagFilterOpen]);
+
+    if (theme === 'obsidian') {
+        return <ObsidianPlanner />
+    }
 
     // All work blocks have a subject + objective filled
     const workBlocks = blocks.filter(b => b.type === 'WORK');
