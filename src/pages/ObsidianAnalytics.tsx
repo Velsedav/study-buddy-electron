@@ -325,6 +325,64 @@ function SubjectBalance({ derived, sessions }: { derived: DerivedAnalytics; sess
   )
 }
 
+function CalibrationPanel({ derived }: { derived: DerivedAnalytics }) {
+  const { calibration } = derived
+  return (
+    <div className="oa-panel">
+      <div className="oa-panel-header">Calibration</div>
+      {!calibration ? (
+        <div className="oa-empty">No ratings yet</div>
+      ) : (
+        <div className="oa-calibration-stats">
+          <div className="oa-cal-stat">
+            <span className="oa-cal-value">{calibration.goodPct}%</span>
+            <span className="oa-cal-label">Post-session good/easy</span>
+          </div>
+          {calibration.avgGap !== null && (
+            <div className="oa-cal-stat">
+              <span className={`oa-cal-value ${calibration.avgGap > 0.1 ? 'oa-cal-positive' : calibration.avgGap < -0.1 ? 'oa-cal-negative' : 'oa-cal-neutral'}`}>
+                {calibration.avgGap > 0 ? '+' : ''}{Math.round(calibration.avgGap * 100)}%
+              </span>
+              <span className="oa-cal-label">Pre→post recall gap</span>
+            </div>
+          )}
+          <div className="oa-cal-stat">
+            <span className="oa-cal-value">{calibration.totalCount}</span>
+            <span className="oa-cal-label">Total ratings</span>
+          </div>
+        </div>
+      )}
+    </div>
+  )
+}
+
+function TagBreakdown({ derived }: { derived: DerivedAnalytics }) {
+  const { tags } = derived
+  return (
+    <div className="oa-panel">
+      <div className="oa-panel-header">By tag</div>
+      {tags.data.length === 0 ? (
+        <div className="oa-empty">No tagged subjects yet</div>
+      ) : (
+        <div className="oa-tag-list">
+          {tags.data.map(row => (
+            <div key={row.tag} className="oa-tag-row">
+              <span className="oa-tag-label">{row.tag}</span>
+              <div className="oa-subject-bar-track">
+                <div
+                  className="oa-subject-bar"
+                  style={{ width: `${Math.round((row.mins / tags.maxMins) * 100)}%` }}
+                />
+              </div>
+              <span className="oa-subject-time">{formatTime(row.mins)}</span>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
 function FocusTypeSplit({ derived }: { derived: DerivedAnalytics }) {
   const { focusBreakdown } = derived
   const total = focusBreakdown.comprendre + focusBreakdown.memoriser + focusBreakdown.faire

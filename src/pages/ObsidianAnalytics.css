@@ -506,3 +506,54 @@
   border-radius: 3px;
   transition: width 0.3s ease;
 }
+
+/* ── CalibrationPanel ── */
+.oa-calibration-stats {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.oa-cal-stat {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.oa-cal-value {
+  font-family: 'JetBrains Mono', monospace;
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text-dark, #e6edf3);
+}
+
+.oa-cal-positive { color: var(--success, #3fb950); }
+.oa-cal-negative { color: var(--danger, #f85149); }
+.oa-cal-neutral  { color: var(--text-muted, #7d8590); }
+
+.oa-cal-label {
+  font-size: 11px;
+  color: var(--text-muted, #7d8590);
+}
+
+/* ── TagBreakdown ── */
+.oa-tag-list {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+}
+
+.oa-tag-row {
+  display: grid;
+  grid-template-columns: 1fr 2fr auto;
+  align-items: center;
+  gap: 8px;
+}
+
+.oa-tag-label {
+  font-size: 12px;
+  color: var(--text-dark, #e6edf3);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
