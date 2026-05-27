@@ -10,6 +10,7 @@ import { getAllChapters, getRatings } from '../lib/chapters';
 import type { Chapter } from '../lib/chapters';
 import CalendarPanel from '../components/CalendarPanel';
 import { CustomSelect } from '../components/CustomSelect';
+import ObsidianAnalytics from './ObsidianAnalytics';
 import './Analytics.css';
 
 // ── Helpers ──
@@ -36,7 +37,8 @@ function getWeekStart(date: Date): Date {
 }
 
 export default function AnalyticsTab() {
-    const { weekStart } = useSettings();
+    const { weekStart, theme } = useSettings();
+    if (theme === 'obsidian') return <ObsidianAnalytics />;
     const { t } = useTranslation();
     const [sessions, setSessions] = useState<Session[]>([]);
     const [blocks, setBlocks] = useState<SessionBlock[]>([]);

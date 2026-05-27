@@ -1,0 +1,118 @@
+/* ── Root ── */
+.oa-root {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--bg-color, #0d1117);
+  color: var(--text-dark, #e6edf3);
+  font-family: var(--font-body, system-ui, sans-serif);
+  overflow: hidden;
+}
+
+.oa-loading {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: var(--text-muted, #7d8590);
+  font-size: 14px;
+}
+
+/* ── Top bar ── */
+.oa-topbar {
+  display: flex;
+  align-items: center;
+  height: 48px;
+  padding: 0 16px;
+  border-bottom: 1px solid var(--border-color, #30363d);
+  flex-shrink: 0;
+}
+
+.oa-view-pills {
+  display: flex;
+  gap: 4px;
+  background: var(--surface-raised, #21262d);
+  padding: 3px;
+  border-radius: 8px;
+}
+
+.oa-view-pill {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border: none;
+  background: none;
+  color: var(--text-muted, #7d8590);
+  border-radius: 6px;
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 500;
+  transition: background 0.1s, color 0.1s;
+  white-space: nowrap;
+}
+
+.oa-view-pill:hover {
+  color: var(--text-dark, #e6edf3);
+  background: rgba(255,255,255,0.05);
+}
+
+.oa-view-pill-active {
+  background: var(--primary, #58a6ff);
+  color: #0d1117;
+}
+
+.oa-view-pill-active:hover {
+  background: var(--primary, #58a6ff);
+  color: #0d1117;
+}
+
+/* ── Content area ── */
+.oa-content {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+/* ── Shared panel card ── */
+.oa-panel {
+  background: var(--card-bg, #161b22);
+  border: 1px solid var(--border-color, #30363d);
+  border-radius: 8px;
+  padding: 16px;
+}
+
+.oa-panel-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 12px;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.07em;
+  color: var(--text-muted, #7d8590);
+  margin-bottom: 12px;
+}
+
+/* ── Two-column grid ── */
+.oa-two-col {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+
+/* ── Empty state ── */
+.oa-empty {
+  color: var(--text-muted, #7d8590);
+  font-size: 13px;
+  font-style: italic;
+  text-align: center;
+  padding: 24px 0;
+}
+
+/* ── Placeholder (removed after Tasks 11-13) ── */
+.oa-view-placeholder {
+  padding: 32px;
+  color: var(--text-muted, #7d8590);
+  font-size: 14px;
+}
