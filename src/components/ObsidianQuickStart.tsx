@@ -51,7 +51,7 @@ export default function ObsidianQuickStart({ subject, onClose }: Props) {
   function handleCustomDuration(val: string) {
     setCustomDuration(val)
     const parsed = parseInt(val, 10)
-    if (!isNaN(parsed) && parsed > 0) {
+    if (!isNaN(parsed) && parsed > 0 && parsed <= 480) {
       setDuration(parsed)
       localStorage.setItem(LS_DURATION_KEY, String(parsed))
     }
@@ -82,7 +82,7 @@ export default function ObsidianQuickStart({ subject, onClose }: Props) {
       <div className="oqs-modal" onClick={e => e.stopPropagation()} role="dialog" aria-modal="true">
         <div className="oqs-header">
           <span className="oqs-title">Start: {subject.name}</span>
-          <button className="oqs-close" onClick={handleClose}><X size={16} /></button>
+          <button className="oqs-close" onClick={handleClose} aria-label="Close modal"><X size={16} /></button>
         </div>
 
         <div className="oqs-field">
@@ -110,8 +110,9 @@ export default function ObsidianQuickStart({ subject, onClose }: Props) {
         </div>
 
         <div className="oqs-field">
-          <label className="oqs-label">Technique</label>
+          <label className="oqs-label" htmlFor="oqs-technique">Technique</label>
           <select
+            id="oqs-technique"
             className="oqs-select"
             value={techniqueId}
             onChange={e => handleTechniqueChange(e.target.value)}
@@ -124,8 +125,9 @@ export default function ObsidianQuickStart({ subject, onClose }: Props) {
         </div>
 
         <div className="oqs-field">
-          <label className="oqs-label">Chapter <span className="oqs-optional">(optional)</span></label>
+          <label className="oqs-label" htmlFor="oqs-chapter">Chapter <span className="oqs-optional">(optional)</span></label>
           <select
+            id="oqs-chapter"
             className="oqs-select"
             value={chapterName}
             onChange={e => setChapterName(e.target.value)}

@@ -149,3 +149,9 @@
 .oqs-launch:hover {
   background: var(--primary-hover, #79b8ff);
 }
+
+@media (max-width: 400px) {
+  .oqs-modal {
+    width: 90vw;
+  }
+}
