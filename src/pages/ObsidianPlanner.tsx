@@ -1,13 +1,12 @@
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Play, AlignJustify, Columns2, Wand2, Undo2, Redo2, Bell, BellOff, Plus, Zap, MoreVertical, Check } from 'lucide-react'
+import { Play, AlignJustify, Columns2, Wand2, Undo2, Redo2, Bell, BellOff, Plus, Zap, MoreVertical, Check, X } from 'lucide-react'
 import { getSubjects, getAllTags, getAllSubjectTagsMap } from '../lib/db'
 import type { Subject, Tag } from '../lib/db'
 import { getChaptersForSubject } from '../lib/chapters'
 import type { Chapter } from '../lib/chapters'
-import { TECHNIQUES, CATEGORY_LABELS, CATEGORY_COLORS, getTierColor } from '../lib/techniques'
+import { TECHNIQUES, CATEGORY_LABELS, CATEGORY_COLORS, getTierColor, type TierType, type TechCategory } from '../lib/techniques'
 import { useUndoRedo } from '../lib/undo'
-import TechniquePickerModal from '../components/TechniquePickerModal'
 import {
   generateBlocks,
   formatSessionSummary,
@@ -388,6 +387,104 @@ function ConfigStrip({
   )
 }
 
+const TIER_ORDER: TierType[] = ['S', 'A', 'B', 'C', 'D', 'E', 'F']
+const CATEGORY_ORDER: TechCategory[] = ['comprendre', 'memoriser', 'faire']
+
+function InlineTechniquePicker({ currentId, onSelect, onClose }: {
+  currentId: string | null
+  onSelect: (id: string | null) => void
+  onClose: () => void
+}) {
+  const [query, setQuery] = useState('')
+  const inputRef = useRef<HTMLInputElement>(null)
+
+  useEffect(() => { inputRef.current?.focus() }, [])
+
+  useEffect(() => {
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose() }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [onClose])
+
+  const isSearching = query.trim().length > 0
+
+  const filtered = isSearching
+    ? TECHNIQUES.filter(t => t.name.toLowerCase().includes(query.toLowerCase()))
+        .sort((a, b) => TIER_ORDER.indexOf(a.tier) - TIER_ORDER.indexOf(b.tier))
+    : null
+
+  return (
+    <div className="op-inline-picker">
+      <div className="op-inline-picker-search">
+        <input
+          ref={inputRef}
+          className="op-inline-picker-input"
+          value={query}
+          onChange={e => setQuery(e.target.value)}
+          placeholder="Search techniques..."
+        />
+        <button className="op-inline-picker-close" onClick={onClose} aria-label="Close picker">
+          <X size={13} />
+        </button>
+      </div>
+
+      {isSearching ? (
+        <div className="op-inline-picker-flat">
+          {filtered!.length === 0 && (
+            <div className="op-inline-picker-empty">No techniques found</div>
+          )}
+          {filtered!.map(t => (
+            <button
+              key={t.id}
+              className={`op-inline-tech-item${t.id === currentId ? ' op-inline-tech-active' : ''}`}
+              onClick={() => { onSelect(t.id); onClose() }}
+            >
+              <span className="op-inline-tech-tier" style={{ color: getTierColor(t.tier) }}>{t.tier}</span>
+              <span className="op-inline-tech-name">{t.name}</span>
+              {t.category && (
+                <span className="op-inline-tech-cat" style={{ color: CATEGORY_COLORS[t.category] }}>
+                  {CATEGORY_LABELS[t.category]}
+                </span>
+              )}
+            </button>
+          ))}
+        </div>
+      ) : (
+        <div className="op-inline-picker-grid">
+          {CATEGORY_ORDER.map(cat => {
+            const techs = TECHNIQUES
+              .filter(t => t.category === cat)
+              .sort((a, b) => TIER_ORDER.indexOf(a.tier) - TIER_ORDER.indexOf(b.tier))
+            return (
+              <div key={cat} className="op-inline-picker-col">
+                <div className="op-inline-picker-col-header" style={{ color: CATEGORY_COLORS[cat] }}>
+                  {CATEGORY_LABELS[cat]}
+                </div>
+                {techs.map(t => (
+                  <button
+                    key={t.id}
+                    className={`op-inline-tech-item${t.id === currentId ? ' op-inline-tech-active' : ''}`}
+                    onClick={() => { onSelect(t.id); onClose() }}
+                  >
+                    <span className="op-inline-tech-tier" style={{ color: getTierColor(t.tier) }}>{t.tier}</span>
+                    <span className="op-inline-tech-name">{t.name}</span>
+                  </button>
+                ))}
+              </div>
+            )
+          })}
+        </div>
+      )}
+
+      {currentId && (
+        <button className="op-inline-picker-clear" onClick={() => { onSelect(null); onClose() }}>
+          Clear selection
+        </button>
+      )}
+    </div>
+  )
+}
+
 interface PlanBlockProps {
   block: PlannerBlock
   subjects: Subject[]
@@ -535,22 +632,30 @@ function PlanBlock({
 
           <div className="op-expand-field">
             <label className="op-expand-label">Technique</label>
-            <button className="op-technique-card" onClick={() => setPickerOpen(true)} aria-label="Open technique picker">
-              {tech ? (
-                <div className="op-tech-info">
-                  <span className="op-tech-name">{tech.name}</span>
-                  <div className="op-tech-meta">
-                    <span className="op-tech-tier" style={{ color: getTierColor(tech.tier) }}>Tier {tech.tier}</span>
-                    {tech.category && (
-                      <span style={{ color: CATEGORY_COLORS[tech.category] }}>{CATEGORY_LABELS[tech.category]}</span>
-                    )}
+            {pickerOpen ? (
+              <InlineTechniquePicker
+                currentId={block.technique_id ?? null}
+                onSelect={id => onUpdate({ ...block, technique_id: id })}
+                onClose={() => setPickerOpen(false)}
+              />
+            ) : (
+              <button className="op-technique-card" onClick={() => setPickerOpen(true)} aria-label="Open technique picker">
+                {tech ? (
+                  <div className="op-tech-info">
+                    <span className="op-tech-name">{tech.name}</span>
+                    <div className="op-tech-meta">
+                      <span className="op-tech-tier" style={{ color: getTierColor(tech.tier) }}>Tier {tech.tier}</span>
+                      {tech.category && (
+                        <span style={{ color: CATEGORY_COLORS[tech.category] }}>{CATEGORY_LABELS[tech.category]}</span>
+                      )}
+                    </div>
                   </div>
-                </div>
-              ) : (
-                <span className="op-tech-none">No technique selected</span>
-              )}
-              <span className="op-tech-browse"><Zap size={11} /> Browse</span>
-            </button>
+                ) : (
+                  <span className="op-tech-none">No technique selected</span>
+                )}
+                <span className="op-tech-browse"><Zap size={11} /> Browse</span>
+              </button>
+            )}
           </div>
 
           <div className="op-expand-field">
@@ -567,13 +672,6 @@ function PlanBlock({
         </div>
       )}
 
-      {pickerOpen && (
-        <TechniquePickerModal
-          onClose={() => setPickerOpen(false)}
-          onSelect={(id, _objective) => { onUpdate({ ...block, technique_id: id }); setPickerOpen(false) }}
-          currentSelection={block.technique_id ?? null}
-        />
-      )}
     </div>
   )
 }
