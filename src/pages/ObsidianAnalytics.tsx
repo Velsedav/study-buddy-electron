@@ -325,6 +325,45 @@ function SubjectBalance({ derived, sessions }: { derived: DerivedAnalytics; sess
   )
 }
 
+function TimeOfDayPanel({ derived }: { derived: DerivedAnalytics }) {
+  const { timeOfDay } = derived
+  const total = timeOfDay.morning + timeOfDay.afternoon + timeOfDay.evening + timeOfDay.night
+  const bars: { key: keyof TimeOfDay; label: string; emoji: string }[] = [
+    { key: 'morning',   label: 'Morning',   emoji: '🌅' },
+    { key: 'afternoon', label: 'Afternoon', emoji: '☀️' },
+    { key: 'evening',   label: 'Evening',   emoji: '🌆' },
+    { key: 'night',     label: 'Night',     emoji: '🌙' },
+  ]
+  const max = Math.max(...bars.map(b => timeOfDay[b.key]), 1)
+
+  return (
+    <div className="oa-panel">
+      <div className="oa-panel-header">Study pattern</div>
+      {total === 0 ? (
+        <div className="oa-empty">No session data yet</div>
+      ) : (
+        <div className="oa-tod-bars">
+          {bars.map(({ key, label, emoji }) => {
+            const mins = timeOfDay[key]
+            const heightPct = Math.round((mins / max) * 100)
+            return (
+              <div key={key} className="oa-tod-col">
+                <div className="oa-tod-bar-track">
+                  <div className="oa-tod-bar" style={{ height: `${heightPct}%` }} />
+                </div>
+                <div className="oa-tod-label">
+                  <span>{emoji}</span>
+                  <span>{label}</span>
+                </div>
+              </div>
+            )
+          })}
+        </div>
+      )}
+    </div>
+  )
+}
+
 function CalibrationPanel({ derived }: { derived: DerivedAnalytics }) {
   const { calibration } = derived
   return (
