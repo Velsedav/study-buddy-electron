@@ -119,7 +119,7 @@ function TopBar({ todayHours, weekHours, filter, onFilterChange, view, onViewCha
 }
 
 export default function ObsidianHome() {
-  const { subjects, sessions, allChapters, loading } = useObsidianData()
+  const { subjects, sessions, allChapters, loading, setSubjects } = useObsidianData()
   const [view, setView] = useState<ViewMode>(() => {
     return (localStorage.getItem(LS_VIEW_KEY) as ViewMode) || 'list'
   })
@@ -137,6 +137,16 @@ export default function ObsidianHome() {
   function handleViewChange(v: ViewMode) {
     setView(v)
     localStorage.setItem(LS_VIEW_KEY, v)
+  }
+
+  async function reloadSubjects() {
+    const subs = await getSubjects()
+    const withTags = await Promise.all(
+      subs
+        .filter(s => !s.deleted_at && !s.archived)
+        .map(async s => ({ ...s, tags: await getSubjectTags(s.id) }))
+    )
+    setSubjects(withTags)
   }
 
   if (loading) {
@@ -193,7 +203,7 @@ export default function ObsidianHome() {
           onClose={() => setEditingSubject(null)}
           onSaved={() => {
             setEditingSubject(null)
-            window.location.reload()
+            reloadSubjects()
           }}
         />
       )}
@@ -419,7 +429,10 @@ function SplitView({ subjects, allChapters, onStart, onEdit }: SplitViewProps) {
           <div
             key={subject.id}
             className={`ohi-split-row${selectedId === subject.id ? ' ohi-split-selected' : ''}`}
+            role="button"
+            tabIndex={0}
             onClick={() => setSelectedId(subject.id)}
+            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setSelectedId(subject.id) } }}
           >
             <span className="ohi-split-name">{subject.name}</span>
             <button
