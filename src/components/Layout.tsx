@@ -339,6 +339,92 @@ export default function Layout() {
         return () => { if (typingRef.current) clearTimeout(typingRef.current); };
     }, [currentQuote, isTerminal]);
 
+    // ── Obsidian layout ─────────────────────────────────────────────────────
+    if (theme === 'obsidian') {
+        return (
+            <div className="layout obsidian-layout">
+                <nav className="obsidian-sidebar">
+                    {navItems.map(item => {
+                        const Icon = item.icon;
+                        const active = location.pathname === item.path || (item.path !== '/' && location.pathname.startsWith(item.path));
+                        return (
+                            <Link
+                                key={item.path}
+                                to={item.path}
+                                className={`obsidian-nav-link${active ? ' obsidian-nav-active' : ''}`}
+                                title={item.label}
+                                onClick={(e) => handleNavClick(e, item.path)}
+                            >
+                                <Icon size={20} />
+                                {item.path === '/learning' && learningReviewDue && (
+                                    <span className="nav-review-dot" aria-label="Review available" />
+                                )}
+                            </Link>
+                        );
+                    })}
+                </nav>
+
+                <div className="obsidian-main-wrapper">
+                    <main className="main-content">
+                        <div key={location.pathname} className="page-route-transition">
+                            <Outlet />
+                        </div>
+                    </main>
+                    <div className="obsidian-quote-bar">
+                        <span className={`obsidian-quote-text ${animClass}`}>
+                            {currentQuote}
+                        </span>
+                        <button
+                            className="obsidian-quote-edit"
+                            onClick={() => setEditorOpen(true)}
+                            title="Edit quotes"
+                            aria-label="Edit quotes"
+                        >
+                            <Pencil size={12} />
+                        </button>
+                    </div>
+                </div>
+
+                {editorOpen && (
+                    <QuoteEditorModal
+                        onClose={() => setEditorOpen(false)}
+                        onChanged={loadQuotes}
+                    />
+                )}
+
+                <CloseOverlay />
+
+                {navWarningStep !== 'none' && (
+                    <div className="modal-overlay" onClick={() => { setNavWarningStep('none'); setPendingNavPath(null); }}>
+                        <div className="modal-content confirm-modal-content" role="dialog" aria-modal="true" onClick={e => e.stopPropagation()}>
+                            {navWarningStep === 'confirm-stop' && (
+                                <>
+                                    <h2 className="confirm-modal-title">⏸️ Stop studying?</h2>
+                                    <p className="confirm-modal-text">Are you sure you want to end this session early?</p>
+                                    <div className="confirm-modal-actions">
+                                        <button className="btn btn-primary" onClick={() => { setNavWarningStep('none'); setPendingNavPath(null); }}>Keep studying</button>
+                                        <button className="btn btn-secondary confirm-btn-danger" onClick={() => setNavWarningStep('confirm-save')}>Yes, stop</button>
+                                    </div>
+                                </>
+                            )}
+                            {navWarningStep === 'confirm-save' && (
+                                <>
+                                    <h2 className="confirm-modal-title">💾 Save your progress?</h2>
+                                    <p className="confirm-modal-text">Do you want to record the time you studied so far?</p>
+                                    <div className="confirm-modal-actions">
+                                        <button className="btn btn-primary" onClick={() => finishSessionFromLayout(true)}>Save progress</button>
+                                        <button className="btn btn-secondary" onClick={() => finishSessionFromLayout(false)}>Discard</button>
+                                    </div>
+                                </>
+                            )}
+                        </div>
+                    </div>
+                )}
+            </div>
+        );
+    }
+    // ── end Obsidian layout ──────────────────────────────────────────────────
+
     return (
         <div className="layout">
             {/* Sidebar Navigation */}
