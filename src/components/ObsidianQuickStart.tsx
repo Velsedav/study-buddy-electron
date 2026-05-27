@@ -1,11 +1,12 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { X } from 'lucide-react'
+import { X, ChevronDown } from 'lucide-react'
 import { TECHNIQUES } from '../lib/techniques'
 import { getChaptersForSubject } from '../lib/chapters'
 import type { Chapter } from '../lib/chapters'
 import type { Subject } from '../lib/db'
 import { buildQuickStartSession } from '../lib/obsidian-utils'
+import TechniquePickerModal from './TechniquePickerModal'
 import './ObsidianQuickStart.css'
 
 const DURATION_PRESETS = [25, 50, 90]
@@ -29,6 +30,7 @@ export default function ObsidianQuickStart({ subject, onClose }: Props) {
   })
   const [chapterName, setChapterName] = useState<string>('')
   const [chapters, setChapters] = useState<Chapter[]>([])
+  const [pickerOpen, setPickerOpen] = useState(false)
 
   useEffect(() => {
     setChapters(getChaptersForSubject(subject.id))
@@ -110,18 +112,13 @@ export default function ObsidianQuickStart({ subject, onClose }: Props) {
         </div>
 
         <div className="oqs-field">
-          <label className="oqs-label" htmlFor="oqs-technique">Technique</label>
-          <select
-            id="oqs-technique"
-            className="oqs-select"
-            value={techniqueId}
-            onChange={e => handleTechniqueChange(e.target.value)}
-          >
-            <option value="">— none —</option>
-            {TECHNIQUES.map(t => (
-              <option key={t.id} value={t.id}>{t.name}</option>
-            ))}
-          </select>
+          <label className="oqs-label">Technique</label>
+          <button className="oqs-technique-btn" onClick={() => setPickerOpen(true)}>
+            <span className="oqs-technique-name">
+              {techniqueId ? (TECHNIQUES.find(t => t.id === techniqueId)?.name ?? '— none —') : '— none —'}
+            </span>
+            <ChevronDown size={14} />
+          </button>
         </div>
 
         <div className="oqs-field">
@@ -143,6 +140,17 @@ export default function ObsidianQuickStart({ subject, onClose }: Props) {
           Launch Session
         </button>
       </div>
+
+      {pickerOpen && (
+        <TechniquePickerModal
+          onClose={() => setPickerOpen(false)}
+          onSelect={(id) => {
+            handleTechniqueChange(id)
+            setPickerOpen(false)
+          }}
+          currentSelection={techniqueId}
+        />
+      )}
     </div>
   )
 }
