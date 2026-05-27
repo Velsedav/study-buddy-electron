@@ -61,7 +61,7 @@ export function retentionColor(pct: number | null): string {
   return 'var(--danger)'
 }
 
-const QUICK_START_PREP_MINUTES = 5
+const QUICK_START_PREP_MINUTES = 10
 
 export function buildQuickStartSession(
   subjectId: string,

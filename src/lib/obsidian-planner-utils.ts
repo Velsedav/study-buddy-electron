@@ -19,10 +19,10 @@ export interface PlannerBlock {
 }
 
 export const PLANNER_SHAPES: Record<PlannerShapeName, ShapeConfig> = {
-  '25/5':  { work: 25, break: 5,  prep: 5  },
+  '25/5':  { work: 25, break: 5,  prep: 10 },
   '50/10': { work: 50, break: 10, prep: 10 },
   '90/15': { work: 90, break: 15, prep: 10 },
-  'Custom': { work: 25, break: 5, prep: 5  },
+  'Custom': { work: 25, break: 5, prep: 10 },
 }
 
 export function generateBlocks(
