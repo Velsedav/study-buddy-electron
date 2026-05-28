@@ -1029,6 +1029,7 @@ function ActiveTimerSection(props: {
 
   return (
     <div>
+      <div className="subActiveTitle">{s.title}</div>
       {links.length > 0 && (
         <div className="subTimerLinks">
           {links.map(link => (

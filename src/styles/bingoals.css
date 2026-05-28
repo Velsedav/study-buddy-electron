@@ -2441,3 +2441,29 @@
   background: currentColor;
   opacity: 0.4;
 }
+
+/* ── List column containment ── */
+
+/* Prevent full-view panel memories from overflowing into adjacent columns */
+.bingoals-root .objPage-listCol { overflow: hidden; }
+
+/* Full-view panels inside narrow list column: stack timer above memories */
+.bingoals-root .objPage-listCol .bingo-panel-body {
+  flex-direction: column !important;
+}
+.bingoals-root .objPage-listCol .bingo-panel-right {
+  border-left: none !important;
+  padding-left: 0 !important;
+}
+
+/* ── Active panel title ── */
+
+.bingoals-root .subActiveTitle {
+  font-size: 0.92rem;
+  font-weight: 700;
+  margin-bottom: 10px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  opacity: 0.85;
+}
