@@ -1,5 +1,5 @@
 import { memo, useEffect, useMemo, useState } from "react";
-import { Target, Pencil, ArrowUp, ArrowDown, ChevronLeft, ChevronRight, ExternalLink } from "lucide-react";
+import { Pencil, ArrowUp, ArrowDown, ChevronLeft, ChevronRight, ExternalLink } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import BingoModal from "../../components/bingoals/BingoModal";
 import type { DashboardRow, Objective, ObjectiveMediaSummary, Subobjective } from "../../lib/bingoals/db";
@@ -129,13 +129,7 @@ export default function BingoDashboard() {
 
   return (
     <div className="bingoals-root fade-in">
-      <div className="page-header">
-          <div className="page-title-group">
-            <div className="icon-wrapper bg-blue"><Target size={20} /></div>
-            <h1 className="page-header-title">
-              {t('bingoals.page_title')} <span className="bingo-title-year">{selectedYear}</span>
-            </h1>
-          </div>
+      <div className="bingo-toolbar">
           <div className="bingo-year-nav">
             {selectedYear !== CURRENT_YEAR && (
               <button
