@@ -2193,72 +2193,12 @@
   font-size: 1rem;
 }
 
-/* ── Compact row ── */
-
-.bingoals-root .subCompactRow {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 9px 10px;
-  border-radius: 6px;
-  cursor: pointer;
-  min-height: 48px;
-  border: 1px solid transparent;
-  transition: background 80ms ease;
-}
-
-.bingoals-root .subCompactRow:hover { background: rgba(255,255,255,0.05); }
-
-.bingoals-root .subCompactRow--active {
-  background: rgba(255,255,255,0.08);
-  border-color: rgba(255,255,255,0.14);
-}
-
-.bingoals-root .subCompactRow--done { opacity: 0.42; }
-
-.bingoals-root .subCompactDot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  flex-shrink: 0;
-  background: rgba(255,255,255,0.2);
-  transition: background 200ms ease;
-}
-
-.bingoals-root .subCompactDot--done { background: var(--success, #4caf50); }
-.bingoals-root .subCompactDot--active { background: var(--primary); }
-.bingoals-root .subCompactDot--running {
-  background: var(--danger, #e53935);
-  animation: subDotPulse 1s ease-in-out infinite;
-}
+/* ── Link chip + add-link button (reused by memStrip + subFullCard) ── */
 
 @keyframes subDotPulse {
   0%, 100% { opacity: 1; transform: scale(1); }
   50% { opacity: 0.35; transform: scale(0.7); }
 }
-
-.bingoals-root .subCompactTitle {
-  flex: 1;
-  font-size: 0.87rem;
-  min-width: 0;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.bingoals-root .subCompactRow--done .subCompactTitle { text-decoration: line-through; }
-
-.bingoals-root .subCompactLinks {
-  display: flex;
-  gap: 4px;
-  overflow-x: auto;
-  scrollbar-width: none;
-  flex-shrink: 0;
-  max-width: 44%;
-  align-items: center;
-}
-
-.bingoals-root .subCompactLinks::-webkit-scrollbar { display: none; }
 
 .bingoals-root .subCompactChip {
   display: inline-flex;
@@ -2283,7 +2223,6 @@
   padding: 2px 6px;
   font-size: 0.68rem;
   font-weight: 600;
-  opacity: 0;
   border-radius: 4px;
   border: 1px dashed rgba(255,255,255,0.2);
   background: transparent;
@@ -2291,18 +2230,10 @@
   cursor: pointer;
   flex-shrink: 0;
   transition: opacity 100ms ease;
+  opacity: 0.7;
 }
 
-.bingoals-root .subCompactRow:hover .subCompactAddLink { opacity: 0.7; }
-.bingoals-root .subCompactAddLink:hover { opacity: 1 !important; }
-
-.bingoals-root .subCompactProgress {
-  font-size: 0.7rem;
-  font-variant-numeric: tabular-nums;
-  opacity: 0.5;
-  white-space: nowrap;
-  flex-shrink: 0;
-}
+.bingoals-root .subCompactAddLink:hover { opacity: 1; }
 
 /* ── Grid view ── */
 
