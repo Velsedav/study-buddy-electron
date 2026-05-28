@@ -21,9 +21,9 @@ import {
   updateObjective,
   updateSubobjective
 } from "../../lib/bingoals/db";
-import { clamp01, daysAgo } from "../../lib/bingoals/format";
+import { clamp01, daysAgo, formatDuration } from "../../lib/bingoals/format";
 import { fileToCompressedDataUrl } from "../../lib/bingoals/image";
-import { computeObjectivePercent } from "../../lib/bingoals/progress";
+import { computeObjectivePercent, progressLabel, computeTotalMs, computeLastStudiedTs } from "../../lib/bingoals/progress";
 import { titleToHue } from "../../lib/bingoals/color";
 import { useTranslation } from "../../lib/i18n";
 import { playSFX, SFX } from "../../lib/sounds";
@@ -55,21 +55,38 @@ export default function BingoObjectivePage() {
   const [playingSubId, setPlayingSubId] = useState<string | null>(null);
   const [addOpen, setAddOpen] = useState(false);
   const [running, setRunning] = useState<{ subId: string; startedAt: number } | null>(null);
+  const [activeSubId, setActiveSubId] = useState<string | null>(null)
+  const [listView, setListView] = useState<'compact' | 'grid' | 'full'>(() =>
+    (localStorage.getItem('bingoals.listView') as 'compact' | 'grid' | 'full') ?? 'compact'
+  )
+  const [pendingAddLinkSubId, setPendingAddLinkSubId] = useState<string | null>(null)
 
   async function reload() {
-    const o = await getObjective(objectiveId);
-    const s = await listSubobjectives(objectiveId);
-    const ids = s.map((x) => x.id);
-    const tStats = await getTimeStatsForSubobjectives(ids);
-    const m = await listMediaForSubobjectives(ids);
-    setObj(o);
-    setSubs(s);
-    setTimeMap(tStats);
-    setMedia(m);
-    setPlayingSubId((prev) => (prev && s.some((x) => x.id === prev) ? prev : null));
+    const o = await getObjective(objectiveId)
+    const s = await listSubobjectives(objectiveId)
+    const ids = s.map((x) => x.id)
+    const tStats = await getTimeStatsForSubobjectives(ids)
+    const m = await listMediaForSubobjectives(ids)
+    setObj(o)
+    setSubs(s)
+    setTimeMap(tStats)
+    setMedia(m)
+    setPlayingSubId((prev) => (prev && s.some((x) => x.id === prev) ? prev : null))
+    setActiveSubId((prev) => {
+      if (prev && s.some((x) => x.id === prev)) return prev
+      const firstIncomplete = s.find((x) => {
+        const { autoDone } = computeAutoDone(x)
+        return !autoDone && !x.is_done
+      })
+      return firstIncomplete?.id ?? s[0]?.id ?? null
+    })
   }
 
   useEffect(() => { void reload(); }, [objectiveId]);
+
+  useEffect(() => {
+    localStorage.setItem('bingoals.listView', listView)
+  }, [listView])
 
   async function stopTimerIfRunning() {
     if (!running) return;
@@ -89,6 +106,10 @@ export default function BingoObjectivePage() {
   }, [obj, subs]);
 
   const percentText = percent === null ? "—" : `${Math.round(percent * 100)}%`;
+
+  const totalMs = useMemo(() => computeTotalMs(timeMap), [timeMap])
+  const lastStudiedTs = useMemo(() => computeLastStudiedTs(timeMap, subs), [timeMap, subs])
+  const lastStudiedDays = daysAgo(lastStudiedTs)
 
   const mediaBySub = useMemo(() => {
     const map = new Map<string, MediaItem[]>();
@@ -118,42 +139,55 @@ export default function BingoObjectivePage() {
 
   return (
     <div className="bingoals-root fade-in">
-      <div className="page-header">
-          <div className="page-title-group">
-            <Link to="/bingoals" className="btn btn-icon" aria-label={t('bingoals.back')}>
-              <ArrowLeft size={20} />
-            </Link>
-            <h1 className="page-header-title">{obj.title}</h1>
-          </div>
-          <button className="btn btn-primary" onMouseEnter={() => playSFX(SFX.HOVER)} onClick={() => setAddOpen(true)}>{t('bingoals.add_subobjective')}</button>
-        </div>
-
-        <div className="panel">
-          <div className="row bingo-panel-header-row">
-            <div className="muted">{t('bingoals.goal_prefix')} {obj.goal_target ?? "—"} {obj.goal_unit ?? ""}</div>
-            <div className="pill">{percentText}</div>
-          </div>
-
-          {(obj.goal_kind === "metric" || obj.goal_kind === "amount" || obj.goal_kind === "manual") && (
-            <div className="form bingo-form-mt">
-              <label htmlFor="obj-current">{t('bingoals.current_value_label')}</label>
-              <input
-                id="obj-current"
-                type="number"
-                value={obj.current_value ?? 0}
-                onChange={async (e) => {
-                  const v = Number(e.target.value);
-                  setObj({ ...obj, current_value: v });
-                  await updateObjective(obj.id, { current_value: v });
-                }}
-              />
-            </div>
+      <div className="objPage-header">
+        <div className="objPage-headerTitleRow">
+          <Link to="/bingoals" className="btn btn-icon" aria-label={t('bingoals.back')}>
+            <ArrowLeft size={20} />
+          </Link>
+          <h1 className="objPage-headerTitleText">{obj.title}</h1>
+          {(obj.goal_kind === 'metric' || obj.goal_kind === 'amount' || obj.goal_kind === 'manual') && (
+            <input
+              type="number"
+              className="numInput"
+              style={{ width: 60 }}
+              value={obj.current_value ?? 0}
+              onChange={async (e) => {
+                const v = Number(e.target.value)
+                setObj({ ...obj, current_value: v })
+                await updateObjective(obj.id, { current_value: v })
+              }}
+            />
           )}
-
-          <div className="bar bingo-bar-mt">
-            <div className="barFill" style={{ width: `${(percent ?? 0) * 100}%` }} />
+        </div>
+        <div className="objPage-headerProgressRow">
+          <span className="objPage-headerProgressLabel">
+            {progressLabel(percent, obj.goal_kind, obj.goal_target, obj.goal_unit)}
+          </span>
+          <div className="objPage-headerBar">
+            <div className="objPage-headerBarFill" style={{ width: `${(percent ?? 0) * 100}%` }} />
           </div>
         </div>
+        <div className="objPage-headerMeta">
+          <span>Last: {formatDaysAgo(lastStudiedDays, t)}</span>
+          <span>Total: {formatDuration(totalMs)}</span>
+        </div>
+        <div className="objPage-controls">
+          <div className="objPage-viewToggle">
+            {(['compact', 'grid', 'full'] as const).map(v => (
+              <button
+                key={v}
+                className={`objPage-viewBtn${listView === v ? ' objPage-viewBtn--active' : ''}`}
+                onClick={() => setListView(v)}
+              >
+                {v}
+              </button>
+            ))}
+          </div>
+          <button className="btn btn-primary" onMouseEnter={() => playSFX(SFX.HOVER)} onClick={() => setAddOpen(true)}>
+            {t('bingoals.add_subobjective')}
+          </button>
+        </div>
+      </div>
 
         <div className="list">
           {subs.map((s) => {
@@ -177,10 +211,6 @@ export default function BingoObjectivePage() {
             );
           })}
         </div>
-
-        <button className="btn bingo-add-sub-bottom" onMouseEnter={() => playSFX(SFX.HOVER)} onClick={() => setAddOpen(true)}>
-          {t('bingoals.add_subobjective')}
-        </button>
 
         <AddSubobjectiveModal
           open={addOpen}
