@@ -861,6 +861,73 @@ const SubobjectivePanel = memo(function SubobjectivePanel(props: {
   prev.playingSubId === next.playingSubId && prev.subMedia === next.subMedia
 )
 
+function ActiveTimerSection(props: {
+  s: Subobjective
+  timeStats: { total_ms: number; last_end: number | null }
+  subs: Subobjective[]
+  setSubs: React.Dispatch<React.SetStateAction<Subobjective[]>>
+  running: { subId: string; startedAt: number } | null
+  setRunning: React.Dispatch<React.SetStateAction<{ subId: string; startedAt: number } | null>>
+  stopTimerIfRunning: () => Promise<void>
+  subMedia: MediaItem[]
+  reload: () => Promise<void>
+  playingSubId: string | null
+  setPlayingSubId: React.Dispatch<React.SetStateAction<string | null>>
+}) {
+  const { s, subMedia } = props
+
+  const links = subMedia
+    .filter(m => m.kind === 'link')
+    .map(item => {
+      try { return JSON.parse(item.data) as { url: string; label: string } }
+      catch { return { url: item.data, label: '' } }
+    })
+
+  return (
+    <div>
+      {links.length > 0 && (
+        <div className="subTimerLinks">
+          {links.map(link => (
+            <button
+              key={link.url}
+              className="subTimerLinkChip"
+              onClick={() => openExternal(link.url)}
+              title={link.url}
+            >
+              <ExternalLink size={13} />
+              {link.label || link.url}
+            </button>
+          ))}
+        </div>
+      )}
+      <SubobjectiveTimerPanel
+        s={s}
+        timeStats={props.timeStats}
+        subs={props.subs}
+        setSubs={props.setSubs}
+        running={props.running}
+        playingSubId={props.playingSubId}
+        setPlayingSubId={props.setPlayingSubId}
+        reload={props.reload}
+        stopTimerIfRunning={props.stopTimerIfRunning}
+        setRunning={props.setRunning}
+      />
+      <div className="subTimerMemories">
+        <div className="subMemoriesDivider">Memories</div>
+        <SubobjectiveMemories
+          s={s}
+          subs={props.subs}
+          subMedia={subMedia}
+          playingSubId={props.playingSubId}
+          setPlayingSubId={props.setPlayingSubId}
+          reload={props.reload}
+          stopTimerIfRunning={props.stopTimerIfRunning}
+        />
+      </div>
+    </div>
+  )
+}
+
 function Slideshow(props: {
   items: MediaItem[];
   playing: boolean;
