@@ -2657,3 +2657,383 @@
 .bingoals-root .subFullCard .bingo-tick-bar { margin-top: 6px; }
 
 .bingoals-root .subFullCard .bingo-instrument-footer { margin-top: 8px; }
+
+/* ════════════════════════════════════════════════════════════════
+   MEMORIES VIEW — per-subobjective horizontal strips of memory cards
+   ════════════════════════════════════════════════════════════════ */
+
+/* When listView==='memories', list column claims full width;
+   memoriesCol hidden (strips already show memories). */
+.bingoals-root .objPage-layout--memories .objPage-listCol {
+  flex: 1 1 auto !important;
+  width: 100%;
+  min-width: 0;
+}
+.bingoals-root .objPage-layout--memories .objPage-memoriesCol { display: none !important; }
+
+/* ── Strip container ── */
+
+.bingoals-root .memStrip {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px;
+  margin-bottom: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.025);
+  transition: border-color 150ms ease, opacity 200ms ease;
+  min-width: 0;
+}
+
+.bingoals-root .memStrip:hover { border-color: rgba(255, 255, 255, 0.16); }
+
+.bingoals-root .memStrip--done { opacity: 0.55; }
+.bingoals-root .memStrip--done:hover { opacity: 0.8; }
+
+.bingoals-root .memStrip--running {
+  border-color: var(--danger, #e53935);
+  box-shadow: 0 0 0 1px var(--danger, #e53935), 0 0 28px -10px var(--danger, #e53935);
+}
+
+.bingoals-root .memStrip--active {
+  border-left: 3px solid var(--primary);
+  padding-left: 10px;
+}
+
+@media (min-width: 720px) {
+  .bingoals-root .memStrip {
+    flex-direction: row;
+    align-items: stretch;
+    gap: 14px;
+    padding: 14px;
+  }
+}
+
+/* ── Strip header (left region) ── */
+
+.bingoals-root .memStrip-header {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  flex-shrink: 0;
+}
+
+@media (min-width: 720px) {
+  .bingoals-root .memStrip-header { width: 240px; }
+}
+
+@media (min-width: 1400px) {
+  .bingoals-root .memStrip-header { width: 280px; }
+}
+
+.bingoals-root .memStrip-headerTop {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.bingoals-root .memStrip-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: rgba(255, 255, 255, 0.2);
+}
+.bingoals-root .memStrip-dot--done { background: var(--success, #4caf50); }
+.bingoals-root .memStrip-dot--active { background: var(--primary); }
+.bingoals-root .memStrip-dot--running {
+  background: var(--danger, #e53935);
+  animation: subDotPulse 1s ease-in-out infinite;
+}
+
+.bingoals-root .memStrip-title {
+  flex: 1;
+  min-width: 0;
+  font-size: 0.85rem;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: pointer;
+  color: inherit;
+  opacity: 0.95;
+}
+
+.bingoals-root .memStrip-progress {
+  font-size: 0.7rem;
+  font-variant-numeric: tabular-nums;
+  opacity: 0.5;
+  white-space: nowrap;
+}
+
+.bingoals-root .memStrip-headerActions {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.bingoals-root .memStrip-startBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  border-radius: 6px;
+  cursor: pointer;
+  background: var(--primary);
+  color: #fff;
+  border: 1px solid transparent;
+}
+.bingoals-root .memStrip-startBtn--stop {
+  background: var(--danger, #e53935);
+}
+
+.bingoals-root .memStrip-headerLinks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  align-items: center;
+}
+
+/* ── Track (right region) — horizontal scroll ── */
+
+.bingoals-root .memStrip-track {
+  flex: 1;
+  min-width: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  position: relative;
+}
+.bingoals-root .memStrip-track::-webkit-scrollbar { display: none; }
+
+.bingoals-root .memStrip-trackInner {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 8px;
+  padding: 2px;
+  align-items: stretch;
+}
+
+/* Right-edge fade gradient hint when content overflows */
+.bingoals-root .memStrip-track::after {
+  content: '';
+  position: sticky;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 30px;
+  pointer-events: none;
+  background: linear-gradient(to right, transparent, rgba(0, 0, 0, 0.35));
+}
+
+/* ── Memory card base ── */
+
+.bingoals-root .memStrip-card {
+  position: relative;
+  width: 120px;
+  height: 120px;
+  border-radius: 8px;
+  overflow: hidden;
+  flex-shrink: 0;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: transform 120ms ease, box-shadow 120ms ease;
+}
+
+@media (min-width: 720px) {
+  .bingoals-root .memStrip-card { width: 140px; height: 140px; }
+}
+
+@media (min-width: 1400px) {
+  .bingoals-root .memStrip-card { width: 160px; height: 160px; }
+}
+
+.bingoals-root .memStrip-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.3);
+}
+
+.bingoals-root .memStrip-card--image {
+  background-size: cover;
+  background-position: center;
+}
+
+.bingoals-root .memStrip-card--quote {
+  display: flex;
+  align-items: flex-start;
+  padding: 10px;
+  font-style: italic;
+  font-size: 0.78rem;
+  line-height: 1.35;
+  color: #fff;
+}
+
+.bingoals-root .memStrip-quoteMark {
+  position: absolute;
+  top: -8px;
+  left: 4px;
+  font-size: 3.5rem;
+  opacity: 0.18;
+  font-family: Georgia, serif;
+  line-height: 1;
+  pointer-events: none;
+}
+
+.bingoals-root .memStrip-quoteText {
+  position: relative;
+  z-index: 1;
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.bingoals-root .memStrip-card--quote.memStrip-card--expanded {
+  height: auto;
+  min-height: 120px;
+}
+
+.bingoals-root .memStrip-card--quote.memStrip-card--expanded .memStrip-quoteText {
+  -webkit-line-clamp: unset;
+  overflow: visible;
+}
+
+.bingoals-root .memStrip-cardDelete {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.65);
+  border: none;
+  color: #fff;
+  font-size: 0.7rem;
+  line-height: 1;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 100ms ease;
+  z-index: 4;
+}
+
+.bingoals-root .memStrip-card:hover .memStrip-cardDelete { opacity: 0.85; }
+.bingoals-root .memStrip-cardDelete:hover { opacity: 1 !important; background: var(--danger, #e53935); }
+
+/* Placeholder + add-picker cards */
+.bingoals-root .memStrip-card--placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: 0.72rem;
+  font-weight: 600;
+  background: transparent;
+  border: 1px dashed rgba(255, 255, 255, 0.18);
+  color: inherit;
+  opacity: 0.55;
+  padding: 8px;
+  cursor: pointer;
+  transition: opacity 100ms ease, border-color 100ms ease, background 100ms ease;
+}
+.bingoals-root .memStrip-card--placeholder:hover {
+  opacity: 0.95;
+  border-color: rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.bingoals-root .memStrip-card--addTrigger {
+  font-size: 1.6rem;
+  font-weight: 300;
+}
+
+/* + add picker popover */
+.bingoals-root .memStrip-addPicker {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  width: 130px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px;
+  background: rgba(20, 20, 30, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 8px;
+  z-index: 5;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.4);
+}
+
+.bingoals-root .memStrip-addPickerBtn {
+  padding: 6px 10px;
+  font-size: 0.74rem;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: inherit;
+  border-radius: 5px;
+  cursor: pointer;
+  text-align: left;
+}
+.bingoals-root .memStrip-addPickerBtn:hover { background: rgba(255, 255, 255, 0.14); }
+
+/* Hidden file input attached to each strip */
+.bingoals-root .memStrip-fileInput {
+  position: absolute;
+  width: 0;
+  height: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ── Lightbox ── */
+
+.bingoals-root .memLightbox {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.88);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 300;
+  cursor: zoom-out;
+}
+
+.bingoals-root .memLightbox-image {
+  max-width: 95vw;
+  max-height: 95vh;
+  object-fit: contain;
+  user-select: none;
+  cursor: default;
+}
+
+.bingoals-root .memLightbox-close,
+.bingoals-root .memLightbox-delete {
+  position: absolute;
+  top: 16px;
+  padding: 8px 14px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: #fff;
+  cursor: pointer;
+}
+.bingoals-root .memLightbox-close { right: 16px; }
+.bingoals-root .memLightbox-delete {
+  left: 16px;
+  background: rgba(229, 57, 53, 0.25);
+  border-color: rgba(229, 57, 53, 0.6);
+}
+.bingoals-root .memLightbox-close:hover { background: rgba(255, 255, 255, 0.18); }
+.bingoals-root .memLightbox-delete:hover { background: rgba(229, 57, 53, 0.4); }
