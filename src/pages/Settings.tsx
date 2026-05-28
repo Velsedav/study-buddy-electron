@@ -1,7 +1,7 @@
 import { useSettings } from '../lib/settings';
 import type { Theme, WeekStart, MetacognitionDay } from '../lib/settings';
 import { useState, useEffect } from 'react';
-import { Palette, Calendar, Keyboard, Globe, Database, AlertTriangle, Trash2, Volume2, Play, Brain, Power, Zap, Settings as SettingsIcon, FolderOpen, X } from 'lucide-react';
+import { Palette, Calendar, Keyboard, Globe, Database, AlertTriangle, Trash2, Volume2, Play, Brain, Power, Zap, FolderOpen, X } from 'lucide-react';
 import { useTranslation } from '../lib/i18n';
 import { deleteAllData } from '../lib/db';
 import { deleteAllBingoData } from '../lib/bingoals/db';
@@ -253,12 +253,6 @@ export default function SettingsTab() {
 
     return (
         <div className="settings-tab fade-in">
-            <div className="page-header">
-                <div className="page-title-group">
-                    <div className="icon-wrapper bg-orange"><SettingsIcon size={20} /></div>
-                    <h1>{t('nav.settings')}</h1>
-                </div>
-            </div>
             {showDeleteModal && (
                 <div className="modal-overlay">
                     <div className="modal-content danger-modal">
