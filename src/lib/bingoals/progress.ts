@@ -23,3 +23,18 @@ export function computeObjectivePercent(
   if (!target || target <= 0) return null;
   return clamp01((objective.current_value ?? 0) / target);
 }
+
+export function progressLabel(
+  percent: number | null,
+  goalKind: string,
+  goalTarget: number | null,
+  goalUnit: string | null
+): string {
+  if (percent === null) return '—'
+  if (goalKind === 'manual' || !goalTarget) {
+    return `${Math.round(percent * 100)}%`
+  }
+  const done = Math.round(percent * goalTarget)
+  const unit = goalUnit ? ` ${goalUnit}` : ''
+  return `${done} / ${goalTarget}${unit}`
+}
