@@ -2444,26 +2444,66 @@
 
 /* ── List column containment ── */
 
-/* Prevent full-view panel memories from overflowing into adjacent columns */
 .bingoals-root .objPage-listCol { overflow: hidden; }
 
 /* Full-view panels inside narrow list column: stack timer above memories */
 .bingoals-root .objPage-listCol .bingo-panel-body {
   flex-direction: column !important;
+  gap: 10px !important;
 }
 .bingoals-root .objPage-listCol .bingo-panel-right {
   border-left: none !important;
   padding-left: 0 !important;
 }
 
+/* Full-view panels: tame visual weight inside the narrow column */
+.bingoals-root .objPage-listCol .panel {
+  padding: 10px;
+  margin-bottom: 10px;
+}
+
+/* Replace saturated green panelDone background with subtle border accent
+   so the column doesn't become a wall of color in full view. */
+.bingoals-root .objPage-listCol .panelDone {
+  background: rgba(76, 175, 80, 0.08);
+  color: inherit;
+  border-color: rgba(76, 175, 80, 0.45);
+}
+.bingoals-root .objPage-listCol .panelDone .muted { color: inherit; opacity: 0.55; }
+.bingoals-root .objPage-listCol .panelDone .pill {
+  background: rgba(76, 175, 80, 0.85);
+  color: #0a0a0a;
+}
+.bingoals-root .objPage-listCol .panelDone .barFill { background: rgba(76, 175, 80, 0.85); }
+
+/* Constrain slideshow size in list column full view */
+.bingoals-root .objPage-listCol .memories .slideshow-image,
+.bingoals-root .objPage-listCol .memories img {
+  max-height: 180px;
+  object-fit: cover;
+}
+
+/* Smaller timer in full-view panels (the active column already shows the big one) */
+.bingoals-root .objPage-listCol .bingo-instrument-timer { font-size: 2rem; }
+.bingoals-root .objPage-listCol .bingo-instrument-face { padding: 10px 10px 8px; }
+
 /* ── Active panel title ── */
 
 .bingoals-root .subActiveTitle {
-  font-size: 0.92rem;
-  font-weight: 700;
-  margin-bottom: 10px;
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  margin-bottom: 12px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
-  opacity: 0.85;
+  color: inherit;
+  opacity: 1;
+}
+
+/* Boost SOUVENIRS / memory label contrast — was barely readable */
+.bingoals-root .bingo-section-label {
+  opacity: 0.75;
+  font-weight: 700;
+  letter-spacing: 0.6px;
 }
