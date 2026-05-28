@@ -379,6 +379,14 @@ export async function exportBingoBackupTo(filePath: string) {
   await db.execute(`VACUUM INTO '${escaped}'`)
 }
 
+export async function deleteAllBingoData() {
+  const db = await getBingoDb()
+  await db.execute(`DELETE FROM objectives`)
+  await db.execute(`DELETE FROM slots`)
+  await db.execute(`DELETE FROM bingo_year_slots`)
+  await db.execute(`DELETE FROM bingo_quotes`)
+}
+
 export async function importBingoBackupFrom(filePath: string) {
   const srcBytes = await fsAPI().readFile(filePath) as Uint8Array
   const userData = await fsAPI().getUserDataPath() as string
@@ -386,4 +394,46 @@ export async function importBingoBackupFrom(filePath: string) {
   await fsAPI().writeFile(path, srcBytes)
   // DB reloads automatically on next getBingoDb() call
   seeded = false
+}
+
+export type ObjectiveMediaSummary = {
+  objectiveId: string
+  links: Array<{ url: string; label: string }>
+  lastImageDataUrl: string | null
+}
+
+export async function listDashboardMediaSummaries(
+  objectiveIds: string[]
+): Promise<ObjectiveMediaSummary[]> {
+  if (objectiveIds.length === 0) return []
+  const db = await getBingoDb()
+  const rows = await db.select<{ objective_id: string; kind: string; data: string; created_at: number }[]>(
+    `SELECT so.objective_id, mi.kind, mi.data, mi.created_at
+     FROM subobjectives so
+     JOIN media_items mi ON mi.subobjective_id = so.id
+     WHERE so.objective_id IN (${objectiveIds.map(() => '?').join(',')})
+     AND mi.kind IN ('link', 'image')
+     ORDER BY mi.created_at ASC`,
+    objectiveIds
+  )
+
+  const map = new Map<string, { links: Array<{ url: string; label: string }>; lastImageDataUrl: string | null }>()
+  for (const id of objectiveIds) map.set(id, { links: [], lastImageDataUrl: null })
+
+  for (const r of rows) {
+    const entry = map.get(r.objective_id)
+    if (!entry) continue
+    if (r.kind === 'link') {
+      const parsed = (() => { try { return JSON.parse(r.data) } catch { return { url: r.data, label: '' } } })()
+      entry.links.push({ url: String(parsed.url ?? r.data), label: String(parsed.label ?? '') })
+    } else {
+      // images are ordered ASC so last one wins
+      entry.lastImageDataUrl = r.data
+    }
+  }
+
+  return objectiveIds.map(id => {
+    const entry = map.get(id)!
+    return { objectiveId: id, links: entry.links, lastImageDataUrl: entry.lastImageDataUrl }
+  })
 }
