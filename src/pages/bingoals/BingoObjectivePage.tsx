@@ -190,7 +190,7 @@ export default function BingoObjectivePage() {
       </div>
 
       {/* ── Responsive layout ── */}
-      <div className="objPage-layout">
+      <div className={`objPage-layout${listView === 'full' ? ' objPage-layout--full' : ''}`}>
 
         {/* List column */}
         <div className="objPage-listCol">
@@ -220,22 +220,27 @@ export default function BingoObjectivePage() {
               ))}
             </div>
           )}
-          {listView === 'full' && subs.map(s => (
-            <SubobjectivePanel
-              key={s.id}
-              s={s}
-              timeStats={timeMap.get(s.id) ?? { total_ms: 0, last_end: null }}
-              subs={subs}
-              setSubs={setSubs}
-              running={running}
-              playingSubId={playingSubId}
-              setPlayingSubId={setPlayingSubId}
-              subMedia={mediaBySub.get(s.id) ?? []}
-              reload={reload}
-              stopTimerIfRunning={stopTimerIfRunning}
-              setRunning={setRunning}
-            />
-          ))}
+          {listView === 'full' && (
+            <div className="subFullGrid">
+              {subs.map(s => (
+                <SubobjectiveFullCard
+                  key={s.id}
+                  s={s}
+                  timeStats={timeMap.get(s.id) ?? { total_ms: 0, last_end: null }}
+                  subs={subs}
+                  setSubs={setSubs}
+                  running={running}
+                  setRunning={setRunning}
+                  stopTimerIfRunning={stopTimerIfRunning}
+                  playingSubId={playingSubId}
+                  setPlayingSubId={setPlayingSubId}
+                  subMedia={mediaBySub.get(s.id) ?? []}
+                  reload={reload}
+                  onAddLink={() => setPendingAddLinkSubId(s.id)}
+                />
+              ))}
+            </div>
+          )}
         </div>
 
         {/* Active panel column — mid/wide only (CSS hides on narrow) */}
@@ -998,6 +1003,134 @@ const SubobjectivePanel = memo(function SubobjectivePanel(props: {
           />
         </div>
       </div>
+    </div>
+  )
+}, (prev, next) =>
+  prev.s === next.s && prev.timeStats === next.timeStats && prev.running === next.running &&
+  prev.playingSubId === next.playingSubId && prev.subMedia === next.subMedia
+)
+
+const SubobjectiveFullCard = memo(function SubobjectiveFullCard(props: {
+  s: Subobjective
+  timeStats: { total_ms: number; last_end: number | null }
+  subs: Subobjective[]
+  setSubs: React.Dispatch<React.SetStateAction<Subobjective[]>>
+  running: { subId: string; startedAt: number } | null
+  setRunning: React.Dispatch<React.SetStateAction<{ subId: string; startedAt: number } | null>>
+  stopTimerIfRunning: () => Promise<void>
+  playingSubId: string | null
+  setPlayingSubId: React.Dispatch<React.SetStateAction<string | null>>
+  subMedia: MediaItem[]
+  reload: () => Promise<void>
+  onAddLink: () => void
+}) {
+  const {
+    s, timeStats, subs, setSubs, running, setRunning, stopTimerIfRunning,
+    playingSubId, setPlayingSubId, subMedia, reload, onAddLink,
+  } = props
+  const { t } = useTranslation()
+  const [isEditingTitle, setIsEditingTitle] = useState(false)
+  const { autoDone, hasTarget } = computeAutoDone(s)
+  const ratio = hasTarget && (s.target_total ?? 0) > 0
+    ? clamp01((s.progress_current ?? 0) / (s.target_total ?? 0))
+    : autoDone ? 1 : 0
+  const isDone = autoDone || (!hasTarget && !!s.is_done)
+  const isRunning = running?.subId === s.id
+
+  const lastImage = subMedia.filter(m => m.kind === 'image').at(-1)
+  const links = subMedia
+    .filter(m => m.kind === 'link')
+    .map(item => {
+      try { return JSON.parse(item.data) as { url: string; label: string } }
+      catch { return { url: item.data, label: '' } }
+    })
+
+  const cardClass = [
+    'subFullCard',
+    isDone && 'subFullCard--done',
+    isRunning && 'subFullCard--running',
+  ].filter(Boolean).join(' ')
+
+  return (
+    <div className={cardClass}>
+      <div className="subFullCard-header">
+        {lastImage ? (
+          <div className="subFullCard-cover" style={{ backgroundImage: `url(${lastImage.data})` }} />
+        ) : (
+          <div
+            className="subFullCard-cover subFullCard-cover--placeholder"
+            style={{ background: `hsl(${titleToHue(s.title)}, 35%, 26%)` }}
+          />
+        )}
+        <div className="subFullCard-titleCol">
+          {isEditingTitle ? (
+            <input
+              className="titleInput subFullCard-titleInput"
+              aria-label={t('bingoals.sub_title_aria')}
+              value={s.title}
+              autoFocus
+              onChange={(e) => setSubs((prev) => prev.map((x) => (x.id === s.id ? { ...x, title: e.target.value } : x)))}
+              onBlur={async () => {
+                setIsEditingTitle(false)
+                const fresh = subs.find((x) => x.id === s.id)
+                if (fresh) await updateSubobjective(s.id, { title: fresh.title })
+                await reload()
+              }}
+              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === 'Escape') (e.target as HTMLInputElement).blur() }}
+            />
+          ) : (
+            <div
+              className="subFullCard-title"
+              onClick={() => setIsEditingTitle(true)}
+              role="button"
+              tabIndex={0}
+              aria-label={t('bingoals.sub_title_aria')}
+              onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setIsEditingTitle(true) }}
+            >
+              {s.title}
+            </div>
+          )}
+          <div className="subFullCard-progress">
+            {hasTarget
+              ? `${s.progress_current ?? 0} / ${s.target_total ?? 0}${s.unit ? ' ' + s.unit : ''}`
+              : (isDone ? t('bingoals.done') : '—')}
+          </div>
+        </div>
+        <div className="subFullCard-percent">{Math.round(ratio * 100)}%</div>
+      </div>
+
+      <div className="subFullCard-links">
+        {links.map(link => (
+          <button
+            key={link.url}
+            className="subCompactChip"
+            onClick={() => openExternal(link.url)}
+            title={link.url}
+          >
+            <ExternalLink size={10} />
+            {link.label || link.url}
+          </button>
+        ))}
+        <button
+          className="subFullCard-addLink"
+          onClick={onAddLink}
+          title={t('bingoals.add_link')}
+          aria-label={t('bingoals.add_link')}
+        >+ link</button>
+      </div>
+
+      <SubobjectiveTimerPanel
+        s={s}
+        timeStats={timeStats}
+        subs={subs}
+        setSubs={setSubs}
+        running={running}
+        playingSubId={playingSubId}
+        setPlayingSubId={setPlayingSubId}
+        reload={reload}
+        stopTimerIfRunning={stopTimerIfRunning}
+        setRunning={setRunning}
+      />
     </div>
   )
 }, (prev, next) =>

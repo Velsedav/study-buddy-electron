@@ -2442,52 +2442,7 @@
   opacity: 0.4;
 }
 
-/* ── List column containment ── */
-
-.bingoals-root .objPage-listCol { overflow: hidden; }
-
-/* Full-view panels inside narrow list column: stack timer above memories */
-.bingoals-root .objPage-listCol .bingo-panel-body {
-  flex-direction: column !important;
-  gap: 10px !important;
-}
-.bingoals-root .objPage-listCol .bingo-panel-right {
-  border-left: none !important;
-  padding-left: 0 !important;
-}
-
-/* Full-view panels: tame visual weight inside the narrow column */
-.bingoals-root .objPage-listCol .panel {
-  padding: 10px;
-  margin-bottom: 10px;
-}
-
-/* Replace saturated green panelDone background with subtle border accent
-   so the column doesn't become a wall of color in full view. */
-.bingoals-root .objPage-listCol .panelDone {
-  background: rgba(76, 175, 80, 0.08);
-  color: inherit;
-  border-color: rgba(76, 175, 80, 0.45);
-}
-.bingoals-root .objPage-listCol .panelDone .muted { color: inherit; opacity: 0.55; }
-.bingoals-root .objPage-listCol .panelDone .pill {
-  background: rgba(76, 175, 80, 0.85);
-  color: #0a0a0a;
-}
-.bingoals-root .objPage-listCol .panelDone .barFill { background: rgba(76, 175, 80, 0.85); }
-
-/* Constrain slideshow size in list column full view */
-.bingoals-root .objPage-listCol .memories .slideshow-image,
-.bingoals-root .objPage-listCol .memories img {
-  max-height: 180px;
-  object-fit: cover;
-}
-
-/* Smaller timer in full-view panels (the active column already shows the big one) */
-.bingoals-root .objPage-listCol .bingo-instrument-timer { font-size: 2rem; }
-.bingoals-root .objPage-listCol .bingo-instrument-face { padding: 10px 10px 8px; }
-
-/* ── Active panel title ── */
+/* ── Active panel title (center column / overlay) ── */
 
 .bingoals-root .subActiveTitle {
   font-size: 1rem;
@@ -2501,9 +2456,179 @@
   opacity: 1;
 }
 
-/* Boost SOUVENIRS / memory label contrast — was barely readable */
 .bingoals-root .bingo-section-label {
   opacity: 0.75;
   font-weight: 700;
   letter-spacing: 0.6px;
 }
+
+/* ════════════════════════════════════════════════════════════════
+   FULL VIEW — dashboard grid of dense cards
+   ════════════════════════════════════════════════════════════════ */
+
+/* When listView==='full', list column claims full row; active/memories cols hidden */
+.bingoals-root .objPage-layout--full { flex-direction: column !important; }
+.bingoals-root .objPage-layout--full .objPage-listCol {
+  flex: 1 1 auto !important;
+  width: 100%;
+  min-width: 0;
+}
+.bingoals-root .objPage-layout--full .objPage-activeCol,
+.bingoals-root .objPage-layout--full .objPage-memoriesCol { display: none !important; }
+
+.bingoals-root .subFullGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+}
+
+@media (min-width: 720px) {
+  .bingoals-root .subFullGrid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (min-width: 1500px) {
+  .bingoals-root .subFullGrid { grid-template-columns: repeat(3, 1fr); }
+}
+
+@media (min-width: 2200px) {
+  .bingoals-root .subFullGrid { grid-template-columns: repeat(4, 1fr); }
+}
+
+.bingoals-root .subFullCard {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 10px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+
+.bingoals-root .subFullCard:hover { border-color: rgba(255,255,255,0.18); }
+
+.bingoals-root .subFullCard--running {
+  border-color: var(--danger, #e53935);
+  box-shadow: 0 0 0 1px var(--danger, #e53935), 0 0 24px -8px var(--danger, #e53935);
+}
+
+.bingoals-root .subFullCard--done {
+  border-color: rgba(76, 175, 80, 0.55);
+  background: rgba(76, 175, 80, 0.05);
+}
+
+.bingoals-root .subFullCard-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.bingoals-root .subFullCard-cover {
+  width: 48px;
+  height: 48px;
+  border-radius: 6px;
+  background-size: cover;
+  background-position: center;
+  background-color: rgba(255,255,255,0.06);
+  flex-shrink: 0;
+}
+
+.bingoals-root .subFullCard-titleCol {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.bingoals-root .subFullCard-title {
+  font-size: 0.9rem;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  cursor: pointer;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: inherit;
+  opacity: 0.95;
+}
+
+.bingoals-root .subFullCard-titleInput {
+  font-size: 0.9rem;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+}
+
+.bingoals-root .subFullCard-progress {
+  font-size: 0.72rem;
+  opacity: 0.55;
+  font-variant-numeric: tabular-nums;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bingoals-root .subFullCard-percent {
+  font-size: 0.78rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  padding: 3px 10px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 12px;
+  flex-shrink: 0;
+  color: inherit;
+}
+
+.bingoals-root .subFullCard--done .subFullCard-percent {
+  background: rgba(76, 175, 80, 0.3);
+  color: #fff;
+}
+
+.bingoals-root .subFullCard-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  align-items: center;
+}
+
+.bingoals-root .subFullCard-addLink {
+  padding: 2px 8px;
+  font-size: 0.68rem;
+  font-weight: 600;
+  border-radius: 4px;
+  border: 1px dashed rgba(255,255,255,0.25);
+  background: transparent;
+  color: inherit;
+  opacity: 0.5;
+  cursor: pointer;
+  transition: opacity 100ms ease;
+}
+
+.bingoals-root .subFullCard:hover .subFullCard-addLink,
+.bingoals-root .subFullCard-addLink:hover { opacity: 1; }
+
+/* SubobjectiveTimerPanel sits inside the card — reset its own paddings/margins
+   so the card controls spacing. */
+.bingoals-root .subFullCard .bingo-panel-left {
+  padding: 0;
+  background: transparent;
+  border: none;
+}
+
+.bingoals-root .subFullCard .bingo-instrument-face {
+  padding: 12px 12px 10px;
+}
+
+.bingoals-root .subFullCard .bingo-instrument-timer {
+  font-size: 2.4rem;
+}
+
+.bingoals-root .subFullCard .bingo-start-btn { margin-bottom: 8px; }
+
+.bingoals-root .subFullCard .bingo-tick-bar { margin-top: 6px; }
+
+.bingoals-root .subFullCard .bingo-instrument-footer { margin-top: 8px; }
