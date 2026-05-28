@@ -302,6 +302,78 @@ function AddLinkModal(props: { open: boolean; onClose: () => void; onAdd: (url: 
   );
 }
 
+function subProgressText(s: Subobjective): string {
+  if ((s.target_total ?? 0) > 0) {
+    const unit = s.unit ? ` ${s.unit}` : ''
+    return `${s.progress_current} / ${s.target_total}${unit}`
+  }
+  const { autoDone } = computeAutoDone(s)
+  return autoDone ? '✓' : '—'
+}
+
+function SubobjectiveCompactRow(props: {
+  s: Subobjective
+  subMedia: MediaItem[]
+  running: { subId: string; startedAt: number } | null
+  activeSubId: string | null
+  setActiveSubId: (id: string | null) => void
+  onAddLink: () => void
+}) {
+  const { s, subMedia, running, activeSubId, setActiveSubId, onAddLink } = props
+  const { t } = useTranslation()
+  const { autoDone, hasTarget } = computeAutoDone(s)
+  const isDone = autoDone || (!hasTarget && !!s.is_done)
+  const isActive = activeSubId === s.id
+  const isRunning = running?.subId === s.id
+
+  const links = subMedia
+    .filter(m => m.kind === 'link')
+    .map(item => {
+      try { return JSON.parse(item.data) as { url: string; label: string } }
+      catch { return { url: item.data, label: '' } }
+    })
+
+  const dotClass = [
+    'subCompactDot',
+    isRunning ? 'subCompactDot--running' : isDone ? 'subCompactDot--done' : isActive ? 'subCompactDot--active' : '',
+  ].filter(Boolean).join(' ')
+
+  return (
+    <div
+      className={['subCompactRow', isActive && 'subCompactRow--active', isDone && 'subCompactRow--done'].filter(Boolean).join(' ')}
+      onClick={() => setActiveSubId(s.id)}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setActiveSubId(s.id) }}
+    >
+      <span className={dotClass} aria-hidden="true" />
+      <span className="subCompactTitle">{s.title}</span>
+      {links.length > 0 && (
+        <div className="subCompactLinks" onClick={e => e.stopPropagation()}>
+          {links.map(link => (
+            <button
+              key={link.url}
+              className="subCompactChip"
+              onClick={() => openExternal(link.url)}
+              title={link.url}
+            >
+              <ExternalLink size={10} />
+              {link.label || link.url}
+            </button>
+          ))}
+        </div>
+      )}
+      <button
+        className="subCompactAddLink"
+        onClick={(e) => { e.stopPropagation(); onAddLink() }}
+        title={t('bingoals.add_link')}
+        aria-label={t('bingoals.add_link')}
+      >+ link</button>
+      <span className="subCompactProgress">{subProgressText(s)}</span>
+    </div>
+  )
+}
+
 const SubobjectivePanel = memo(function SubobjectivePanel(props: {
   s: Subobjective;
   timeStats: { total_ms: number; last_end: number | null };
