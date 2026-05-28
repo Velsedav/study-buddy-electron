@@ -1971,3 +1971,473 @@
 .bingoals-root .panelDone .quote {
   color: var(--black);
 }
+
+/* ════════════════════════════════════════════════════════════════
+   DETAIL PAGE (BingoObjectivePage) — layout, compact, grid, active
+   ════════════════════════════════════════════════════════════════ */
+
+/* ── Objective page header ── */
+
+.bingoals-root .objPage-header { margin-bottom: 16px; }
+
+.bingoals-root .objPage-headerTitleRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.bingoals-root .objPage-headerTitleText {
+  flex: 1;
+  font-size: 1.15rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bingoals-root .objPage-headerProgressRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+
+.bingoals-root .objPage-headerProgressLabel {
+  font-size: 0.82rem;
+  font-weight: 700;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.bingoals-root .objPage-headerBar {
+  flex: 1;
+  height: 3px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.bingoals-root .objPage-headerBarFill {
+  height: 100%;
+  background: var(--primary);
+  border-radius: 2px;
+  transition: width 300ms ease;
+}
+
+.bingoals-root .objPage-headerMeta {
+  font-size: 0.75rem;
+  opacity: 0.5;
+  display: flex;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.bingoals-root .objPage-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.bingoals-root .objPage-viewToggle { display: flex; gap: 2px; }
+
+.bingoals-root .objPage-viewBtn {
+  padding: 4px 10px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  border-radius: 4px;
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.12);
+  color: inherit;
+  cursor: pointer;
+  opacity: 0.45;
+  transition: opacity 100ms ease, background 100ms ease;
+}
+
+.bingoals-root .objPage-viewBtn:hover { opacity: 0.85; }
+
+.bingoals-root .objPage-viewBtn--active {
+  background: rgba(255,255,255,0.1);
+  border-color: rgba(255,255,255,0.25);
+  opacity: 1;
+}
+
+/* ── Page layout grid ── */
+
+.bingoals-root .objPage-layout {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  gap: 0;
+}
+
+.bingoals-root .objPage-listCol { min-width: 0; }
+
+.bingoals-root .objPage-activeCol { display: none; }
+.bingoals-root .objPage-memoriesCol { display: none; }
+
+@media (min-width: 900px) {
+  .bingoals-root .objPage-layout {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 20px;
+  }
+  .bingoals-root .objPage-listCol { flex: 0 0 300px; min-width: 0; }
+  .bingoals-root .objPage-activeCol { display: block; flex: 1; min-width: 0; }
+}
+
+@media (min-width: 1400px) {
+  .bingoals-root .objPage-listCol { flex-basis: 320px; }
+  .bingoals-root .objPage-activeCol { flex: 1; max-width: 600px; min-width: 0; }
+  .bingoals-root .objPage-memoriesCol { display: block; flex: 1; min-width: 0; }
+  /* At 4K memoriesCol takes over — hide inline memories in activeCol */
+  .bingoals-root .objPage-activeCol .subTimerMemories { display: none; }
+}
+
+/* Larger timer in active col context */
+@media (min-width: 900px) {
+  .bingoals-root .objPage-activeCol .bingo-instrument-timer { font-size: 4rem; }
+}
+@media (min-width: 1400px) {
+  .bingoals-root .objPage-activeCol .bingo-instrument-timer { font-size: 5rem; }
+  .bingoals-root .objPage-activeCol .bingo-instrument-face { padding: 20px 16px 14px; }
+}
+
+/* ── Narrow overlay ── */
+
+.bingoals-root .objPage-overlay {
+  position: fixed;
+  left: 0; right: 0; bottom: 0;
+  height: 95dvh;
+  background: var(--card-bg, rgba(20,20,35,0.97));
+  border-radius: 16px 16px 0 0;
+  box-shadow: 0 -4px 40px rgba(0,0,0,0.45);
+  transform: translateY(100%);
+  transition: transform 300ms cubic-bezier(0.32, 0.72, 0, 1);
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.bingoals-root .objPage-overlay--open { transform: translateY(0); }
+
+.bingoals-root .objPage-overlay-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px 12px 10px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  flex-shrink: 0;
+}
+
+.bingoals-root .objPage-overlay-title {
+  flex: 1;
+  font-weight: 700;
+  font-size: 0.88rem;
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bingoals-root .objPage-overlay-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  overscroll-behavior: contain;
+}
+
+/* Hide overlay on mid/wide — columns handle it */
+@media (min-width: 900px) {
+  .bingoals-root .objPage-overlay { display: none; }
+}
+
+/* Larger timer inside overlay */
+.bingoals-root .objPage-overlay-body .bingo-instrument-timer { font-size: 5rem; }
+.bingoals-root .objPage-overlay-body .bingo-instrument-face { padding: 20px 16px 14px; }
+
+/* Slightly taller start/stop in active contexts */
+.bingoals-root .objPage-activeCol .bingo-start-btn,
+.bingoals-root .objPage-overlay-body .bingo-start-btn {
+  padding: 14px;
+  font-size: 1rem;
+}
+
+/* ── Compact row ── */
+
+.bingoals-root .subCompactRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 9px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  min-height: 48px;
+  border: 1px solid transparent;
+  transition: background 80ms ease;
+}
+
+.bingoals-root .subCompactRow:hover { background: rgba(255,255,255,0.05); }
+
+.bingoals-root .subCompactRow--active {
+  background: rgba(255,255,255,0.08);
+  border-color: rgba(255,255,255,0.14);
+}
+
+.bingoals-root .subCompactRow--done { opacity: 0.42; }
+
+.bingoals-root .subCompactDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: rgba(255,255,255,0.2);
+  transition: background 200ms ease;
+}
+
+.bingoals-root .subCompactDot--done { background: var(--success, #4caf50); }
+.bingoals-root .subCompactDot--active { background: var(--primary); }
+.bingoals-root .subCompactDot--running {
+  background: var(--danger, #e53935);
+  animation: subDotPulse 1s ease-in-out infinite;
+}
+
+@keyframes subDotPulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.35; transform: scale(0.7); }
+}
+
+.bingoals-root .subCompactTitle {
+  flex: 1;
+  font-size: 0.87rem;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bingoals-root .subCompactRow--done .subCompactTitle { text-decoration: line-through; }
+
+.bingoals-root .subCompactLinks {
+  display: flex;
+  gap: 4px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  flex-shrink: 0;
+  max-width: 44%;
+  align-items: center;
+}
+
+.bingoals-root .subCompactLinks::-webkit-scrollbar { display: none; }
+
+.bingoals-root .subCompactChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  white-space: nowrap;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.16);
+  color: inherit;
+  cursor: pointer;
+  transition: background 80ms ease;
+  flex-shrink: 0;
+}
+
+.bingoals-root .subCompactChip:hover { background: rgba(255,255,255,0.18); }
+
+.bingoals-root .subCompactAddLink {
+  padding: 2px 6px;
+  font-size: 0.68rem;
+  font-weight: 600;
+  opacity: 0;
+  border-radius: 4px;
+  border: 1px dashed rgba(255,255,255,0.2);
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: opacity 100ms ease;
+}
+
+.bingoals-root .subCompactRow:hover .subCompactAddLink { opacity: 0.7; }
+.bingoals-root .subCompactAddLink:hover { opacity: 1 !important; }
+
+.bingoals-root .subCompactProgress {
+  font-size: 0.7rem;
+  font-variant-numeric: tabular-nums;
+  opacity: 0.5;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+/* ── Grid view ── */
+
+.bingoals-root .subGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+@media (min-width: 1400px) {
+  .bingoals-root .subGrid { grid-template-columns: repeat(3, 1fr); }
+}
+
+.bingoals-root .subGridTile {
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+  min-height: 120px;
+  cursor: pointer;
+  background-size: cover;
+  background-position: center;
+  border: 2px solid transparent;
+  transition: transform 100ms ease, box-shadow 100ms ease;
+}
+
+.bingoals-root .subGridTile:hover {
+  transform: scale(1.02);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+}
+
+.bingoals-root .subGridTile--active { border-color: var(--primary); }
+
+.bingoals-root .subGridDoneOverlay {
+  display: none;
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  z-index: 2;
+}
+
+.bingoals-root .subGridTile--done .subGridDoneOverlay { display: flex; }
+
+.bingoals-root .subGridProgress {
+  position: absolute;
+  top: 6px; left: 6px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  background: rgba(0,0,0,0.45);
+  border-radius: 10px;
+  padding: 1px 7px;
+  color: #fff;
+  z-index: 3;
+}
+
+.bingoals-root .subGridAddLink {
+  position: absolute;
+  top: 6px; right: 6px;
+  padding: 2px 6px;
+  font-size: 0.65rem;
+  font-weight: 600;
+  background: rgba(0,0,0,0.4);
+  border: 1px dashed rgba(255,255,255,0.3);
+  border-radius: 4px;
+  color: #fff;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 100ms ease;
+  z-index: 3;
+}
+
+.bingoals-root .subGridTile:hover .subGridAddLink { opacity: 1; }
+
+.bingoals-root .subGridScrim {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.72) 0%, transparent 100%);
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  z-index: 1;
+}
+
+.bingoals-root .subGridTitle {
+  font-size: 0.77rem;
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.6);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bingoals-root .subGridLinks { display: flex; gap: 3px; flex-wrap: wrap; }
+
+.bingoals-root .subGridChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 1px 6px;
+  border-radius: 10px;
+  font-size: 0.62rem;
+  font-weight: 600;
+  background: rgba(0,0,0,0.5);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: #fff;
+  cursor: pointer;
+  transition: background 80ms ease;
+  white-space: nowrap;
+}
+
+.bingoals-root .subGridChip:hover { background: rgba(0,0,0,0.7); }
+
+/* ── Active panel — link chips above timer ── */
+
+.bingoals-root .subTimerLinks {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+
+.bingoals-root .subTimerLinkChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: inherit;
+  cursor: pointer;
+  transition: background 100ms ease;
+}
+
+.bingoals-root .subTimerLinkChip:hover { background: rgba(255,255,255,0.2); }
+
+/* ── Memories divider in active panel ── */
+
+.bingoals-root .subMemoriesDivider {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 20px 0 12px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  opacity: 0.4;
+}
+
+.bingoals-root .subMemoriesDivider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: currentColor;
+  opacity: 0.4;
+}
