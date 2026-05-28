@@ -96,8 +96,8 @@ export default function BingoDashboard() {
       return { slot_index: r.slot_index, objective_id: r.objective_id, objective, total_ms: r.total_ms ?? 0, last_progress_at, percent };
     });
 
-    DASH_CACHE[year] = out
-    setCells(out)
+    DASH_CACHE[year] = out;
+    setCells(out);
 
     const mediaSummaries = await listDashboardMediaSummaries(objectiveIds)
     const newMediaMap = new Map<string, ObjectiveMediaSummary>()
