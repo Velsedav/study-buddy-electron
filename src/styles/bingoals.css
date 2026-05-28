@@ -2783,8 +2783,8 @@
 
 .bingoals-root .memStrip-card {
   position: relative;
-  width: 120px;
-  height: 120px;
+  width: 180px;
+  height: 180px;
   border-radius: 8px;
   overflow: hidden;
   flex-shrink: 0;
@@ -2795,11 +2795,11 @@
 }
 
 @media (min-width: 720px) {
-  .bingoals-root .memStrip-card { width: 140px; height: 140px; }
+  .bingoals-root .memStrip-card { width: 220px; height: 220px; }
 }
 
 @media (min-width: 1400px) {
-  .bingoals-root .memStrip-card { width: 160px; height: 160px; }
+  .bingoals-root .memStrip-card { width: 260px; height: 260px; }
 }
 
 .bingoals-root .memStrip-card:hover {
@@ -2815,18 +2815,18 @@
 .bingoals-root .memStrip-card--quote {
   display: flex;
   align-items: flex-start;
-  padding: 10px;
+  padding: 14px 14px 12px;
   font-style: italic;
-  font-size: 0.78rem;
-  line-height: 1.35;
+  font-size: 0.95rem;
+  line-height: 1.45;
   color: #fff;
 }
 
 .bingoals-root .memStrip-quoteMark {
   position: absolute;
-  top: -8px;
-  left: 4px;
-  font-size: 3.5rem;
+  top: -12px;
+  left: 6px;
+  font-size: 5rem;
   opacity: 0.18;
   font-family: Georgia, serif;
   line-height: 1;
@@ -2837,19 +2837,12 @@
   position: relative;
   z-index: 1;
   display: -webkit-box;
-  -webkit-line-clamp: 4;
+  -webkit-line-clamp: 7;
   -webkit-box-orient: vertical;
   overflow: hidden;
-}
-
-.bingoals-root .memStrip-card--quote.memStrip-card--expanded {
-  height: auto;
-  min-height: 120px;
-}
-
-.bingoals-root .memStrip-card--quote.memStrip-card--expanded .memStrip-quoteText {
-  -webkit-line-clamp: unset;
-  overflow: visible;
+  text-overflow: ellipsis;
+  white-space: pre-wrap;
+  word-break: break-word;
 }
 
 .bingoals-root .memStrip-cardDelete {
@@ -2982,3 +2975,95 @@
 }
 .bingoals-root .memLightbox-close:hover { background: rgba(255, 255, 255, 0.18); }
 .bingoals-root .memLightbox-delete:hover { background: rgba(229, 57, 53, 0.4); }
+
+/* ── Quote viewer (full-screen overlay for reading a long quote) ── */
+
+.bingoals-root .memQuoteViewer {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.88);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 300;
+  cursor: zoom-out;
+  padding: 60px 40px;
+}
+
+.bingoals-root .memQuoteViewer-body {
+  max-width: 720px;
+  max-height: 85vh;
+  overflow-y: auto;
+  position: relative;
+  cursor: default;
+  font-style: italic;
+  font-size: 1.6rem;
+  line-height: 1.55;
+  color: #fff;
+  text-align: left;
+  padding: 50px 40px 30px;
+  background: rgba(20, 20, 30, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.bingoals-root .memQuoteViewer-mark {
+  position: absolute;
+  top: -10px;
+  left: 20px;
+  font-size: 8rem;
+  opacity: 0.18;
+  font-family: Georgia, serif;
+  line-height: 1;
+  pointer-events: none;
+}
+
+.bingoals-root .memQuoteViewer-close,
+.bingoals-root .memQuoteViewer-delete {
+  position: absolute;
+  top: 16px;
+  padding: 8px 14px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: #fff;
+  cursor: pointer;
+}
+.bingoals-root .memQuoteViewer-close { right: 16px; }
+.bingoals-root .memQuoteViewer-delete {
+  left: 16px;
+  background: rgba(229, 57, 53, 0.25);
+  border-color: rgba(229, 57, 53, 0.6);
+}
+.bingoals-root .memQuoteViewer-close:hover { background: rgba(255, 255, 255, 0.18); }
+.bingoals-root .memQuoteViewer-delete:hover { background: rgba(229, 57, 53, 0.4); }
+
+/* ── Quote entry textarea (AddQuoteModal) ── */
+
+.bingoals-root .bingo-quote-textarea,
+.bingo-quote-textarea {
+  width: 100%;
+  min-height: 120px;
+  font-family: inherit;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  padding: 10px 12px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.04);
+  color: inherit;
+  resize: vertical;
+  white-space: pre-wrap;
+  box-sizing: border-box;
+}
+
+.bingoals-root .bingo-quote-textarea:focus,
+.bingo-quote-textarea:focus {
+  outline: none;
+  border-color: var(--primary, #4c8cf7);
+  background: rgba(255, 255, 255, 0.07);
+}

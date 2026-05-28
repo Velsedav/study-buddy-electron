@@ -416,11 +416,18 @@ function AddQuoteModal(props: { open: boolean; onClose: () => void; onAdd: (quot
   return (
     <BingoModal open={props.open} title={t('bingoals.add_quote_modal_title')} onClose={props.onClose}>
       <div className="form">
-        <input
+        <textarea
+          className="bingo-quote-textarea"
           value={text}
           onChange={(e) => setText(e.target.value)}
           placeholder={t('bingoals.quote_placeholder')}
-          onKeyDown={(e) => { if (e.key === "Enter" && text.trim()) props.onAdd(text.trim()); }}
+          onKeyDown={(e) => {
+            if (e.key === "Enter" && (e.ctrlKey || e.metaKey) && text.trim()) {
+              e.preventDefault();
+              props.onAdd(text.trim());
+            }
+          }}
+          rows={6}
           autoFocus
         />
         <div className="row">
@@ -507,6 +514,54 @@ function MemoryLightbox(props: {
       >×</button>
       <button
         className="memLightbox-delete"
+        onClick={async (e) => {
+          e.stopPropagation()
+          if (!confirmDelete) { setConfirmDelete(true); return }
+          await onDelete()
+          onClose()
+        }}
+      >
+        {confirmDelete ? (t('bingoals.yes_delete') || 'Confirm delete') : (t('bingoals.delete') || 'Delete')}
+      </button>
+    </div>
+  )
+}
+
+function QuoteLightbox(props: {
+  quote: { id: string; data: string } | null
+  onClose: () => void
+  onDelete: () => Promise<void>
+}) {
+  const { quote, onClose, onDelete } = props
+  const { t } = useTranslation()
+  const [confirmDelete, setConfirmDelete] = useState(false)
+
+  useEffect(() => {
+    if (!quote) return
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose() }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [quote, onClose])
+
+  useEffect(() => {
+    if (!quote) setConfirmDelete(false)
+  }, [quote])
+
+  if (!quote) return null
+
+  return (
+    <div className="memQuoteViewer" onClick={onClose}>
+      <div className="memQuoteViewer-body" onClick={(e) => e.stopPropagation()}>
+        <span className="memQuoteViewer-mark" aria-hidden="true">“</span>
+        {quote.data}
+      </div>
+      <button
+        className="memQuoteViewer-close"
+        onClick={(e) => { e.stopPropagation(); onClose() }}
+        aria-label={t('bingoals.close') || 'Close'}
+      >×</button>
+      <button
+        className="memQuoteViewer-delete"
         onClick={async (e) => {
           e.stopPropagation()
           if (!confirmDelete) { setConfirmDelete(true); return }
@@ -611,7 +666,7 @@ const SubobjectiveMemoryStrip = memo(function SubobjectiveMemoryStrip(props: {
   } = props
   const { t } = useTranslation()
   const [lightboxImageId, setLightboxImageId] = useState<string | null>(null)
-  const [expandedQuoteId, setExpandedQuoteId] = useState<string | null>(null)
+  const [lightboxQuoteId, setLightboxQuoteId] = useState<string | null>(null)
   const [pickerOpen, setPickerOpen] = useState(false)
   const [quoteOpen, setQuoteOpen] = useState(false)
   const fileInputRef = useRef<HTMLInputElement | null>(null)
@@ -767,18 +822,17 @@ const SubobjectiveMemoryStrip = memo(function SubobjectiveMemoryStrip(props: {
                   </div>
                 )
               }
-              const expanded = expandedQuoteId === item.id
               const hue = titleToHue(s.title)
               return (
                 <div
                   key={item.id}
-                  className={`memStrip-card memStrip-card--quote ${expanded ? 'memStrip-card--expanded' : ''}`}
+                  className="memStrip-card memStrip-card--quote"
                   style={{ background: `hsl(${hue}, 35%, 22%)` }}
-                  onClick={() => setExpandedQuoteId(expanded ? null : item.id)}
+                  onClick={() => setLightboxQuoteId(item.id)}
                   role="button"
                   tabIndex={0}
                   aria-label={t('bingoals.memory_quote_aria') || 'Quote'}
-                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setExpandedQuoteId(expanded ? null : item.id) }}
+                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setLightboxQuoteId(item.id) }}
                 >
                   <span className="memStrip-quoteMark" aria-hidden="true">“</span>
                   <span className="memStrip-quoteText">{item.data}</span>
@@ -864,6 +918,19 @@ const SubobjectiveMemoryStrip = memo(function SubobjectiveMemoryStrip(props: {
         onDelete={async () => {
           if (!lightboxImageId) return
           await deleteMediaItem(lightboxImageId)
+          await reload()
+        }}
+      />
+      <QuoteLightbox
+        quote={(() => {
+          if (!lightboxQuoteId) return null
+          const found = subMedia.find(m => m.id === lightboxQuoteId && m.kind === 'quote')
+          return found ? { id: found.id, data: found.data } : null
+        })()}
+        onClose={() => setLightboxQuoteId(null)}
+        onDelete={async () => {
+          if (!lightboxQuoteId) return
+          await deleteMediaItem(lightboxQuoteId)
           await reload()
         }}
       />
