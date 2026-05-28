@@ -666,6 +666,9 @@ const SubobjectiveMemoryStrip = memo(function SubobjectiveMemoryStrip(props: {
   const { t } = useTranslation()
   const [lightboxImageId, setLightboxImageId] = useState<string | null>(null)
   const [expandedQuoteId, setExpandedQuoteId] = useState<string | null>(null)
+  const [pickerOpen, setPickerOpen] = useState(false)
+  const [quoteOpen, setQuoteOpen] = useState(false)
+  const fileInputRef = useRef<HTMLInputElement | null>(null)
 
   const { autoDone, hasTarget } = computeAutoDone(s)
   const isDone = autoDone || (!hasTarget && !!s.is_done)
@@ -708,6 +711,20 @@ const SubobjectiveMemoryStrip = memo(function SubobjectiveMemoryStrip(props: {
     }
     await reload()
   }
+
+  const triggerImageUpload = () => {
+    setPickerOpen(false)
+    fileInputRef.current?.click()
+  }
+  const triggerAddQuote = () => {
+    setPickerOpen(false)
+    setQuoteOpen(true)
+  }
+  const triggerAddLink = () => {
+    setPickerOpen(false)
+    onAddLink()
+  }
+  const hasMemories = subMedia.some(m => m.kind === 'image' || m.kind === 'quote')
 
   return (
     <div className={stripClass}>
@@ -831,8 +848,66 @@ const SubobjectiveMemoryStrip = memo(function SubobjectiveMemoryStrip(props: {
                 </div>
               )
             })}
+          {!hasMemories ? (
+            <>
+              <button
+                className="memStrip-card memStrip-card--placeholder"
+                onClick={triggerImageUpload}
+                aria-label={t('bingoals.add_images')}
+              >+ image</button>
+              <button
+                className="memStrip-card memStrip-card--placeholder"
+                onClick={triggerAddQuote}
+                aria-label={t('bingoals.add_quote')}
+              >+ quote</button>
+              <button
+                className="memStrip-card memStrip-card--placeholder"
+                onClick={triggerAddLink}
+                aria-label={t('bingoals.add_link')}
+              >+ link</button>
+            </>
+          ) : (
+            <div className="memStrip-card memStrip-card--placeholder memStrip-card--addTrigger" style={{ position: 'relative' }}>
+              <button
+                onClick={() => setPickerOpen(o => !o)}
+                style={{ all: 'unset', cursor: 'pointer', width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '1.6rem' }}
+                aria-label={t('bingoals.add')}
+              >+</button>
+              {pickerOpen && (
+                <div className="memStrip-addPicker" onClick={(e) => e.stopPropagation()}>
+                  <button className="memStrip-addPickerBtn" onClick={triggerImageUpload}>+ image</button>
+                  <button className="memStrip-addPickerBtn" onClick={triggerAddQuote}>+ quote</button>
+                  <button className="memStrip-addPickerBtn" onClick={triggerAddLink}>+ link</button>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </div>
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept="image/*"
+        multiple
+        className="memStrip-fileInput"
+        onChange={async (e) => {
+          const files = Array.from(e.target.files ?? [])
+          if (files.length === 0) return
+          await stopTimerIfRunning()
+          for (const file of files) {
+            const dataUrl = await fileToCompressedDataUrl(file)
+            await addImage(s.id, dataUrl)
+            await new Promise((r) => setTimeout(r, 0))
+          }
+          e.currentTarget.value = ''
+          await reload()
+        }}
+      />
+      <AddQuoteModal
+        open={quoteOpen}
+        onClose={() => setQuoteOpen(false)}
+        onAdd={async (quote) => { setQuoteOpen(false); await addQuote(s.id, quote); await reload() }}
+      />
       <MemoryLightbox
         image={(() => {
           if (!lightboxImageId) return null
