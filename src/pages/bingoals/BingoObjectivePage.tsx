@@ -25,6 +25,7 @@ import { clamp01, daysAgo, formatDuration } from "../../lib/bingoals/format";
 import { fileToCompressedDataUrl } from "../../lib/bingoals/image";
 import { computeObjectivePercent, progressLabel, computeTotalMs, computeLastStudiedTs } from "../../lib/bingoals/progress";
 import { titleToHue } from "../../lib/bingoals/color";
+import { sortStripsForMemoriesView } from "../../lib/bingoals/sortStrips";
 import { useTranslation } from "../../lib/i18n";
 import { playSFX, SFX } from "../../lib/sounds";
 
@@ -56,9 +57,11 @@ export default function BingoObjectivePage() {
   const [addOpen, setAddOpen] = useState(false);
   const [running, setRunning] = useState<{ subId: string; startedAt: number } | null>(null);
   const [activeSubId, setActiveSubId] = useState<string | null>(null)
-  const [listView, setListView] = useState<'compact' | 'grid' | 'full'>(() =>
-    (localStorage.getItem('bingoals.listView') as 'compact' | 'grid' | 'full') ?? 'compact'
-  )
+  const [listView, setListView] = useState<'memories' | 'grid' | 'full'>(() => {
+    const raw = localStorage.getItem('bingoals.listView')
+    if (raw === 'grid' || raw === 'full' || raw === 'memories') return raw
+    return 'memories'  // also covers legacy 'compact'
+  })
   const [pendingAddLinkSubId, setPendingAddLinkSubId] = useState<string | null>(null)
 
   async function reload() {
@@ -110,6 +113,15 @@ export default function BingoObjectivePage() {
   const totalMs = useMemo(() => computeTotalMs(timeMap), [timeMap])
   const lastStudiedTs = useMemo(() => computeLastStudiedTs(timeMap, subs), [timeMap, subs])
   const lastStudiedDays = daysAgo(lastStudiedTs)
+
+  const sortedSubs = useMemo(() => sortStripsForMemoriesView(
+    subs,
+    running?.subId ?? null,
+    (sub) => {
+      const { autoDone, hasTarget } = computeAutoDone(sub)
+      return autoDone || (!hasTarget && !!sub.is_done)
+    },
+  ), [subs, running])
 
   const mediaBySub = useMemo(() => {
     const map = new Map<string, MediaItem[]>();
@@ -173,7 +185,7 @@ export default function BingoObjectivePage() {
         </div>
         <div className="objPage-controls">
           <div className="objPage-viewToggle">
-            {(['compact', 'grid', 'full'] as const).map(v => (
+            {(['memories', 'grid', 'full'] as const).map(v => (
               <button
                 key={v}
                 className={`objPage-viewBtn${listView === v ? ' objPage-viewBtn--active' : ''}`}
@@ -190,18 +202,24 @@ export default function BingoObjectivePage() {
       </div>
 
       {/* ── Responsive layout ── */}
-      <div className={`objPage-layout${listView === 'full' ? ' objPage-layout--full' : ''}`}>
+      <div className={`objPage-layout${listView === 'full' ? ' objPage-layout--full' : ''}${listView === 'memories' ? ' objPage-layout--memories' : ''}`}>
 
         {/* List column */}
         <div className="objPage-listCol">
-          {listView === 'compact' && subs.map(s => (
-            <SubobjectiveCompactRow
+          {listView === 'memories' && sortedSubs.map(s => (
+            <SubobjectiveMemoryStrip
               key={s.id}
               s={s}
-              subMedia={mediaBySub.get(s.id) ?? []}
+              subs={subs}
+              setSubs={setSubs}
+              timeStats={timeMap.get(s.id) ?? { total_ms: 0, last_end: null }}
               running={running}
+              setRunning={setRunning}
+              stopTimerIfRunning={stopTimerIfRunning}
+              subMedia={mediaBySub.get(s.id) ?? []}
               activeSubId={activeSubId}
               setActiveSubId={setActiveSubId}
+              reload={reload}
               onAddLink={() => setPendingAddLinkSubId(s.id)}
             />
           ))}
