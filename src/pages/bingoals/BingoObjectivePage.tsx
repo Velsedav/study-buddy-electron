@@ -664,6 +664,8 @@ const SubobjectiveMemoryStrip = memo(function SubobjectiveMemoryStrip(props: {
     subMedia, activeSubId, setActiveSubId, reload, onAddLink,
   } = props
   const { t } = useTranslation()
+  const [lightboxImageId, setLightboxImageId] = useState<string | null>(null)
+  const [expandedQuoteId, setExpandedQuoteId] = useState<string | null>(null)
 
   const { autoDone, hasTarget } = computeAutoDone(s)
   const isDone = autoDone || (!hasTarget && !!s.is_done)
@@ -775,9 +777,75 @@ const SubobjectiveMemoryStrip = memo(function SubobjectiveMemoryStrip(props: {
       </div>
       <div className="memStrip-track">
         <div className="memStrip-trackInner">
-          {/* Memory cards added in Task 6 + placeholders/picker in Task 7 */}
+          {subMedia
+            .filter(m => m.kind === 'image' || m.kind === 'quote')
+            .map(item => {
+              if (item.kind === 'image') {
+                return (
+                  <div
+                    key={item.id}
+                    className="memStrip-card memStrip-card--image"
+                    style={{ backgroundImage: `url(${item.data})` }}
+                    onClick={() => setLightboxImageId(item.id)}
+                    role="button"
+                    tabIndex={0}
+                    aria-label={t('bingoals.memory_image_aria') || 'Image'}
+                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setLightboxImageId(item.id) }}
+                  >
+                    <button
+                      className="memStrip-cardDelete"
+                      onClick={async (e) => {
+                        e.stopPropagation()
+                        await deleteMediaItem(item.id)
+                        await reload()
+                      }}
+                      aria-label={t('bingoals.delete')}
+                    >×</button>
+                  </div>
+                )
+              }
+              const expanded = expandedQuoteId === item.id
+              const hue = titleToHue(s.title)
+              return (
+                <div
+                  key={item.id}
+                  className={`memStrip-card memStrip-card--quote ${expanded ? 'memStrip-card--expanded' : ''}`}
+                  style={{ background: `hsl(${hue}, 35%, 22%)` }}
+                  onClick={() => setExpandedQuoteId(expanded ? null : item.id)}
+                  role="button"
+                  tabIndex={0}
+                  aria-label={t('bingoals.memory_quote_aria') || 'Quote'}
+                  onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setExpandedQuoteId(expanded ? null : item.id) }}
+                >
+                  <span className="memStrip-quoteMark" aria-hidden="true">“</span>
+                  <span className="memStrip-quoteText">{item.data}</span>
+                  <button
+                    className="memStrip-cardDelete"
+                    onClick={async (e) => {
+                      e.stopPropagation()
+                      await deleteMediaItem(item.id)
+                      await reload()
+                    }}
+                    aria-label={t('bingoals.delete')}
+                  >×</button>
+                </div>
+              )
+            })}
         </div>
       </div>
+      <MemoryLightbox
+        image={(() => {
+          if (!lightboxImageId) return null
+          const found = subMedia.find(m => m.id === lightboxImageId && m.kind === 'image')
+          return found ? { id: found.id, data: found.data } : null
+        })()}
+        onClose={() => setLightboxImageId(null)}
+        onDelete={async () => {
+          if (!lightboxImageId) return
+          await deleteMediaItem(lightboxImageId)
+          await reload()
+        }}
+      />
     </div>
   )
 }, (prev, next) =>
