@@ -645,6 +645,148 @@ function SubobjectiveTile(props: {
   )
 }
 
+const SubobjectiveMemoryStrip = memo(function SubobjectiveMemoryStrip(props: {
+  s: Subobjective
+  subs: Subobjective[]
+  setSubs: React.Dispatch<React.SetStateAction<Subobjective[]>>
+  timeStats: { total_ms: number; last_end: number | null }
+  running: { subId: string; startedAt: number } | null
+  setRunning: React.Dispatch<React.SetStateAction<{ subId: string; startedAt: number } | null>>
+  stopTimerIfRunning: () => Promise<void>
+  subMedia: MediaItem[]
+  activeSubId: string | null
+  setActiveSubId: (id: string | null) => void
+  reload: () => Promise<void>
+  onAddLink: () => void
+}) {
+  const {
+    s, subs, setSubs, running, setRunning, stopTimerIfRunning,
+    subMedia, activeSubId, setActiveSubId, reload, onAddLink,
+  } = props
+  const { t } = useTranslation()
+
+  const { autoDone, hasTarget } = computeAutoDone(s)
+  const isDone = autoDone || (!hasTarget && !!s.is_done)
+  const isActive = activeSubId === s.id
+  const isRunning = running?.subId === s.id
+
+  const links = subMedia
+    .filter(m => m.kind === 'link')
+    .map(item => {
+      try { return { item, parsed: JSON.parse(item.data) as { url: string; label: string } } }
+      catch { return { item, parsed: { url: item.data, label: '' } } }
+    })
+
+  const stripClass = [
+    'memStrip',
+    isDone && 'memStrip--done',
+    isRunning && 'memStrip--running',
+    isActive && 'memStrip--active',
+  ].filter(Boolean).join(' ')
+
+  const dotClass = [
+    'memStrip-dot',
+    isRunning ? 'memStrip-dot--running' : isDone ? 'memStrip-dot--done' : isActive ? 'memStrip-dot--active' : '',
+  ].filter(Boolean).join(' ')
+
+  const progressText = (s.target_total ?? 0) > 0
+    ? `${s.progress_current ?? 0} / ${s.target_total ?? 0}${s.unit ? ' ' + s.unit : ''}`
+    : isDone ? '✓' : '—'
+
+  const onToggleDone = async () => {
+    if (hasTarget) {
+      const next = autoDone ? Math.max(0, (s.target_total ?? 1) - 1) : (s.target_total ?? 1)
+      const { autoDone: ad } = computeAutoDone({ ...s, progress_current: next })
+      playSFX(ad ? SFX.BINGO_COMPLETE : SFX.BINGO_CHECK)
+      setSubs((prev) => prev.map((x) => (x.id === s.id ? { ...x, progress_current: next } : x)))
+      await updateSubobjective(s.id, { progress_current: next, is_done: ad ? 1 : 0 })
+    } else {
+      playSFX(s.is_done ? SFX.CANCEL : SFX.BINGO_COMPLETE)
+      await updateSubobjective(s.id, { is_done: s.is_done ? 0 : 1 })
+    }
+    await reload()
+  }
+
+  return (
+    <div className={stripClass}>
+      <div className="memStrip-header">
+        <div className="memStrip-headerTop">
+          <span className={dotClass} aria-hidden="true" />
+          <span
+            className="memStrip-title"
+            onClick={() => setActiveSubId(s.id)}
+            role="button"
+            tabIndex={0}
+            aria-label={t('bingoals.sub_title_aria')}
+            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setActiveSubId(s.id) }}
+          >
+            {s.title}
+          </span>
+          <span className="memStrip-progress">{progressText}</span>
+        </div>
+        <div className="memStrip-headerActions">
+          {isRunning ? (
+            <button
+              className="memStrip-startBtn memStrip-startBtn--stop"
+              onClick={() => { playSFX(SFX.CANCEL); stopTimerIfRunning() }}
+              onMouseEnter={() => playSFX(SFX.HOVER)}
+            >
+              <span className="bingo-stop-square" aria-hidden="true" />
+              {t('bingoals.stop')}
+            </button>
+          ) : (
+            <button
+              className="memStrip-startBtn"
+              onClick={async () => {
+                playSFX(SFX.SESSION_START)
+                await stopTimerIfRunning()
+                setRunning({ subId: s.id, startedAt: Date.now() })
+              }}
+              onMouseEnter={() => playSFX(SFX.HOVER)}
+            >
+              <span className="bingo-rec-dot" aria-hidden="true" />
+              {t('bingoals.start')}
+            </button>
+          )}
+          <button className="btn bingo-mark-done-btn" onClick={onToggleDone}>
+            {isDone ? t('bingoals.undone') : t('bingoals.done')}
+          </button>
+        </div>
+        <div className="memStrip-headerLinks">
+          {links.map(({ item, parsed }) => (
+            <button
+              key={item.id}
+              className="subCompactChip"
+              onClick={() => openExternal(parsed.url)}
+              title={parsed.url}
+            >
+              <ExternalLink size={10} />
+              {parsed.label || parsed.url}
+            </button>
+          ))}
+          <button
+            className="subCompactAddLink"
+            onClick={onAddLink}
+            title={t('bingoals.add_link')}
+            aria-label={t('bingoals.add_link')}
+            style={{ opacity: 0.7 }}
+          >+ link</button>
+        </div>
+      </div>
+      <div className="memStrip-track">
+        <div className="memStrip-trackInner">
+          {/* Memory cards added in Task 6 + placeholders/picker in Task 7 */}
+        </div>
+      </div>
+    </div>
+  )
+}, (prev, next) =>
+  prev.s === next.s
+  && prev.subMedia === next.subMedia
+  && prev.running === next.running
+  && prev.activeSubId === next.activeSubId
+)
+
 const SubobjectiveTimerPanel = memo(function SubobjectiveTimerPanel(props: {
   s: Subobjective
   timeStats: { total_ms: number; last_end: number | null }
