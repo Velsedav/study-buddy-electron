@@ -1,20 +1,24 @@
 import { memo, useEffect, useMemo, useState } from "react";
-import { Target, Pencil, ArrowUp, ArrowDown, ChevronLeft, ChevronRight } from "lucide-react";
+import { Target, Pencil, ArrowUp, ArrowDown, ChevronLeft, ChevronRight, ExternalLink } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import BingoModal from "../../components/bingoals/BingoModal";
-import type { DashboardRow, Objective, Subobjective } from "../../lib/bingoals/db";
+import type { DashboardRow, Objective, ObjectiveMediaSummary, Subobjective } from "../../lib/bingoals/db";
 import {
   createObjectiveAndAssignSlot,
   ensureYearSlots,
   getBingoDb,
+  listDashboardMediaSummaries,
   listDashboardRows,
   updateObjective
 } from "../../lib/bingoals/db";
 import { daysAgo, formatDuration } from "../../lib/bingoals/format";
+import { progressLabel } from "../../lib/bingoals/progress";
 import { fileToCompressedDataUrl } from "../../lib/bingoals/image";
 import { computeObjectivePercent } from "../../lib/bingoals/progress";
 import { useTranslation } from "../../lib/i18n";
 import { playSFX, SFX } from "../../lib/sounds";
+
+const openExternal = (url: string) => (window as any).electronAPI.shell.openExternal(url)
 
 type Cell = {
   slot_index: number;
@@ -51,6 +55,7 @@ export default function BingoDashboard() {
   const [cells, setCells] = useState<Cell[]>(() => DASH_CACHE[CURRENT_YEAR] ?? []);
   const [createSlot, setCreateSlot] = useState<number | null>(null);
   const [editObj, setEditObj] = useState<Objective | null>(null);
+  const [mediaMap, setMediaMap] = useState<Map<string, ObjectiveMediaSummary>>(new Map())
 
   async function load(year = selectedYear) {
     await ensureYearSlots(year);
@@ -92,8 +97,13 @@ export default function BingoDashboard() {
       return { slot_index: r.slot_index, objective_id: r.objective_id, objective, total_ms: r.total_ms ?? 0, last_progress_at, percent };
     });
 
-    DASH_CACHE[year] = out;
-    setCells(out);
+    DASH_CACHE[year] = out
+    setCells(out)
+
+    const mediaSummaries = await listDashboardMediaSummaries(objectiveIds)
+    const newMediaMap = new Map<string, ObjectiveMediaSummary>()
+    for (const s of mediaSummaries) newMediaMap.set(s.objectiveId, s)
+    setMediaMap(newMediaMap)
   }
 
   useEffect(() => {
@@ -185,6 +195,7 @@ export default function BingoDashboard() {
                 setEditObj={setEditObj}
                 load={load}
                 t={t}
+                mediaSummary={c.objective_id ? mediaMap.get(c.objective_id) : undefined}
               />
             );
           })}
