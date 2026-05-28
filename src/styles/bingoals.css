@@ -16,6 +16,11 @@
   --shadow: 4px 4px 0 var(--black);
   font-family: var(--mono);
   color: var(--black);
+  padding: 24px;
+}
+
+@media (min-width: 1200px) {
+  .bingoals-root { padding: 32px; }
 }
 
 [data-theme="classic-uniform"] .bingoals-root {
