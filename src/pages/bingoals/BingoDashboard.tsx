@@ -31,12 +31,6 @@ type Cell = {
 const CURRENT_YEAR = new Date().getFullYear();
 let DASH_CACHE: Record<number, Cell[]> = {};
 
-function statusTitle(status: string) {
-  if (status === "green") return "On track";
-  if (status === "orange") return "Due soon";
-  if (status === "red") return "Overdue";
-  return "";
-}
 
 function lastStatus(days: number | null, freqDays: number | null) {
   if (!freqDays || freqDays <= 0) return "neutral";
@@ -419,19 +413,21 @@ function EditObjectiveModal(props: { objective: Objective | null; onClose: () =>
 }
 
 const DashboardCard = memo(function DashboardCard({
-  c, nav, setEditObj, load, t
+  c, nav, setEditObj, load, t, mediaSummary
 }: {
   c: Cell;
   nav: (path: string) => void;
   setEditObj: (o: Objective) => void;
   load: () => Promise<void>;
   t: (key: string) => string;
+  mediaSummary: ObjectiveMediaSummary | undefined;
 }) {
   const d = daysAgo(c.last_progress_at);
   const status = lastStatus(d, c.objective!.frequency_days ?? null);
-  const percentText = c.percent === null ? "—" : `${Math.round(c.percent * 100)}%`;
   const pinned = !!c.objective!.pin_bottom;
   const cover = c.objective!.cover_data;
+  const firstLink = mediaSummary?.links[0] ?? null
+  const label = progressLabel(c.percent, c.objective!.goal_kind, c.objective!.goal_target ?? null, c.objective!.goal_unit ?? null)
   const cardStyle = cover
     ? {
       backgroundImage: `linear-gradient(to top, rgba(0,0,0,.85), rgba(0,0,0,.25)), url(${cover})`,
@@ -439,13 +435,6 @@ const DashboardCard = memo(function DashboardCard({
       backgroundPosition: "center"
     }
     : undefined;
-
-  function lastLabel(days: number | null) {
-    if (days === null) return "—";
-    if (days <= 0) return t('bingoals.today');
-    if (days === 1) return t('bingoals.yesterday');
-    return t('bingoals.days_ago').replace('{n}', String(days));
-  }
 
   return (
     <div className="cardWrap">
@@ -460,22 +449,49 @@ const DashboardCard = memo(function DashboardCard({
         onKeyDown={(e) => { if (e.key === "Enter") { playSFX(SFX.ENTER_MENU); nav(`/bingoals/objective/${c.objective!.id}`); } }}
       >
         <div className="cardTitle">{c.objective!.title}</div>
-        <div className="cardMeta">
-          <div>
-            <span className="muted">{t('bingoals.last_label')}:</span>{" "}
-            <span className={`lastAge ${status}`} title={statusTitle(status)}>{lastLabel(d)}</span>
-          </div>
-          <div><span className="muted">{t('bingoals.time_label')}:</span> {formatDuration(c.total_ms)}</div>
+        <div className="cardProgressLine">
+          <span className={`cardStatusDot cardStatusDot--${status}`} />
+          <span className="cardProgressCount">{label}</span>
+          <span className="cardTimeBadge">· {formatDuration(c.total_ms)}</span>
         </div>
+        {firstLink && (
+          <button
+            className="cardLinkChip"
+            onClick={(e) => { e.stopPropagation(); openExternal(firstLink.url); }}
+            title={firstLink.url}
+          >
+            <ExternalLink size={10} />
+            <span>{firstLink.label || firstLink.url}</span>
+          </button>
+        )}
 
         <div className="cardProgressBar">
           <div className="cardProgressFill" style={{ width: `${(c.percent ?? 0) * 100}%` }} />
         </div>
 
         <div className="hoverProgress">
-          <div className="hoverRow">
-            <div className="muted">{t('bingoals.progress_label')}</div>
-            <div className="pill">{percentText}</div>
+          {mediaSummary?.lastImageDataUrl && (
+            <img className="hoverThumb" src={mediaSummary.lastImageDataUrl} alt="" />
+          )}
+          {mediaSummary && mediaSummary.links.length > 0 && (
+            <div className="hoverLinks">
+              {mediaSummary.links.map((link, i) => (
+                <button
+                  key={i}
+                  className="hoverLinkChip"
+                  onClick={(e) => { e.stopPropagation(); openExternal(link.url); }}
+                  title={link.url}
+                >
+                  <ExternalLink size={10} />
+                  <span>{link.label || link.url}</span>
+                </button>
+              ))}
+            </div>
+          )}
+          <div className="hoverProgressLine">
+            <span className={`cardStatusDot cardStatusDot--${status}`} />
+            <span>{label}</span>
+            <span className="cardTimeBadge">· {formatDuration(c.total_ms)}</span>
           </div>
         </div>
       </div>
@@ -508,5 +524,6 @@ const DashboardCard = memo(function DashboardCard({
     prev.c.objective?.pin_bottom === next.c.objective?.pin_bottom &&
     prev.c.objective?.frequency_days === next.c.objective?.frequency_days &&
     prev.c.objective_id === next.c.objective_id &&
-    prev.c.slot_index === next.c.slot_index;
+    prev.c.slot_index === next.c.slot_index &&
+    prev.mediaSummary === next.mediaSummary;
 });
