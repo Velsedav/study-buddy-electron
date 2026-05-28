@@ -449,7 +449,8 @@
 }
 
 .bingoals-root .cardTitle,
-.bingoals-root .cardMeta,
+.bingoals-root .cardProgressLine,
+.bingoals-root .cardLinkChip,
 .bingoals-root .cardProgressBar,
 .bingoals-root .hoverProgress {
   position: relative;
@@ -478,12 +479,6 @@
   line-height: 1.15;
 }
 
-.bingoals-root .cardMeta {
-  display: grid;
-  gap: 6px;
-  font-size: 12px;
-  opacity: .9;
-}
 
 .bingoals-root .cardProgressBar {
   position: absolute;
@@ -515,6 +510,125 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+/* ── Card progress line (replaces cardMeta) ── */
+
+.bingoals-root .cardProgressLine {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  opacity: .9;
+  margin-bottom: 6px;
+  flex-wrap: wrap;
+}
+
+.bingoals-root .cardProgressCount {
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.bingoals-root .cardTimeBadge {
+  font-size: 11px;
+  opacity: 0.7;
+  white-space: nowrap;
+}
+
+/* ── Status dot ── */
+
+.bingoals-root .cardStatusDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.bingoals-root .cardStatusDot--green  { background: var(--success); }
+.bingoals-root .cardStatusDot--orange { background: var(--accent); }
+.bingoals-root .cardStatusDot--red    { background: var(--danger); }
+.bingoals-root .cardStatusDot--neutral { background: transparent; }
+
+/* ── At-rest link chip ── */
+
+.bingoals-root .cardLinkChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 10px;
+  padding: 2px 7px;
+  border-radius: 20px;
+  border: 1px solid var(--glass-border);
+  background: rgba(var(--primary-rgb), 0.1);
+  color: inherit;
+  cursor: pointer;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 4px;
+  transition: background 100ms;
+}
+.bingoals-root .cardLinkChip:hover {
+  background: rgba(var(--primary-rgb), 0.22);
+}
+.bingoals-root .cardLinkChip span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ── Hover panel: thumbnail + links + progress ── */
+
+.bingoals-root .hoverThumb {
+  display: block;
+  width: 100%;
+  height: 72px;
+  object-fit: cover;
+  border-radius: 4px;
+  margin-bottom: 6px;
+}
+
+.bingoals-root .hoverLinks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 6px;
+}
+
+.bingoals-root .hoverLinkChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 10px;
+  padding: 2px 7px;
+  border-radius: 20px;
+  border: 1px solid var(--glass-border);
+  background: rgba(var(--primary-rgb), 0.1);
+  color: inherit;
+  cursor: pointer;
+  max-width: 160px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: background 100ms;
+}
+.bingoals-root .hoverLinkChip:hover {
+  background: rgba(var(--primary-rgb), 0.22);
+}
+.bingoals-root .hoverLinkChip span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bingoals-root .hoverProgressLine {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
 }
 
 /* ── Pills / bars ── */
@@ -1047,6 +1161,17 @@
   background: rgba(255,255,255,0.15);
   color: #fff;
   border-color: rgba(255,255,255,0.3);
+}
+
+.bingoals-root .card--has-cover .cardLinkChip,
+.bingoals-root .card--has-cover .hoverLinkChip {
+  border-color: rgba(255,255,255,0.3);
+  background: rgba(255,255,255,0.15);
+  color: #fff;
+}
+.bingoals-root .card--has-cover .cardLinkChip:hover,
+.bingoals-root .card--has-cover .hoverLinkChip:hover {
+  background: rgba(255,255,255,0.25);
 }
 
 /* ── Neobrutalism card (keep hard-shadow brutalist style) ── */
