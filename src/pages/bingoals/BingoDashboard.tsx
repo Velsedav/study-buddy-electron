@@ -12,9 +12,8 @@ import {
   updateObjective
 } from "../../lib/bingoals/db";
 import { daysAgo, formatDuration } from "../../lib/bingoals/format";
-import { progressLabel } from "../../lib/bingoals/progress";
+import { computeObjectivePercent, progressLabel } from "../../lib/bingoals/progress";
 import { fileToCompressedDataUrl } from "../../lib/bingoals/image";
-import { computeObjectivePercent } from "../../lib/bingoals/progress";
 import { useTranslation } from "../../lib/i18n";
 import { playSFX, SFX } from "../../lib/sounds";
 
