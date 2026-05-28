@@ -452,6 +452,56 @@ function AddLinkModal(props: { open: boolean; onClose: () => void; onAdd: (url: 
   );
 }
 
+function MemoryLightbox(props: {
+  image: { id: string; data: string } | null
+  onClose: () => void
+  onDelete: () => Promise<void>
+}) {
+  const { image, onClose, onDelete } = props
+  const { t } = useTranslation()
+  const [confirmDelete, setConfirmDelete] = useState(false)
+
+  useEffect(() => {
+    if (!image) return
+    const onKey = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose() }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [image, onClose])
+
+  useEffect(() => {
+    if (!image) setConfirmDelete(false)
+  }, [image])
+
+  if (!image) return null
+
+  return (
+    <div className="memLightbox" onClick={onClose}>
+      <img
+        className="memLightbox-image"
+        src={image.data}
+        alt=""
+        onClick={(e) => e.stopPropagation()}
+      />
+      <button
+        className="memLightbox-close"
+        onClick={(e) => { e.stopPropagation(); onClose() }}
+        aria-label={t('bingoals.close') || 'Close'}
+      >×</button>
+      <button
+        className="memLightbox-delete"
+        onClick={async (e) => {
+          e.stopPropagation()
+          if (!confirmDelete) { setConfirmDelete(true); return }
+          await onDelete()
+          onClose()
+        }}
+      >
+        {confirmDelete ? (t('bingoals.yes_delete') || 'Confirm delete') : (t('bingoals.delete') || 'Delete')}
+      </button>
+    </div>
+  )
+}
+
 function subProgressText(s: Subobjective): string {
   if ((s.target_total ?? 0) > 0) {
     const unit = s.unit ? ` ${s.unit}` : ''
