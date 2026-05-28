@@ -48,7 +48,7 @@ export default function MetacognitionLogs() {
     const loadLogs = async () => {
         try {
             const data = await getMetacognitionLogs();
-            setLogs(data);
+setLogs(data);
         } catch (e) {
             console.error('Failed to load metacognition logs:', e);
         }
@@ -66,13 +66,6 @@ export default function MetacognitionLogs() {
 
     return (
         <div className="metacognition-logs-page fade-in">
-            <div className="page-header metacognition-logs-header">
-                <div className="page-title-group">
-                    <div className="icon-wrapper bg-orange"><Wrench size={20} /></div>
-                    <h1>{t('nav.metacognition_logs')}</h1>
-                </div>
-            </div>
-
             <div className="metacognition-logs-content">
             {logs.length === 0 ? (
                 <div className="glass metacognition-logs-empty">
