@@ -31,7 +31,6 @@ type Cell = {
 const CURRENT_YEAR = new Date().getFullYear();
 let DASH_CACHE: Record<number, Cell[]> = {};
 
-
 function lastStatus(days: number | null, freqDays: number | null) {
   if (!freqDays || freqDays <= 0) return "neutral";
   if (days === null) return "red";
@@ -426,8 +425,8 @@ const DashboardCard = memo(function DashboardCard({
   const status = lastStatus(d, c.objective!.frequency_days ?? null);
   const pinned = !!c.objective!.pin_bottom;
   const cover = c.objective!.cover_data;
-  const firstLink = mediaSummary?.links[0] ?? null
-  const label = progressLabel(c.percent, c.objective!.goal_kind, c.objective!.goal_target ?? null, c.objective!.goal_unit ?? null)
+  const firstLink = mediaSummary?.links[0] ?? null;
+  const label = progressLabel(c.percent, c.objective!.goal_kind, c.objective!.goal_target ?? null, c.objective!.goal_unit ?? null);
   const cardStyle = cover
     ? {
       backgroundImage: `linear-gradient(to top, rgba(0,0,0,.85), rgba(0,0,0,.25)), url(${cover})`,
@@ -477,7 +476,7 @@ const DashboardCard = memo(function DashboardCard({
             <div className="hoverLinks">
               {mediaSummary.links.map((link, i) => (
                 <button
-                  key={i}
+                  key={link.url}
                   className="hoverLinkChip"
                   onClick={(e) => { e.stopPropagation(); openExternal(link.url); }}
                   title={link.url}
