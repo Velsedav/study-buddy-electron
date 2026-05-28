@@ -1038,12 +1038,6 @@ export default function LearningTab() {
 
     return (
         <div className={`learning-page ${animating ? 'fade-out' : 'fade-in'}`}>
-            <div className="page-header">
-                <div className="page-title-group">
-                    <div className="icon-wrapper bg-accent"><Sparkles size={20} /></div>
-                    <h1>Learning Center</h1>
-                </div>
-            </div>
             <div className="learning-tab">
             <p className="learning-tab-desc">Master the science of learning to study smarter, not harder.</p>
             {isDevNavUnlocked() && (
