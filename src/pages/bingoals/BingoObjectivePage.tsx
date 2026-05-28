@@ -189,35 +189,149 @@ export default function BingoObjectivePage() {
         </div>
       </div>
 
-        <div className="list">
-          {subs.map((s) => {
-            const timeStats = timeMap.get(s.id) ?? { total_ms: 0, last_end: null };
-            const subMedia = mediaBySub.get(s.id) ?? [];
-            return (
-              <SubobjectivePanel
-                key={s.id}
-                s={s}
-                timeStats={timeStats}
-                subs={subs}
-                setSubs={setSubs}
-                running={running}
-                playingSubId={playingSubId}
-                setPlayingSubId={setPlayingSubId}
-                subMedia={subMedia}
-                reload={reload}
-                stopTimerIfRunning={stopTimerIfRunning}
-                setRunning={setRunning}
-              />
-            );
-          })}
+      {/* ── Responsive layout ── */}
+      <div className="objPage-layout">
+
+        {/* List column */}
+        <div className="objPage-listCol">
+          {listView === 'compact' && subs.map(s => (
+            <SubobjectiveCompactRow
+              key={s.id}
+              s={s}
+              subMedia={mediaBySub.get(s.id) ?? []}
+              running={running}
+              activeSubId={activeSubId}
+              setActiveSubId={setActiveSubId}
+              onAddLink={() => setPendingAddLinkSubId(s.id)}
+            />
+          ))}
+          {listView === 'grid' && (
+            <div className="subGrid">
+              {subs.map(s => (
+                <SubobjectiveTile
+                  key={s.id}
+                  s={s}
+                  subMedia={mediaBySub.get(s.id) ?? []}
+                  running={running}
+                  activeSubId={activeSubId}
+                  setActiveSubId={setActiveSubId}
+                  onAddLink={() => setPendingAddLinkSubId(s.id)}
+                />
+              ))}
+            </div>
+          )}
+          {listView === 'full' && subs.map(s => (
+            <SubobjectivePanel
+              key={s.id}
+              s={s}
+              timeStats={timeMap.get(s.id) ?? { total_ms: 0, last_end: null }}
+              subs={subs}
+              setSubs={setSubs}
+              running={running}
+              playingSubId={playingSubId}
+              setPlayingSubId={setPlayingSubId}
+              subMedia={mediaBySub.get(s.id) ?? []}
+              reload={reload}
+              stopTimerIfRunning={stopTimerIfRunning}
+              setRunning={setRunning}
+            />
+          ))}
         </div>
 
-        <AddSubobjectiveModal
-          open={addOpen}
-          onClose={() => setAddOpen(false)}
-          objective={obj}
-          onAdded={async () => { setAddOpen(false); await reload(); }}
+        {/* Active panel column — mid/wide only (CSS hides on narrow) */}
+        {activeSubId && (() => {
+          const activeSub = subs.find(x => x.id === activeSubId)
+          if (!activeSub) return null
+          return (
+            <>
+              <div className="objPage-activeCol">
+                <ActiveTimerSection
+                  s={activeSub}
+                  timeStats={timeMap.get(activeSubId) ?? { total_ms: 0, last_end: null }}
+                  subs={subs}
+                  setSubs={setSubs}
+                  running={running}
+                  setRunning={setRunning}
+                  stopTimerIfRunning={stopTimerIfRunning}
+                  subMedia={mediaBySub.get(activeSubId) ?? []}
+                  reload={reload}
+                  playingSubId={playingSubId}
+                  setPlayingSubId={setPlayingSubId}
+                />
+              </div>
+              {/* 4K: memories in separate column */}
+              <div className="objPage-memoriesCol">
+                <SubobjectiveMemories
+                  s={activeSub}
+                  subs={subs}
+                  subMedia={mediaBySub.get(activeSubId) ?? []}
+                  playingSubId={playingSubId}
+                  setPlayingSubId={setPlayingSubId}
+                  reload={reload}
+                  stopTimerIfRunning={stopTimerIfRunning}
+                />
+              </div>
+            </>
+          )
+        })()}
+      </div>
+
+      {/* Narrow overlay — slide-up timer panel (CSS hides on 900px+) */}
+      <div className={`objPage-overlay${activeSubId ? ' objPage-overlay--open' : ''}`}>
+        {activeSubId && (() => {
+          const activeSub = subs.find(x => x.id === activeSubId)
+          if (!activeSub) return null
+          return (
+            <>
+              <div className="objPage-overlay-header">
+                <button
+                  className="btn btn-icon"
+                  onClick={() => setActiveSubId(null)}
+                  aria-label={t('bingoals.back')}
+                >
+                  <ArrowLeft size={18} />
+                </button>
+                <div className="objPage-overlay-title">{activeSub.title}</div>
+              </div>
+              <div className="objPage-overlay-body">
+                <ActiveTimerSection
+                  s={activeSub}
+                  timeStats={timeMap.get(activeSubId) ?? { total_ms: 0, last_end: null }}
+                  subs={subs}
+                  setSubs={setSubs}
+                  running={running}
+                  setRunning={setRunning}
+                  stopTimerIfRunning={stopTimerIfRunning}
+                  subMedia={mediaBySub.get(activeSubId) ?? []}
+                  reload={reload}
+                  playingSubId={playingSubId}
+                  setPlayingSubId={setPlayingSubId}
+                />
+              </div>
+            </>
+          )
+        })()}
+      </div>
+
+      {/* Modals */}
+      <AddSubobjectiveModal
+        open={addOpen}
+        onClose={() => setAddOpen(false)}
+        objective={obj}
+        onAdded={async () => { setAddOpen(false); await reload() }}
+      />
+      {pendingAddLinkSubId && (
+        <AddLinkModal
+          open={true}
+          onClose={() => setPendingAddLinkSubId(null)}
+          onAdd={async (url, label) => {
+            const subId = pendingAddLinkSubId
+            setPendingAddLinkSubId(null)
+            await addLink(subId, url, label)
+            await reload()
+          }}
         />
+      )}
     </div>
   );
 }
