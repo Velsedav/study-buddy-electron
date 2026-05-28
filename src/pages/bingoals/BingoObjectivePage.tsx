@@ -687,55 +687,129 @@ const SubobjectiveTimerPanel = memo(function SubobjectiveTimerPanel(props: {
   prev.playingSubId === next.playingSubId
 )
 
-const SubobjectivePanel = memo(function SubobjectivePanel(props: {
-  s: Subobjective;
-  timeStats: { total_ms: number; last_end: number | null };
-  subs: Subobjective[];
-  setSubs: React.Dispatch<React.SetStateAction<Subobjective[]>>;
-  running: { subId: string; startedAt: number } | null;
-  playingSubId: string | null;
-  setPlayingSubId: React.Dispatch<React.SetStateAction<string | null>>;
-  subMedia: MediaItem[];
-  reload: () => Promise<void>;
-  stopTimerIfRunning: () => Promise<void>;
-  setRunning: React.Dispatch<React.SetStateAction<{ subId: string; startedAt: number } | null>>;
+const SubobjectiveMemories = memo(function SubobjectiveMemories(props: {
+  s: Subobjective
+  subs: Subobjective[]
+  subMedia: MediaItem[]
+  playingSubId: string | null
+  setPlayingSubId: React.Dispatch<React.SetStateAction<string | null>>
+  reload: () => Promise<void>
+  stopTimerIfRunning: () => Promise<void>
 }) {
-  const { s, timeStats, subs, setSubs, running, playingSubId, setPlayingSubId, subMedia, reload, stopTimerIfRunning, setRunning } = props;
-  const { t } = useTranslation();
-  const [isEditingTitle, setIsEditingTitle] = useState(false);
-  const [timeEditOpen, setTimeEditOpen] = useState(false);
-  const [timeEditMs, setTimeEditMs] = useState(0);
-  const [quickAddOpen, setQuickAddOpen] = useState(false);
-  const [deleteConfirm, setDeleteConfirm] = useState(false);
-  const [isEditingCount, setIsEditingCount] = useState(false);
-  const [quoteOpen, setQuoteOpen] = useState(false);
-  const [linkOpen, setLinkOpen] = useState(false);
-
-  const last = Math.max(timeStats.last_end ?? 0, s.updated_at ?? 0) || null;
-  const d = daysAgo(last);
-  const initRunningExtra = running?.subId === s.id ? Math.max(0, Date.now() - running.startedAt) : 0;
-  const initialTotalMs = (timeStats.total_ms ?? 0) + initRunningExtra;
-  const { hasTarget, autoDone } = computeAutoDone(s);
-  const ratio = hasTarget && (s.target_total ?? 0) > 0
-    ? clamp01((s.progress_current ?? 0) / (s.target_total ?? 0))
-    : autoDone ? 1 : 0;
-  const isPlaying = playingSubId === s.id;
-  const isRunning = running?.subId === s.id;
-
-  // Compute adaptive tick count: find smallest "nice" step giving ≤ 20 ticks
-  const tickCount = (() => {
-    const target = s.target_total ?? 0;
-    if (target <= 0) return 10;
-    const steps = [1, 2, 5, 10, 20, 25, 50, 100, 250, 500, 1000];
-    for (const step of steps) {
-      const ticks = Math.ceil(target / step);
-      if (ticks <= 20) return ticks;
-    }
-    return Math.ceil(target / 20);
-  })();
+  const { s, subs, subMedia, playingSubId, setPlayingSubId, reload, stopTimerIfRunning } = props
+  const { t } = useTranslation()
+  const [quoteOpen, setQuoteOpen] = useState(false)
+  const [linkOpen, setLinkOpen] = useState(false)
+  const isPlaying = playingSubId === s.id
+  const linkItems = subMedia.filter(m => m.kind === 'link')
+  const slideItems = subMedia.filter(m => m.kind !== 'link')
 
   return (
-    <div className={`panel ${autoDone ? "panelDone" : ""} ${isRunning ? "panelRecording" : ""}`}>
+    <div className="memories">
+      <div className="row bingo-panel-header-row">
+        <div className="muted bingo-section-label">{t('bingoals.memories_label')}</div>
+        <div className="memories-actions">
+          <button className="btn bingo-memory-action-btn" onMouseEnter={() => playSFX(SFX.HOVER)} onClick={() => setQuoteOpen(true)}>{t('bingoals.add_quote')}</button>
+          <button className="btn bingo-memory-action-btn" onMouseEnter={() => playSFX(SFX.HOVER)} onClick={() => setLinkOpen(true)}>{t('bingoals.add_link')}</button>
+          <label className="btn bingo-memory-action-btn" onMouseEnter={() => playSFX(SFX.HOVER)}>
+            {t('bingoals.add_images')}
+            <input
+              type="file"
+              accept="image/*"
+              multiple
+              className="bingo-file-input"
+              onChange={async (e) => {
+                const files = Array.from(e.target.files ?? [])
+                if (files.length === 0) return
+                await stopTimerIfRunning()
+                for (const file of files) {
+                  const dataUrl = await fileToCompressedDataUrl(file)
+                  await addImage(s.id, dataUrl)
+                  await new Promise((r) => setTimeout(r, 0))
+                }
+                e.currentTarget.value = ''
+                await reload()
+              }}
+            />
+          </label>
+          {(() => {
+            const slideCount = slideItems.length
+            return (
+              <button
+                className="btn bingo-memories-play"
+                disabled={slideCount < 2}
+                title={slideCount < 2 ? t('bingoals.play_requires_two') : undefined}
+                onMouseEnter={() => playSFX(SFX.HOVER)}
+                onClick={() => setPlayingSubId((prev) => (prev === s.id ? null : s.id))}
+              >
+                {isPlaying ? t('bingoals.pause') : t('bingoals.play')}
+              </button>
+            )
+          })()}
+        </div>
+      </div>
+      {linkItems.length > 0 && (
+        <div className="bingo-links-row">
+          {linkItems.map(item => {
+            const parsed = (() => { try { return JSON.parse(item.data) } catch { return { url: item.data, label: '' } } })()
+            return (
+              <div key={item.id} className="bingo-link-pill">
+                <button className="bingo-link-pill-btn" onClick={() => openExternal(parsed.url)} title={parsed.url}>
+                  <ExternalLink size={12} />
+                  {parsed.label || parsed.url}
+                </button>
+                <button className="bingo-link-pill-delete" onClick={async () => { await deleteMediaItem(item.id); await reload() }} aria-label={t('bingoals.delete')}>×</button>
+              </div>
+            )
+          })}
+        </div>
+      )}
+      <Slideshow
+        items={slideItems}
+        playing={isPlaying}
+        onRequestStop={() => setPlayingSubId(null)}
+        onDelete={async (mediaId) => { await deleteMediaItem(mediaId); await reload() }}
+      />
+      <AddQuoteModal
+        open={quoteOpen}
+        onClose={() => setQuoteOpen(false)}
+        onAdd={async (quote) => { setQuoteOpen(false); await addQuote(s.id, quote); await reload() }}
+      />
+      <AddLinkModal
+        open={linkOpen}
+        onClose={() => setLinkOpen(false)}
+        onAdd={async (url, label) => { setLinkOpen(false); await addLink(s.id, url, label); await reload() }}
+      />
+    </div>
+  )
+}, (prev, next) =>
+  prev.s === next.s && prev.playingSubId === next.playingSubId && prev.subMedia === next.subMedia
+)
+
+const SubobjectivePanel = memo(function SubobjectivePanel(props: {
+  s: Subobjective
+  timeStats: { total_ms: number; last_end: number | null }
+  subs: Subobjective[]
+  setSubs: React.Dispatch<React.SetStateAction<Subobjective[]>>
+  running: { subId: string; startedAt: number } | null
+  playingSubId: string | null
+  setPlayingSubId: React.Dispatch<React.SetStateAction<string | null>>
+  subMedia: MediaItem[]
+  reload: () => Promise<void>
+  stopTimerIfRunning: () => Promise<void>
+  setRunning: React.Dispatch<React.SetStateAction<{ subId: string; startedAt: number } | null>>
+}) {
+  const { s, timeStats, subs, setSubs, running, playingSubId, setPlayingSubId, subMedia, reload, stopTimerIfRunning, setRunning } = props
+  const { t } = useTranslation()
+  const [isEditingTitle, setIsEditingTitle] = useState(false)
+  const { autoDone, hasTarget } = computeAutoDone(s)
+  const ratio = hasTarget && (s.target_total ?? 0) > 0
+    ? clamp01((s.progress_current ?? 0) / (s.target_total ?? 0))
+    : autoDone ? 1 : 0
+  const isRunning = running?.subId === s.id
+
+  return (
+    <div className={`panel ${autoDone ? 'panelDone' : ''} ${isRunning ? 'panelRecording' : ''}`}>
       <div className="row bingo-panel-header-row">
         {isEditingTitle ? (
           <input
@@ -745,12 +819,12 @@ const SubobjectivePanel = memo(function SubobjectivePanel(props: {
             autoFocus
             onChange={(e) => setSubs((prev) => prev.map((x) => (x.id === s.id ? { ...x, title: e.target.value } : x)))}
             onBlur={async () => {
-              setIsEditingTitle(false);
-              const fresh = subs.find((x) => x.id === s.id);
-              if (fresh) await updateSubobjective(s.id, { title: fresh.title });
-              await reload();
+              setIsEditingTitle(false)
+              const fresh = subs.find((x) => x.id === s.id)
+              if (fresh) await updateSubobjective(s.id, { title: fresh.title })
+              await reload()
             }}
-            onKeyDown={(e) => { if (e.key === "Enter" || e.key === "Escape") (e.target as HTMLInputElement).blur(); }}
+            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === 'Escape') (e.target as HTMLInputElement).blur() }}
           />
         ) : (
           <div
@@ -759,329 +833,33 @@ const SubobjectivePanel = memo(function SubobjectivePanel(props: {
             role="button"
             tabIndex={0}
             aria-label={t('bingoals.sub_title_aria')}
-            onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") setIsEditingTitle(true); }}
+            onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setIsEditingTitle(true) }}
           >
             {s.title}
           </div>
         )}
         <div className="pill">{Math.round(ratio * 100)}%</div>
       </div>
-
       <div className="bingo-panel-body">
-      <div className="bingo-panel-left">
-        {/* Instrument face: big timer display */}
-        <div className="bingo-instrument-face">
-          <TimerDisplay
-            totalMs={initialTotalMs}
-            isRunning={isRunning}
-            startedAt={isRunning ? running!.startedAt : null}
-            className="bingo-instrument-timer"
+        <SubobjectiveTimerPanel
+          s={s} timeStats={timeStats} subs={subs} setSubs={setSubs}
+          running={running} playingSubId={playingSubId} setPlayingSubId={setPlayingSubId}
+          reload={reload} stopTimerIfRunning={stopTimerIfRunning} setRunning={setRunning}
+        />
+        <div className="bingo-panel-right">
+          <SubobjectiveMemories
+            s={s} subs={subs} subMedia={subMedia}
+            playingSubId={playingSubId} setPlayingSubId={setPlayingSubId}
+            reload={reload} stopTimerIfRunning={stopTimerIfRunning}
           />
-          <button
-            className="btn btn-icon bingo-instrument-edit"
-            onMouseEnter={() => playSFX(SFX.HOVER)}
-            onClick={async (e) => {
-              e.stopPropagation();
-              await stopTimerIfRunning();
-              const ms = (timeStats.total_ms ?? 0) + (running?.subId === s.id ? Math.max(0, Date.now() - running.startedAt) : 0);
-              setTimeEditMs(ms);
-              setTimeEditOpen(true);
-            }}
-            title={t('bingoals.time_edit_title')}
-            aria-label={t('bingoals.time_edit_title')}
-          >
-            <Pencil size={12} />
-          </button>
-          <button
-            className="btn btn-icon bingo-instrument-quick-add"
-            onMouseEnter={() => playSFX(SFX.HOVER)}
-            onClick={(e) => { e.stopPropagation(); setQuickAddOpen(true); }}
-            title={t('bingoals.quick_add_title')}
-            aria-label={t('bingoals.quick_add_title')}
-          >
-            <Plus size={12} />
-          </button>
-        </div>
-
-        {/* START / STOP — physical button */}
-        {isRunning ? (
-          <button className="btn btn-danger bingo-start-btn" onClick={() => { playSFX(SFX.CANCEL); stopTimerIfRunning(); }} onMouseEnter={() => playSFX(SFX.HOVER)} title={t('bingoals.stop')}>
-            <span className="bingo-stop-square" aria-hidden="true" />
-            {t('bingoals.stop')}
-          </button>
-        ) : (
-          <button className="btn btn-primary bingo-start-btn" onClick={async () => { playSFX(SFX.SESSION_START); await stopTimerIfRunning(); setRunning({ subId: s.id, startedAt: Date.now() }); }} onMouseEnter={() => playSFX(SFX.HOVER)}>
-            <span className="bingo-rec-dot" aria-hidden="true" />
-            {t('bingoals.start')}
-          </button>
-        )}
-
-        {/* Count display: large number + target/unit caption */}
-        <div className="bingo-count-block">
-          {isEditingCount ? (
-            <input
-              className="numInput bingo-count-input"
-              type="number"
-              autoFocus
-              aria-label={t('bingoals.aria_current')}
-              value={s.progress_current ?? 0}
-              onChange={(e) => { const v = Number(e.target.value); setSubs((prev) => prev.map((x) => (x.id === s.id ? { ...x, progress_current: v } : x))); }}
-              onBlur={async () => {
-                setIsEditingCount(false);
-                const fresh = subs.find((x) => x.id === s.id);
-                if (!fresh) return;
-                const { hasTarget, autoDone } = computeAutoDone(fresh);
-                await updateSubobjective(s.id, { progress_current: fresh.progress_current, is_done: hasTarget ? (autoDone ? 1 : 0) : fresh.is_done });
-                await reload();
-              }}
-              onKeyDown={(e) => { if (e.key === "Enter" || e.key === "Escape") (e.target as HTMLInputElement).blur(); }}
-            />
-          ) : (
-            <div
-              className="bingo-count-value"
-              onClick={() => setIsEditingCount(true)}
-              role="button"
-              tabIndex={0}
-              aria-label={t('bingoals.aria_current')}
-              onKeyDown={(e) => { if (e.key === "Enter" || e.key === " ") setIsEditingCount(true); }}
-            >
-              {s.progress_current ?? 0}
-            </div>
-          )}
-          <div className="bingo-count-caption">
-            <span>/</span>
-            <input
-              className="numInput bingo-target-caption"
-              type="number"
-              aria-label={t('bingoals.aria_target')}
-              value={s.target_total ?? 0}
-              onChange={(e) => { const v = Number(e.target.value); setSubs((prev) => prev.map((x) => (x.id === s.id ? { ...x, target_total: v } : x))); }}
-              onBlur={async () => {
-                const fresh = subs.find((x) => x.id === s.id);
-                if (!fresh) return;
-                const { hasTarget, autoDone } = computeAutoDone(fresh);
-                await updateSubobjective(s.id, { target_total: fresh.target_total, is_done: hasTarget ? (autoDone ? 1 : 0) : fresh.is_done });
-                await reload();
-              }}
-            />
-            <input
-              className="unitInput bingo-unit-caption"
-              aria-label={t('bingoals.unit_label')}
-              value={s.unit ?? ""}
-              placeholder={t('bingoals.unit_placeholder')}
-              onChange={(e) => setSubs((prev) => prev.map((x) => (x.id === s.id ? { ...x, unit: e.target.value } : x)))}
-              onBlur={async () => {
-                const fresh = subs.find((x) => x.id === s.id);
-                if (fresh) await updateSubobjective(s.id, { unit: fresh.unit?.trim() || null });
-                await reload();
-              }}
-            />
-          </div>
-        </div>
-
-        {/* Wide [−] [+] tap buttons */}
-        <div className="bingo-tap-strip">
-          <button
-            className="bingo-tap-btn"
-            aria-label={t('bingoals.decrement')}
-            onMouseEnter={() => playSFX(SFX.HOVER)}
-            onClick={async () => {
-              const fresh = subs.find((x) => x.id === s.id);
-              if (!fresh) return;
-              const next = Math.max(0, (fresh.progress_current ?? 0) - 1);
-              playSFX(SFX.CANCEL);
-              setSubs((prev) => prev.map((x) => (x.id === s.id ? { ...x, progress_current: next } : x)));
-              const { hasTarget: ht, autoDone: ad } = computeAutoDone({ ...fresh, progress_current: next });
-              await updateSubobjective(s.id, { progress_current: next, is_done: ht ? (ad ? 1 : 0) : fresh.is_done });
-              await reload();
-            }}
-          >−</button>
-          <button
-            className="bingo-tap-btn"
-            aria-label={t('bingoals.increment')}
-            onMouseEnter={() => playSFX(SFX.HOVER)}
-            onClick={async () => {
-              const fresh = subs.find((x) => x.id === s.id);
-              if (!fresh) return;
-              const next = (fresh.progress_current ?? 0) + 1;
-              const { hasTarget: ht, autoDone: ad } = computeAutoDone({ ...fresh, progress_current: next });
-              playSFX(ad ? SFX.BINGO_COMPLETE : SFX.BINGO_CHECK);
-              setSubs((prev) => prev.map((x) => (x.id === s.id ? { ...x, progress_current: next } : x)));
-              await updateSubobjective(s.id, { progress_current: next, is_done: ht ? (ad ? 1 : 0) : fresh.is_done });
-              await reload();
-            }}
-          >+</button>
-        </div>
-
-        {/* Tick-mark progress bar — tick count adapts to target */}
-        <div className="bingo-tick-bar" style={{ '--bingo-ticks': tickCount } as React.CSSProperties}>
-          <div className="bingo-tick-fill" style={{ '--bingo-fill': `${ratio * 100}%` } as React.CSSProperties} />
-        </div>
-
-        {/* Footer: last practiced + done + delete */}
-        <div className="bingo-instrument-footer">
-          <span className="muted">{formatDaysAgo(d, t)}</span>
-          <div className="row bingo-sub-actions">
-            <button className="btn bingo-mark-done-btn" onMouseEnter={() => playSFX(SFX.HOVER)} onClick={async () => {
-              if (hasTarget) {
-                const next = autoDone ? Math.max(0, (s.target_total ?? 1) - 1) : (s.target_total ?? 1);
-                const { autoDone: ad } = computeAutoDone({ ...s, progress_current: next });
-                playSFX(ad ? SFX.BINGO_COMPLETE : SFX.BINGO_CHECK);
-                setSubs((prev) => prev.map((x) => (x.id === s.id ? { ...x, progress_current: next } : x)));
-                await updateSubobjective(s.id, { progress_current: next, is_done: ad ? 1 : 0 });
-              } else {
-                playSFX(s.is_done ? SFX.CANCEL : SFX.BINGO_COMPLETE);
-                await updateSubobjective(s.id, { is_done: s.is_done ? 0 : 1 });
-              }
-              await reload();
-            }}>
-              {(autoDone || (!hasTarget && s.is_done)) ? t('bingoals.undone') : t('bingoals.done')}
-            </button>
-            {deleteConfirm ? (
-              <>
-                <button className="btn btn-danger" onClick={async () => {
-                  if (running?.subId === s.id) await stopTimerIfRunning();
-                  if (playingSubId === s.id) setPlayingSubId(null);
-                  await deleteSubobjective(s.id);
-                  await reload();
-                }}>{t('bingoals.yes_delete')}</button>
-                <button className="btn" onClick={() => setDeleteConfirm(false)}>{t('bingoals.cancel')}</button>
-              </>
-            ) : (
-              <button className="btn-icon bingo-delete-btn" onMouseEnter={() => playSFX(SFX.HOVER)} onClick={() => setDeleteConfirm(true)} aria-label={t('bingoals.delete')}>
-                <Trash2 size={14} />
-              </button>
-            )}
-          </div>
         </div>
       </div>
-      <div className="bingo-panel-right">
-      <div className="memories">
-        <div className="row bingo-panel-header-row">
-          <div className="muted bingo-section-label">{t('bingoals.memories_label')}</div>
-          <div className="memories-actions">
-            <button className="btn bingo-memory-action-btn" onMouseEnter={() => playSFX(SFX.HOVER)} onClick={() => setQuoteOpen(true)}>{t('bingoals.add_quote')}</button>
-            <button className="btn bingo-memory-action-btn" onMouseEnter={() => playSFX(SFX.HOVER)} onClick={() => setLinkOpen(true)}>{t('bingoals.add_link')}</button>
-
-            <label className="btn bingo-memory-action-btn" onMouseEnter={() => playSFX(SFX.HOVER)}>
-              {t('bingoals.add_images')}
-              <input
-                type="file"
-                accept="image/*"
-                multiple
-                className="bingo-file-input"
-                onChange={async (e) => {
-                  const files = Array.from(e.target.files ?? []);
-                  if (files.length === 0) return;
-                  await stopTimerIfRunning();
-                  for (const file of files) {
-                    const dataUrl = await fileToCompressedDataUrl(file);
-                    await addImage(s.id, dataUrl);
-                    await new Promise((r) => setTimeout(r, 0));
-                  }
-                  e.currentTarget.value = "";
-                  await reload();
-                }}
-              />
-            </label>
-
-            {(() => {
-              const slideCount = subMedia.filter(m => m.kind !== "link").length;
-              return (
-                <button
-                  className="btn bingo-memories-play"
-                  disabled={slideCount < 2}
-                  title={slideCount < 2 ? t('bingoals.play_requires_two') : undefined}
-                  onMouseEnter={() => playSFX(SFX.HOVER)}
-                  onClick={() => setPlayingSubId((prev) => (prev === s.id ? null : s.id))}
-                >
-                  {isPlaying ? t('bingoals.pause') : t('bingoals.play')}
-                </button>
-              );
-            })()}
-          </div>
-        </div>
-
-        {(() => {
-          const linkItems = subMedia.filter(m => m.kind === "link");
-          const slideItems = subMedia.filter(m => m.kind !== "link");
-          return (
-            <>
-              {linkItems.length > 0 && (
-                <div className="bingo-links-row">
-                  {linkItems.map(item => {
-                    const parsed = (() => { try { return JSON.parse(item.data); } catch { return { url: item.data, label: "" }; } })();
-                    return (
-                      <div key={item.id} className="bingo-link-pill">
-                        <button
-                          className="bingo-link-pill-btn"
-                          onClick={() => openExternal(parsed.url)}
-                          title={parsed.url}
-                        >
-                          <ExternalLink size={12} />
-                          {parsed.label || parsed.url}
-                        </button>
-                        <button
-                          className="bingo-link-pill-delete"
-                          onClick={async () => { await deleteMediaItem(item.id); await reload(); }}
-                          aria-label={t('bingoals.delete')}
-                        >×</button>
-                      </div>
-                    );
-                  })}
-                </div>
-              )}
-              <Slideshow
-                items={slideItems}
-                playing={isPlaying}
-                onRequestStop={() => setPlayingSubId(null)}
-                onDelete={async (mediaId) => { await deleteMediaItem(mediaId); await reload(); }}
-              />
-            </>
-          );
-        })()}
-      </div>
-      </div>
-      </div>
-
-      <AddQuoteModal
-        open={quoteOpen}
-        onClose={() => setQuoteOpen(false)}
-        onAdd={async (quote) => {
-          setQuoteOpen(false);
-          await addQuote(s.id, quote);
-          await reload();
-        }}
-      />
-
-      <AddLinkModal
-        open={linkOpen}
-        onClose={() => setLinkOpen(false)}
-        onAdd={async (url, label) => {
-          setLinkOpen(false);
-          await addLink(s.id, url, label);
-          await reload();
-        }}
-      />
-
-      <TimeEditModal
-        open={timeEditOpen}
-        initialMs={timeEditMs}
-        onSave={async (ms) => { setTimeEditOpen(false); await setSubobjectiveTotalTime(s.id, ms); await reload(); }}
-        onClose={() => setTimeEditOpen(false)}
-      />
-
-      <QuickAddTimeModal
-        open={quickAddOpen}
-        onSave={async (deltaMs) => { setQuickAddOpen(false); if (deltaMs > 0) { await addManualTimeDelta(s.id, deltaMs); await reload(); } }}
-        onClose={() => setQuickAddOpen(false)}
-      />
     </div>
-  );
-}, (prev, next) => {
-  return prev.s === next.s && prev.timeStats === next.timeStats && prev.running === next.running &&
-    prev.playingSubId === next.playingSubId && prev.subMedia === next.subMedia;
-});
+  )
+}, (prev, next) =>
+  prev.s === next.s && prev.timeStats === next.timeStats && prev.running === next.running &&
+  prev.playingSubId === next.playingSubId && prev.subMedia === next.subMedia
+)
 
 function Slideshow(props: {
   items: MediaItem[];
