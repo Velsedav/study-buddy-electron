@@ -2593,16 +2593,23 @@
    MEMORIES VIEW — per-subobjective horizontal strips of memory cards
    ════════════════════════════════════════════════════════════════ */
 
-/* When listView==='memories', list column expands to share the row with
-   the active panel column. The memoriesCol is hidden (strips already show memories). */
+/* When listView==='memories', list column takes the full width.
+   activeCol + memoriesCol + slide-up overlay are all hidden — the strip
+   header already exposes start/stop, mark-done, links and add controls,
+   so the big timer panel and slide-up overlay are redundant here. */
+.bingoals-root .objPage-layout--memories {
+  flex-direction: column !important;
+}
 .bingoals-root .objPage-layout--memories .objPage-listCol {
-  flex: 1 1 0 !important;
+  flex: 1 1 auto !important;
+  width: 100%;
   min-width: 0;
 }
+.bingoals-root .objPage-layout--memories .objPage-activeCol,
 .bingoals-root .objPage-layout--memories .objPage-memoriesCol { display: none !important; }
 
-/* Strips also must respect parent width — prevent .memStrip overflow inside listCol */
-.bingoals-root .objPage-layout--memories .memStrip { max-width: 100%; }
+/* Hide the slide-up overlay (sibling of objPage-layout) when in memories view */
+.bingoals-root .objPage-layout--memories ~ .objPage-overlay { display: none !important; }
 
 /* ── Strip container ── */
 
