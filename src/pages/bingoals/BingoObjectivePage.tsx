@@ -24,6 +24,7 @@ import {
 import { clamp01, daysAgo } from "../../lib/bingoals/format";
 import { fileToCompressedDataUrl } from "../../lib/bingoals/image";
 import { computeObjectivePercent } from "../../lib/bingoals/progress";
+import { titleToHue } from "../../lib/bingoals/color";
 import { useTranslation } from "../../lib/i18n";
 import { playSFX, SFX } from "../../lib/sounds";
 
@@ -370,6 +371,77 @@ function SubobjectiveCompactRow(props: {
         aria-label={t('bingoals.add_link')}
       >+ link</button>
       <span className="subCompactProgress">{subProgressText(s)}</span>
+    </div>
+  )
+}
+
+function SubobjectiveTile(props: {
+  s: Subobjective
+  subMedia: MediaItem[]
+  running: { subId: string; startedAt: number } | null
+  activeSubId: string | null
+  setActiveSubId: (id: string | null) => void
+  onAddLink: () => void
+}) {
+  const { s, subMedia, running, activeSubId, setActiveSubId, onAddLink } = props
+  const { t } = useTranslation()
+  const { autoDone, hasTarget } = computeAutoDone(s)
+  const isDone = autoDone || (!hasTarget && !!s.is_done)
+  const isActive = activeSubId === s.id
+
+  const links = subMedia
+    .filter(m => m.kind === 'link')
+    .map(item => {
+      try { return JSON.parse(item.data) as { url: string; label: string } }
+      catch { return { url: item.data, label: '' } }
+    })
+
+  const lastImage = subMedia.filter(m => m.kind === 'image').at(-1)
+  const hue = titleToHue(s.title)
+
+  const tileStyle: React.CSSProperties = lastImage
+    ? { backgroundImage: `url(${lastImage.data})` }
+    : { background: `hsl(${hue}, 35%, 28%)` }
+
+  const progressText = (s.target_total ?? 0) > 0
+    ? `${s.progress_current}/${s.target_total}`
+    : isDone ? '✓' : null
+
+  return (
+    <div
+      className={['subGridTile', isActive && 'subGridTile--active', isDone && 'subGridTile--done'].filter(Boolean).join(' ')}
+      style={tileStyle}
+      onClick={() => setActiveSubId(s.id)}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') setActiveSubId(s.id) }}
+    >
+      <div className="subGridDoneOverlay">✓</div>
+      {progressText && <div className="subGridProgress">{progressText}</div>}
+      <button
+        className="subGridAddLink"
+        onClick={(e) => { e.stopPropagation(); onAddLink() }}
+        title={t('bingoals.add_link')}
+        aria-label={t('bingoals.add_link')}
+      >+ link</button>
+      <div className="subGridScrim">
+        <div className="subGridTitle">{s.title}</div>
+        {links.length > 0 && (
+          <div className="subGridLinks" onClick={e => e.stopPropagation()}>
+            {links.map(link => (
+              <button
+                key={link.url}
+                className="subGridChip"
+                onClick={() => openExternal(link.url)}
+                title={link.url}
+              >
+                <ExternalLink size={8} />
+                {link.label || link.url}
+              </button>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   )
 }
