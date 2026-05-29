@@ -19,7 +19,7 @@ import {
 } from '../lib/export';
 import './Settings.css';
 
-export default function SettingsTab() {
+function DefaultSettings() {
     const {
         theme, setTheme,
         weekStart, setWeekStart,
@@ -702,4 +702,8 @@ export default function SettingsTab() {
             <p className="settings-version">Study Buddy · v{__APP_VERSION__}</p>
         </div>
     );
+}
+
+export default function SettingsTab() {
+    return <DefaultSettings />;
 }
