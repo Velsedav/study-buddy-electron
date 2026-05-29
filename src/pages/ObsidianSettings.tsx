@@ -1,5 +1,14 @@
 import { useState, useEffect } from 'react';
-import { Palette, Brain, Volume2, Database, Power, Zap, Keyboard, Play } from 'lucide-react';
+import { Palette, Brain, Volume2, Database, Power, Zap, Keyboard, Play, AlertTriangle, Trash2, FolderOpen, X } from 'lucide-react';
+import { deleteAllData } from '../lib/db';
+import { deleteAllBingoData } from '../lib/bingoals/db';
+import {
+    getExportConfig, saveExportConfig,
+    getLastExportTime,
+    exportToConfiguredPaths,
+    pickExportFolder, pickImportFilePath,
+    importBackup,
+} from '../lib/export';
 import { useTranslation } from '../lib/i18n';
 import { useSettings } from '../lib/settings';
 import type { Theme, WeekStart, MetacognitionDay } from '../lib/settings';
@@ -16,6 +25,23 @@ type Category = 'look-and-feel' | 'learning' | 'audio' | 'system';
 export default function ObsidianSettings() {
     const { t } = useTranslation();
     const [category, setCategory] = useState<Category>('look-and-feel');
+    const [showDeleteModal, setShowDeleteModal] = useState(false);
+    const [deleteInput, setDeleteInput] = useState('');
+    const [showDeleteBingoModal, setShowDeleteBingoModal] = useState(false);
+    const [deleteBingoInput, setDeleteBingoInput] = useState('');
+
+    async function handleDeleteAll() {
+        await deleteAllData();
+        setShowDeleteModal(false);
+        setDeleteInput('');
+        window.location.reload();
+    }
+    async function handleDeleteBingo() {
+        await deleteAllBingoData();
+        setShowDeleteBingoModal(false);
+        setDeleteBingoInput('');
+        window.location.reload();
+    }
 
     const railItems: { id: Category; icon: typeof Palette; label: string }[] = [
         { id: 'look-and-feel', icon: Palette, label: t('settings.look_and_feel') || 'Look & feel' },
@@ -26,6 +52,92 @@ export default function ObsidianSettings() {
 
     return (
         <div className="obs-settings-root">
+            {showDeleteModal && (
+                <div className="modal-overlay">
+                    <div className="modal-content danger-modal">
+                        <div className="settings-header danger-modal-header">
+                            <AlertTriangle size={24} />
+                            <h2>{t('settings.danger_zone')}</h2>
+                        </div>
+                        <p className="danger-modal-text">
+                            {t('settings.delete_confirm_msg')}
+                            <br /><br />
+                            <strong>{t('settings.delete_keyword')}</strong>
+                        </p>
+                        <input
+                            type="text"
+                            value={deleteInput}
+                            onChange={(e) => setDeleteInput(e.target.value)}
+                            placeholder={t('settings.delete_keyword')}
+                            className="danger-modal-input"
+                        />
+                        <div className="danger-modal-actions">
+                            <button
+                                type="button"
+                                className="btn btn-secondary"
+                                onMouseEnter={() => playSFX(SFX.HOVER)}
+                                onClick={() => { setShowDeleteModal(false); setDeleteInput(''); }}
+                            >
+                                {t('settings.cancel')}
+                            </button>
+                            <button
+                                type="button"
+                                className="btn btn-danger-outline btn-danger-outline-solid"
+                                disabled={deleteInput.toLowerCase() !== t('settings.delete_keyword').toLowerCase()}
+                                onMouseEnter={() => playSFX(SFX.HOVER)}
+                                onClick={handleDeleteAll}
+                            >
+                                <Trash2 size={18} style={{ marginRight: '8px' }} />
+                                {t('settings.confirm_delete')}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {showDeleteBingoModal && (
+                <div className="modal-overlay">
+                    <div className="modal-content danger-modal">
+                        <div className="settings-header danger-modal-header">
+                            <AlertTriangle size={24} />
+                            <h2>{t('settings.danger_zone')}</h2>
+                        </div>
+                        <p className="danger-modal-text">
+                            {t('settings.delete_bingo_confirm_msg') || t('settings.delete_confirm_msg')}
+                            <br /><br />
+                            <strong>{t('settings.delete_keyword')}</strong>
+                        </p>
+                        <input
+                            type="text"
+                            value={deleteBingoInput}
+                            onChange={(e) => setDeleteBingoInput(e.target.value)}
+                            placeholder={t('settings.delete_keyword')}
+                            className="danger-modal-input"
+                        />
+                        <div className="danger-modal-actions">
+                            <button
+                                type="button"
+                                className="btn btn-secondary"
+                                onMouseEnter={() => playSFX(SFX.HOVER)}
+                                onClick={() => { setShowDeleteBingoModal(false); setDeleteBingoInput(''); }}
+                            >
+                                {t('settings.cancel')}
+                            </button>
+                            <button
+                                type="button"
+                                className="btn btn-danger-outline btn-danger-outline-solid"
+                                disabled={deleteBingoInput.toLowerCase() !== t('settings.delete_keyword').toLowerCase()}
+                                onMouseEnter={() => playSFX(SFX.HOVER)}
+                                onClick={handleDeleteBingo}
+                            >
+                                <Trash2 size={18} style={{ marginRight: '8px' }} />
+                                {t('settings.confirm_delete')}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
             <div className="obs-settings-layout">
                 <nav className="obs-settings-rail" aria-label="Settings categories">
                     <div className="obs-settings-rail-header">Settings</div>
@@ -48,7 +160,12 @@ export default function ObsidianSettings() {
                         {category === 'look-and-feel' && <LookAndFeelPanel />}
                         {category === 'learning' && <LearningPanel />}
                         {category === 'audio' && <AudioPanel />}
-                        {category === 'system' && <SystemPanel />}
+                        {category === 'system' && (
+                            <SystemPanel
+                                onRequestDeleteAll={() => setShowDeleteModal(true)}
+                                onRequestDeleteBingo={() => setShowDeleteBingoModal(true)}
+                            />
+                        )}
                     </div>
                 </main>
             </div>
@@ -353,12 +470,132 @@ function AudioPanel() {
     );
 }
 
-function SystemPanel() {
+function SystemPanel(props: { onRequestDeleteAll: () => void; onRequestDeleteBingo: () => void }) {
     const { t } = useTranslation();
+    const { onRequestDeleteAll, onRequestDeleteBingo } = props;
+    const [exportPath1, setExportPath1] = useState(() => getExportConfig().path1);
+    const [exportPath2, setExportPath2] = useState(() => getExportConfig().path2);
+    const [lastExportTime, setLastExportTime] = useState(() => getLastExportTime());
+    const [status, setStatus] = useState<{ type: 'success' | 'error'; message: string } | null>(null);
+
+    function flashStatus(type: 'success' | 'error', message: string) {
+        setStatus({ type, message });
+        setTimeout(() => setStatus(null), 4000);
+    }
+
+    function persistPaths(p1: string, p2: string) {
+        saveExportConfig({ path1: p1, path2: p2 });
+    }
+
+    async function handlePickPath(slot: 1 | 2) {
+        const folder = await pickExportFolder();
+        if (!folder) return;
+        if (slot === 1) {
+            setExportPath1(folder);
+            persistPaths(folder, exportPath2);
+        } else {
+            setExportPath2(folder);
+            persistPaths(exportPath1, folder);
+        }
+    }
+    function handleClearPath(slot: 1 | 2) {
+        if (slot === 1) {
+            setExportPath1('');
+            persistPaths('', exportPath2);
+        } else {
+            setExportPath2('');
+            persistPaths(exportPath1, '');
+        }
+    }
+
+    async function handleExportNow() {
+        const result = await exportToConfiguredPaths();
+        setLastExportTime(getLastExportTime());
+        if (result.saved.length > 0) flashStatus('success', t('settings.export_success') || 'Exported');
+        else flashStatus('error', t('settings.export_error') || 'Export failed');
+    }
+
+    async function handleImport() {
+        const file = await pickImportFilePath();
+        if (!file) return;
+        try {
+            await importBackup(file);
+            flashStatus('success', t('settings.import_success') || 'Imported');
+        } catch (e) {
+            flashStatus('error', String(e));
+        }
+    }
+
     return (
         <>
             <h1 className="obs-settings-panel-title">{t('settings.system') || 'System'}</h1>
-            <p className="obs-settings-panel-subtitle">Backup, restore, and danger zone.</p>
+
+            <section className="obs-settings-section">
+                <h2 className="obs-settings-section-label">{t('settings.data_management')}</h2>
+                <p className="obs-settings-hint">{t('settings.export_path') || 'Export folder'} 1</p>
+                <div className="obs-settings-row">
+                    <input type="text" value={exportPath1} readOnly placeholder={t('settings.no_path') || 'No folder set'} style={{ flex: 1 }} />
+                    <button type="button" className="btn btn-icon" onClick={() => handlePickPath(1)} aria-label={t('settings.pick_folder')} title={t('settings.pick_folder')}>
+                        <FolderOpen size={14} />
+                    </button>
+                    {exportPath1 && (
+                        <button type="button" className="btn btn-icon" onClick={() => handleClearPath(1)} aria-label={t('settings.clear_path')} title={t('settings.clear_path')}>
+                            <X size={14} />
+                        </button>
+                    )}
+                </div>
+                <p className="obs-settings-hint">{t('settings.export_path') || 'Export folder'} 2</p>
+                <div className="obs-settings-row">
+                    <input type="text" value={exportPath2} readOnly placeholder={t('settings.no_path') || 'No folder set'} style={{ flex: 1 }} />
+                    <button type="button" className="btn btn-icon" onClick={() => handlePickPath(2)} aria-label={t('settings.pick_folder')} title={t('settings.pick_folder')}>
+                        <FolderOpen size={14} />
+                    </button>
+                    {exportPath2 && (
+                        <button type="button" className="btn btn-icon" onClick={() => handleClearPath(2)} aria-label={t('settings.clear_path')} title={t('settings.clear_path')}>
+                            <X size={14} />
+                        </button>
+                    )}
+                </div>
+
+                <div className="obs-settings-row" style={{ marginTop: 12 }}>
+                    <button type="button" className="btn btn-primary" onClick={handleExportNow} onMouseEnter={() => playSFX(SFX.HOVER)}>
+                        {t('settings.export_now') || 'Export now'}
+                    </button>
+                    <button type="button" className="btn btn-secondary" onClick={handleImport} onMouseEnter={() => playSFX(SFX.HOVER)}>
+                        {t('settings.import') || 'Import backup'}
+                    </button>
+                </div>
+
+                {lastExportTime && (
+                    <p className="obs-settings-hint">
+                        {(t('settings.last_export') || 'Last export')}: {new Date(lastExportTime).toLocaleString()}
+                    </p>
+                )}
+                {status && (
+                    <p className="obs-settings-hint" style={{ color: status.type === 'success' ? 'var(--success)' : 'var(--danger)' }}>
+                        {status.message}
+                    </p>
+                )}
+            </section>
+
+            <section className="obs-settings-section">
+                <hr className="obs-settings-danger-rule" />
+                <h2 className="obs-settings-section-label" style={{ color: 'var(--danger)' }}>
+                    <AlertTriangle size={14} style={{ verticalAlign: '-2px', marginRight: 6 }} />
+                    {t('settings.danger_zone')}
+                </h2>
+                <p className="obs-settings-hint">{t('settings.danger_warning') || 'These actions are irreversible.'}</p>
+                <div className="obs-settings-row">
+                    <button type="button" className="btn btn-danger-outline" onClick={onRequestDeleteAll} onMouseEnter={() => playSFX(SFX.HOVER)}>
+                        <Trash2 size={14} style={{ marginRight: 6 }} />
+                        {t('settings.delete_all') || 'Delete all data'}
+                    </button>
+                    <button type="button" className="btn btn-danger-outline" onClick={onRequestDeleteBingo} onMouseEnter={() => playSFX(SFX.HOVER)}>
+                        <Trash2 size={14} style={{ marginRight: 6 }} />
+                        {t('settings.delete_all_bingo') || 'Delete all Bingoals data'}
+                    </button>
+                </div>
+            </section>
         </>
     );
 }
