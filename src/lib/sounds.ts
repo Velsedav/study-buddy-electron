@@ -107,14 +107,22 @@ export const SFX_GROUPS: SFXGroup[] = [
 
 // ── Volume Management ──
 
+/** Audio profile override — 'auto' follows visual theme, others force that profile regardless of theme */
+export type AudioProfile = 'auto' | 'glass' | 'terminal';
+
 export interface VolumeSettings {
     master: number; // 0–100
     individual: Partial<Record<SoundEffect, number>>; // 0–100 per effect
+    profile: AudioProfile;
+    /** Per-effect absolute paths to user-supplied audio files that override the built-in pack */
+    custom: Partial<Record<SoundEffect, string>>;
 }
 
 const DEFAULT_VOLUMES: VolumeSettings = {
     master: 100,
     individual: {},
+    profile: 'auto',
+    custom: {},
 };
 
 let volumeSettings: VolumeSettings = DEFAULT_VOLUMES;
@@ -131,8 +139,20 @@ export function loadVolumeSettings(): VolumeSettings {
 }
 
 export function saveVolumeSettings(settings: VolumeSettings) {
+    const prev = volumeSettings;
     volumeSettings = settings;
     localStorage.setItem('study-buddy-volume', JSON.stringify(settings));
+
+    // Reconcile the custom-sound cache with what's now in settings
+    const prevCustom = prev.custom ?? {};
+    const nextCustom = settings.custom ?? {};
+    const keys = new Set([...Object.keys(prevCustom), ...Object.keys(nextCustom)]) as Set<SoundEffect>;
+    for (const effect of keys) {
+        if (prevCustom[effect] !== nextCustom[effect]) {
+            if (nextCustom[effect]) void loadCustomSound(effect, nextCustom[effect]!);
+            else clearCustomSound(effect);
+        }
+    }
 }
 
 export function getEffectiveVolume(effectName: SoundEffect): number {
@@ -174,11 +194,75 @@ const TERM_SOUNDS = new Set([
     'term_bingo_check',
 ]);
 
-/** Resolve the actual file name to play, swapping glass_ → term_ when available */
+/** Resolve the actual file name to play, swapping glass_ → term_ when the active profile requests terminal */
 function resolveFileName(effectName: SoundEffect, theme: string): string {
-    if (!theme.startsWith('terminal-')) return effectName;
+    const profile = volumeSettings.profile ?? 'auto';
+    let wantTerminal: boolean;
+    if (profile === 'glass') wantTerminal = false;
+    else if (profile === 'terminal') wantTerminal = true;
+    else wantTerminal = theme.includes('terminal');
+
+    if (!wantTerminal) return effectName;
     const termVariant = effectName.replace(/^glass_/, 'term_');
     return TERM_SOUNDS.has(termVariant) ? termVariant : effectName;
+}
+
+// ── Custom user-supplied sounds ──
+
+/** Audio elements keyed by effect for user-overridden sounds. Built from blob URLs. */
+const customAudioCache: Partial<Record<SoundEffect, HTMLAudioElement>> = {};
+/** Blob URLs we own, so we can revoke them when replaced or cleared. */
+const customBlobUrls: Partial<Record<SoundEffect, string>> = {};
+
+function guessMimeFromPath(path: string): string {
+    const ext = path.toLowerCase().split('.').pop() ?? '';
+    if (ext === 'mp3') return 'audio/mpeg';
+    if (ext === 'wav') return 'audio/wav';
+    if (ext === 'ogg' || ext === 'oga') return 'audio/ogg';
+    if (ext === 'm4a' || ext === 'aac') return 'audio/aac';
+    if (ext === 'flac') return 'audio/flac';
+    if (ext === 'opus') return 'audio/opus';
+    if (ext === 'webm') return 'audio/webm';
+    return 'audio/mpeg';
+}
+
+/** Load a user-supplied sound file from disk into the in-memory cache. Idempotent: replaces any prior entry. */
+export async function loadCustomSound(effect: SoundEffect, filePath: string): Promise<boolean> {
+    try {
+        const fsAPI = (window as any).electronAPI?.fs;
+        if (!fsAPI) return false;
+        const bytes: Uint8Array = await fsAPI.readFile(filePath);
+        const blob = new Blob([bytes], { type: guessMimeFromPath(filePath) });
+        const url = URL.createObjectURL(blob);
+
+        // Revoke any previous URL for this effect
+        if (customBlobUrls[effect]) URL.revokeObjectURL(customBlobUrls[effect]!);
+
+        customBlobUrls[effect] = url;
+        customAudioCache[effect] = new Audio(url);
+        return true;
+    } catch (e) {
+        console.warn(`Could not load custom sound for ${effect} from ${filePath}:`, e);
+        return false;
+    }
+}
+
+/** Drop a user-supplied sound from the cache and revoke its blob URL. */
+export function clearCustomSound(effect: SoundEffect) {
+    const url = customBlobUrls[effect];
+    if (url) URL.revokeObjectURL(url);
+    delete customBlobUrls[effect];
+    delete customAudioCache[effect];
+}
+
+/** Preload every custom sound listed in settings. Call once at app startup after settings hydrate. */
+export async function preloadCustomSounds(): Promise<void> {
+    const custom = volumeSettings.custom ?? {};
+    await Promise.all(
+        (Object.entries(custom) as [SoundEffect, string | undefined][])
+            .filter(([, p]) => !!p)
+            .map(([effect, p]) => loadCustomSound(effect, p!))
+    );
 }
 
 // ── Audio Cache & Playback ──
@@ -194,6 +278,13 @@ export function stopAllSounds() {
             audio.currentTime = 0;
         }
     }
+    for (const key of Object.keys(customAudioCache) as SoundEffect[]) {
+        const audio = customAudioCache[key];
+        if (audio && !audio.paused) {
+            audio.pause();
+            audio.currentTime = 0;
+        }
+    }
 }
 
 /** Timer-category sounds play over ongoing audio — they are never blocked by stopAllSounds */
@@ -202,26 +293,25 @@ function isTimerSound(effectName: string): boolean {
 }
 
 export function playSFX(effectName: SoundEffect, theme: string = currentTheme) {
-    const resolved = resolveFileName(effectName, theme);
-    const fileName = `${resolved}.mp3`;
-    const filePath = `/audio/${fileName}`;
-
     try {
-        if (!audioCache[filePath]) {
-            audioCache[filePath] = new Audio(filePath);
-        }
-
         // Timer and hover sounds play over ongoing audio; all others stop the current sound first
         if (!isTimerSound(effectName) && effectName !== 'glass_ui_hover') {
             stopAllSounds();
         }
 
-        const audio = audioCache[filePath];
+        const custom = customAudioCache[effectName];
+        const audio = custom ?? (() => {
+            const resolved = resolveFileName(effectName, theme);
+            const filePath = `/audio/${resolved}.mp3`;
+            if (!audioCache[filePath]) audioCache[filePath] = new Audio(filePath);
+            return audioCache[filePath];
+        })();
+
         audio.volume = getEffectiveVolume(effectName);
         audio.currentTime = 0;
 
         audio.play().catch(e => {
-            console.warn(`Could not play sound ${fileName}:`, e.message);
+            console.warn(`Could not play sound for ${effectName}:`, e.message);
         });
     } catch (e) {
         console.error("Audio playback error:", e);

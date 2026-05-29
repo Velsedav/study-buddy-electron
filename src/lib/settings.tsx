@@ -45,10 +45,6 @@ export function migrateTheme(theme: string): Theme {
   return 'obsidian-pastel';
 }
 
-/** True for any theme whose name starts with "terminal-". Works for future themes automatically. */
-export function isTerminalTheme(theme: Theme | string): boolean {
-    return theme.startsWith('terminal-');
-}
 export type WeekStart = 'monday' | 'sunday';
 export type MetacognitionDay = 'friday' | 'saturday' | 'sunday';
 
@@ -73,7 +69,6 @@ const defaultSettings: Settings = {
 };
 
 interface SettingsContextType extends Settings {
-    isTerminal: boolean;
     setTheme: (t: Theme) => void;
     setWeekStart: (w: WeekStart) => void;
     setLanguage: (l: string) => void;
@@ -138,7 +133,6 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     return (
         <SettingsContext.Provider value={{
             ...settings,
-            isTerminal: isTerminalTheme(settings.theme),
             setTheme: (t) => updateSetting('theme', t),
             setWeekStart: (w) => updateSetting('weekStart', w),
             setLanguage: (l) => updateSetting('language', l),

@@ -209,7 +209,7 @@ export default function Session() {
     const [obsidianCopied, setObsidianCopied] = useState(false);
     const [intervalPhase, setIntervalPhase] = useState<'work' | 'rest'>('work');
     const [intervalTick, setIntervalTick] = useState(30);
-    const { theme, isTerminal } = useSettings();
+    const { theme } = useSettings();
     const { t } = useTranslation();
 
     useEffect(() => {
@@ -575,7 +575,7 @@ export default function Session() {
                     <div className="session-work-container">
                         {currentBlock.chapter_name && (
                             <div className="session-info-card">
-                                <div className="session-info-label">{isTerminal ? '>>' : '📖'} {t('session.chapter')}</div>
+                                <div className="session-info-label">📖 {t('session.chapter')}</div>
                                 <div className="session-info-value">{currentBlock.chapter_name}</div>
                                 {currentChapterSources.length > 0 && (
                                     <div className="session-chapter-sources">
@@ -594,18 +594,18 @@ export default function Session() {
                         )}
                         {currentBlock.objective && (
                             <div className="session-info-card">
-                                <div className="session-info-label">{isTerminal ? '[!]' : '🎯'} {t('session.objective')}</div>
+                                <div className="session-info-label">🎯 {t('session.objective')}</div>
                                 <div className="session-info-value">{currentBlock.objective}</div>
                             </div>
                         )}
                         {tech?.timerMode === 'interval_30_30' ? (
                             <div className="interval-3030-panel">
-                                <div className="session-info-label">{isTerminal ? '[T]' : '⚡'} {tech.name}</div>
+                                <div className="session-info-label">⚡ {tech.name}</div>
                                 <div className={`interval-phase-display ${intervalPhase}`}>
                                     <div className="interval-phase-label">
                                         {intervalPhase === 'work'
-                                            ? (isTerminal ? '[>] Pratique' : '🎯 Pratique')
-                                            : (isTerminal ? '[~] Pause' : '😮‍💨 Pause')}
+                                            ? '🎯 Pratique'
+                                            : '😮‍💨 Pause'}
                                     </div>
                                     <div className="interval-tick">{intervalTick}s</div>
                                     <div className="interval-phase-bar">
@@ -619,7 +619,7 @@ export default function Session() {
                             </div>
                         ) : tech?.id === 'paper1' ? (
                             <div className="paper-panel">
-                                <div className="session-info-label">{isTerminal ? '[T]' : '⚡'} {tech.name}</div>
+                                <div className="session-info-label">⚡ {tech.name}</div>
                                 <input
                                     className="paper-title-input"
                                     placeholder={t('session.paper_title_placeholder')}
@@ -672,7 +672,7 @@ export default function Session() {
                             </div>
                         ) : tech ? (
                             <div className="session-tech-card">
-                                <div className="session-info-label">{isTerminal ? '[T]' : '⚡'} {tech.name}</div>
+                                <div className="session-info-label">⚡ {tech.name}</div>
                                 <div className="session-tech-hint">{tech.hint}</div>
                             </div>
                         ) : (
@@ -682,7 +682,7 @@ export default function Session() {
                         {/* Metacognition Reminder */}
                         {currentBlock.technique_id && METACOGNITION_QUESTIONS[currentBlock.technique_id] && (
                             <div className={`meta-check-card ${METACOGNITION_QUESTIONS[currentBlock.technique_id].tier === 'F' || METACOGNITION_QUESTIONS[currentBlock.technique_id].tier === 'D' ? 'warning' : 'normal'}`}>
-                                <div className="meta-check-label">{isTerminal ? '[?]' : '🧠'} {t('session.meta_check')}</div>
+                                <div className="meta-check-label">🧠 {t('session.meta_check')}</div>
                                 {METACOGNITION_QUESTIONS[currentBlock.technique_id].questions.map((q, qi) => (
                                     <div key={qi} className={`meta-check-question ${qi < METACOGNITION_QUESTIONS[currentBlock.technique_id].questions.length - 1 ? 'spaced' : ''}`}>
                                         {q}
@@ -996,7 +996,7 @@ export default function Session() {
                     </div>
 
                     {totalSeconds > 0 && (
-                        <div className={`session-block-progress${isTerminal ? ' terminal' : ''}`}>
+                        <div className={`session-block-progress`}>
                             <div
                                 className="session-block-progress-fill"
                                 style={{ '--fill-pct': `${Math.min(100, (elapsed / totalSeconds) * 100)}%` } as React.CSSProperties}
@@ -1011,7 +1011,7 @@ export default function Session() {
                         </div>
                     )}
 
-                    <div className={`timer-display ${paused ? 'paused' : 'running'}${!paused && remaining < 60 ? ' critical' : !paused && remaining < 300 ? ' warning' : ''}${isTerminal ? ' terminal' : ''}`}>
+                    <div className={`timer-display ${paused ? 'paused' : 'running'}${!paused && remaining < 60 ? ' critical' : !paused && remaining < 300 ? ' warning' : ''}`}>
                         {(() => { const [mm, ss] = formatSecondsMMSS(remaining).split(':'); return <>{mm}<span className="timer-colon">:</span>{ss}</>; })()}
                     </div>
 
@@ -1045,7 +1045,7 @@ export default function Session() {
                     <div className="modal-content confirm-modal-content" onClick={e => e.stopPropagation()}>
                         {endConfirmStep === 'confirm-stop' && (
                             <>
-                                <h2 className="confirm-modal-title">{isTerminal ? '[!]' : '⏸️'} {t('session.stop_title')}</h2>
+                                <h2 className="confirm-modal-title">⏸️ {t('session.stop_title')}</h2>
                                 <p className="confirm-modal-text">
                                     {t('session.stop_text')}
                                 </p>
@@ -1062,7 +1062,7 @@ export default function Session() {
 
                         {endConfirmStep === 'confirm-save' && (
                             <>
-                                <h2 className="confirm-modal-title">{isTerminal ? '[S]' : '💾'} {t('session.save_title')}</h2>
+                                <h2 className="confirm-modal-title">💾 {t('session.save_title')}</h2>
                                 <p className="confirm-modal-text">
                                     {t('session.save_text')}
                                 </p>
@@ -1183,7 +1183,7 @@ export default function Session() {
                                 {/* Zone d'ombre — multi-item list */}
                                 <div className="post-zone-ombre-section">
                                     <div className="post-zone-ombre-label">
-                                        {isTerminal ? '[?]' : '🌑'} {t('session.zone_ombre_label')}
+                                        🌑 {t('session.zone_ombre_label')}
                                     </div>
                                     <div className="post-zone-ombre-input-row">
                                         <input
@@ -1232,7 +1232,7 @@ export default function Session() {
 
                                 {hasPaperNotes && (
                                     <div className="total-rest-paper-card">
-                                        <div className="total-rest-paper-label">{isTerminal ? '[N]' : '📄'} {paperTitle.trim() || t('session.paper_notes_card')}</div>
+                                        <div className="total-rest-paper-label">📄 {paperTitle.trim() || t('session.paper_notes_card')}</div>
                                         <div className="paper-copy-row">
                                             <button className="btn btn-secondary paper-copy-btn" onClick={handleCopyPaperNotes}>
                                                 {paperCopied ? t('session.paper_copied') : t('session.paper_copy_btn')}
