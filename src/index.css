@@ -7004,3 +7004,167 @@ input[type="checkbox"] {
 [data-theme="obsidian-tokyo-night"] .btn { border-radius: var(--border-radius-sm); }
 [data-theme="obsidian-tokyo-night"] .btn-primary { background: var(--primary); color: var(--bg-color); }
 [data-theme="obsidian-tokyo-night"] .btn-primary:hover { background: var(--primary-hover); }
+
+[data-theme="obsidian-solarized-dark"] {
+  --font-main: 'IBM Plex Sans', sans-serif;
+  --font-heading: 'IBM Plex Sans', sans-serif;
+  --bg-color: #002b36;
+  --bg-gradient: var(--bg-color);
+  --card-bg: #073642;
+  --surface-raised: color-mix(in srgb, var(--card-bg) 92%, white);
+  --border-color: color-mix(in srgb, var(--card-bg) 82%, white);
+  --primary: #268bd2;
+  --primary-rgb: 38, 139, 210;
+  --primary-hover: color-mix(in srgb, var(--primary) 90%, white);
+  --secondary: #2aa198;
+  --accent: #b58900;
+  --success: #859900;
+  --danger: #dc322f;
+  --text-dark: #fdf6e3;
+  --text-light: color-mix(in srgb, var(--text-dark) 94%, white);
+  --text-muted: color-mix(in srgb, var(--text-dark) 50%, var(--bg-color));
+  --border-radius: 6px;
+  --border-radius-sm: 4px;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 2px 6px rgba(0, 0, 0, 0.5);
+  --transition: all 0.15s ease;
+  --sidebar-bg: var(--card-bg);
+  --glass-border: var(--border-color);
+  --input-border: var(--border-color);
+  --input-bg-focus: var(--bg-color);
+  --input-focus-ring: rgba(var(--primary-rgb), 0.2);
+  --bubble-bg: var(--card-bg);
+  --h-0: var(--card-bg);
+  --h-1: color-mix(in srgb, var(--card-bg) 75%, var(--primary));
+  --h-2: color-mix(in srgb, var(--card-bg) 50%, var(--primary));
+  --h-3: var(--primary);
+  --h-4: var(--primary-hover);
+}
+[data-theme="obsidian-solarized-dark"] .glass { background: var(--card-bg); border: 1px solid var(--border-color); backdrop-filter: none; }
+[data-theme="obsidian-solarized-dark"] .btn { border-radius: var(--border-radius-sm); }
+[data-theme="obsidian-solarized-dark"] .btn-primary { background: var(--primary); color: var(--bg-color); }
+[data-theme="obsidian-solarized-dark"] .btn-primary:hover { background: var(--primary-hover); }
+
+[data-theme="obsidian-gruvbox"] {
+  --font-main: 'IBM Plex Sans', sans-serif;
+  --font-heading: 'IBM Plex Sans', sans-serif;
+  --bg-color: #282828;
+  --bg-gradient: var(--bg-color);
+  --card-bg: #3c3836;
+  --surface-raised: color-mix(in srgb, var(--card-bg) 92%, white);
+  --border-color: color-mix(in srgb, var(--card-bg) 82%, white);
+  --primary: #fe8019;
+  --primary-rgb: 254, 128, 25;
+  --primary-hover: color-mix(in srgb, var(--primary) 90%, white);
+  --secondary: #b8bb26;
+  --accent: #fabd2f;
+  --success: #b8bb26;
+  --danger: #fb4934;
+  --text-dark: #ebdbb2;
+  --text-light: color-mix(in srgb, var(--text-dark) 94%, white);
+  --text-muted: color-mix(in srgb, var(--text-dark) 50%, var(--bg-color));
+  --border-radius: 6px;
+  --border-radius-sm: 4px;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 2px 6px rgba(0, 0, 0, 0.5);
+  --transition: all 0.15s ease;
+  --sidebar-bg: var(--card-bg);
+  --glass-border: var(--border-color);
+  --input-border: var(--border-color);
+  --input-bg-focus: var(--bg-color);
+  --input-focus-ring: rgba(var(--primary-rgb), 0.2);
+  --bubble-bg: var(--card-bg);
+  --h-0: var(--card-bg);
+  --h-1: color-mix(in srgb, var(--card-bg) 75%, var(--primary));
+  --h-2: color-mix(in srgb, var(--card-bg) 50%, var(--primary));
+  --h-3: var(--primary);
+  --h-4: var(--primary-hover);
+}
+[data-theme="obsidian-gruvbox"] .glass { background: var(--card-bg); border: 1px solid var(--border-color); backdrop-filter: none; }
+[data-theme="obsidian-gruvbox"] .btn { border-radius: var(--border-radius-sm); }
+[data-theme="obsidian-gruvbox"] .btn-primary { background: var(--primary); color: var(--bg-color); }
+[data-theme="obsidian-gruvbox"] .btn-primary:hover { background: var(--primary-hover); }
+
+[data-theme="obsidian-catppuccin"] {
+  --font-main: 'IBM Plex Sans', sans-serif;
+  --font-heading: 'IBM Plex Sans', sans-serif;
+  --bg-color: #1e1e2e;
+  --bg-gradient: var(--bg-color);
+  --card-bg: #313244;
+  --surface-raised: color-mix(in srgb, var(--card-bg) 92%, white);
+  --border-color: color-mix(in srgb, var(--card-bg) 82%, white);
+  --primary: #cba6f7;
+  --primary-rgb: 203, 166, 247;
+  --primary-hover: color-mix(in srgb, var(--primary) 90%, white);
+  --secondary: #f5c2e7;
+  --accent: #f9e2af;
+  --success: #a6e3a1;
+  --danger: #f38ba8;
+  --text-dark: #cdd6f4;
+  --text-light: color-mix(in srgb, var(--text-dark) 94%, white);
+  --text-muted: color-mix(in srgb, var(--text-dark) 50%, var(--bg-color));
+  --border-radius: 6px;
+  --border-radius-sm: 4px;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 2px 6px rgba(0, 0, 0, 0.5);
+  --transition: all 0.15s ease;
+  --sidebar-bg: var(--card-bg);
+  --glass-border: var(--border-color);
+  --input-border: var(--border-color);
+  --input-bg-focus: var(--bg-color);
+  --input-focus-ring: rgba(var(--primary-rgb), 0.2);
+  --bubble-bg: var(--card-bg);
+  --h-0: var(--card-bg);
+  --h-1: color-mix(in srgb, var(--card-bg) 75%, var(--primary));
+  --h-2: color-mix(in srgb, var(--card-bg) 50%, var(--primary));
+  --h-3: var(--primary);
+  --h-4: var(--primary-hover);
+}
+[data-theme="obsidian-catppuccin"] .glass { background: var(--card-bg); border: 1px solid var(--border-color); backdrop-filter: none; }
+[data-theme="obsidian-catppuccin"] .btn { border-radius: var(--border-radius-sm); }
+[data-theme="obsidian-catppuccin"] .btn-primary { background: var(--primary); color: var(--bg-color); }
+[data-theme="obsidian-catppuccin"] .btn-primary:hover { background: var(--primary-hover); }
+
+[data-theme="obsidian-ayu"] {
+  --font-main: 'IBM Plex Sans', sans-serif;
+  --font-heading: 'IBM Plex Sans', sans-serif;
+  --bg-color: #1f2430;
+  --bg-gradient: var(--bg-color);
+  --card-bg: #232834;
+  --surface-raised: color-mix(in srgb, var(--card-bg) 92%, white);
+  --border-color: color-mix(in srgb, var(--card-bg) 82%, white);
+  --primary: #ffcc66;
+  --primary-rgb: 255, 204, 102;
+  --primary-hover: color-mix(in srgb, var(--primary) 90%, white);
+  --secondary: #5ccfe6;
+  --accent: #ffae57;
+  --success: #bae67e;
+  --danger: #ff3333;
+  --text-dark: #cbccc6;
+  --text-light: color-mix(in srgb, var(--text-dark) 94%, white);
+  --text-muted: color-mix(in srgb, var(--text-dark) 50%, var(--bg-color));
+  --border-radius: 6px;
+  --border-radius-sm: 4px;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 2px 6px rgba(0, 0, 0, 0.5);
+  --transition: all 0.15s ease;
+  --sidebar-bg: var(--card-bg);
+  --glass-border: var(--border-color);
+  --input-border: var(--border-color);
+  --input-bg-focus: var(--bg-color);
+  --input-focus-ring: rgba(var(--primary-rgb), 0.2);
+  --bubble-bg: var(--card-bg);
+  --h-0: var(--card-bg);
+  --h-1: color-mix(in srgb, var(--card-bg) 75%, var(--primary));
+  --h-2: color-mix(in srgb, var(--card-bg) 50%, var(--primary));
+  --h-3: var(--primary);
+  --h-4: var(--primary-hover);
+}
+[data-theme="obsidian-ayu"] .glass { background: var(--card-bg); border: 1px solid var(--border-color); backdrop-filter: none; }
+[data-theme="obsidian-ayu"] .btn { border-radius: var(--border-radius-sm); }
+[data-theme="obsidian-ayu"] .btn-primary { background: var(--primary); color: var(--bg-color); }
+[data-theme="obsidian-ayu"] .btn-primary:hover { background: var(--primary-hover); }
