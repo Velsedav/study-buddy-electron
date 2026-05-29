@@ -2,6 +2,7 @@
 
 .calendar-goal-modal {
     max-width: 420px;
+    background: var(--input-bg-focus, #fff);
 }
 
 .calendar-header {
@@ -137,7 +138,7 @@
     top: calc(100% + 4px);
     left: 0;
     right: 0;
-    background: var(--card-bg);
+    background: var(--input-bg-focus, #fff);
     border: 1px solid var(--glass-border);
     border-radius: var(--border-radius);
     box-shadow: var(--shadow-md);
@@ -156,6 +157,28 @@
 .goal-subject-dropdown-item:hover {
     background: rgba(var(--primary-rgb), 0.08);
     color: var(--primary);
+}
+
+.goal-subject-dropdown-empty {
+    padding: 10px 14px;
+    font-size: 0.85rem;
+    opacity: 0.5;
+    font-style: italic;
+}
+
+.goal-subject-dropdown-chapter {
+    padding-left: 20px;
+    font-size: 0.85rem;
+    opacity: 0.9;
+}
+
+.goal-subject-dropdown-chapter-parent {
+    opacity: 0.55;
+    font-size: 0.8rem;
+}
+
+.goal-subject-dropdown-chapter-sep {
+    opacity: 0.4;
 }
 
 /* ── Chapter list in goal modal ── */

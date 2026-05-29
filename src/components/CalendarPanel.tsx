@@ -125,9 +125,23 @@ export default function CalendarPanel({
         setShowGoalModal(false);
     };
 
-    const filteredSubjects = newGoalSubjectQuery.trim().length > 0
-        ? subjects.filter(s => s.name.toLowerCase().includes(newGoalSubjectQuery.toLowerCase()))
-        : [];
+    const filteredResults = useMemo(() => {
+        const query = newGoalSubjectQuery.trim().toLowerCase();
+        type SubjectResult = { kind: 'subject'; subject: Subject };
+        type ChapterResult = { kind: 'chapter'; chapter: Chapter; subject: Subject };
+        const results: (SubjectResult | ChapterResult)[] = [];
+        if (!query) {
+            subjects.forEach(s => results.push({ kind: 'subject', subject: s }));
+        } else {
+            subjects.filter(s => s.name.toLowerCase().includes(query))
+                .forEach(s => results.push({ kind: 'subject', subject: s }));
+            allChapters.filter(c => c.name.toLowerCase().includes(query)).forEach(c => {
+                const subject = subjects.find(s => s.id === c.subjectId);
+                if (subject) results.push({ kind: 'chapter', chapter: c, subject });
+            });
+        }
+        return results;
+    }, [newGoalSubjectQuery, subjects, allChapters]);
 
     const removeGoalDate = (id: string) => {
         const removed = goalDates.find(g => g.id === id);
@@ -313,20 +327,40 @@ export default function CalendarPanel({
                                             aria-label="Clear subject"
                                         >×</button>
                                     )}
-                                    {showSubjectDropdown && filteredSubjects.length > 0 && (
+                                    {showSubjectDropdown && (filteredResults.length > 0 || newGoalSubjectQuery.trim().length > 0) && (
                                         <div className="goal-subject-dropdown">
-                                            {filteredSubjects.map(s => (
+                                            {filteredResults.length === 0 && (
+                                                <div className="goal-subject-dropdown-empty">{t('calendar.subject_no_results')}</div>
+                                            )}
+                                            {filteredResults.map(r => r.kind === 'subject' ? (
                                                 <div
-                                                    key={s.id}
+                                                    key={`s-${r.subject.id}`}
                                                     className="goal-subject-dropdown-item"
                                                     onMouseDown={() => {
-                                                        setNewGoalSubjectId(s.id);
-                                                        setNewGoalSubjectQuery(s.name);
-                                                        if (!newGoalLabel.trim()) setNewGoalLabel(s.name);
+                                                        setNewGoalSubjectId(r.subject.id);
+                                                        setNewGoalSubjectQuery(r.subject.name);
+                                                        setNewGoalChapterName(null);
+                                                        if (!newGoalLabel.trim()) setNewGoalLabel(r.subject.name);
                                                         setShowSubjectDropdown(false);
                                                     }}
                                                 >
-                                                    {s.name}
+                                                    {r.subject.name}
+                                                </div>
+                                            ) : (
+                                                <div
+                                                    key={`c-${r.chapter.id}`}
+                                                    className="goal-subject-dropdown-item goal-subject-dropdown-chapter"
+                                                    onMouseDown={() => {
+                                                        setNewGoalSubjectId(r.subject.id);
+                                                        setNewGoalChapterName(r.chapter.name);
+                                                        setNewGoalSubjectQuery(`${r.subject.name} › ${r.chapter.name}`);
+                                                        if (!newGoalLabel.trim()) setNewGoalLabel(r.chapter.name);
+                                                        setShowSubjectDropdown(false);
+                                                    }}
+                                                >
+                                                    <span className="goal-subject-dropdown-chapter-parent">{r.subject.name}</span>
+                                                    <span className="goal-subject-dropdown-chapter-sep"> › </span>
+                                                    {r.chapter.name}
                                                 </div>
                                             ))}
                                         </div>

@@ -256,6 +256,7 @@ describe('computeWeekTrend', () => {
   it('returns 100 when previous week was zero and current is positive', () => {
     const result = computeWeekTrend([], { minutes: 60, count: 1, activeDays: 1 }, 'monday')
     expect(result.weekMinutesDelta).toBe(100)
+    expect(result.weekCountDelta).toBe(100)
   })
 
   it('calculates correct percentage change', () => {

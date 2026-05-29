@@ -257,13 +257,14 @@ export function computeTechTierBreakdown(
     C: '#22d3ee', D: '#f59e0b', E: 'var(--danger)', F: '#9ca3af',
   }
   const validSessionIds = new Set(sessions.map(s => s.id))
+  const techMap = new Map(techniques.map(t => [t.id, t]))
   const tierMap: Record<string, number> = { S: 0, A: 0, B: 0, C: 0, D: 0, E: 0, F: 0 }
   let total = 0
 
   blocks.forEach(b => {
     if (!validSessionIds.has(b.session_id) || b.type !== 'WORK' || !b.technique_id) return
-    const tech = techniques.find(t => t.id === b.technique_id)
-    if (!tech?.tier) return
+    const tech = techMap.get(b.technique_id)
+    if (!tech?.tier || !(tech.tier in tierMap)) return
     tierMap[tech.tier] += b.minutes
     total += b.minutes
   })
@@ -326,7 +327,7 @@ export function computeTimeline(sessions: Session[], filterMonths: number): Time
     minutes: dailyTotals[dateStr],
   }))
 
-  const maxMins = Math.max(...data.map(d => d.minutes), 60)
+  const maxMins = data.reduce((m, d) => d.minutes > m ? d.minutes : m, 60)
   const studiedDays = data.filter(d => d.minutes > 0).length
   const totalPeriodMinutes = data.reduce((acc, d) => acc + d.minutes, 0)
   return { data, maxMins, studiedDays, totalPeriodMinutes }

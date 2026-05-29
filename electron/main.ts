@@ -6,6 +6,9 @@ import Database from 'better-sqlite3'
 // ── Linux GPU fixes ───────────────────────────────────────────────────────────
 // White screen on Debian/GNOME caused by DMABUF buffer sharing failing in
 // Chromium's GPU process. Force desktop GL path and X11 ozone platform.
+// Force French locale so <input type="date"> renders dd/mm/yyyy in Chromium
+app.commandLine.appendSwitch('lang', 'fr-FR')
+
 if (process.platform === 'linux') {
   app.commandLine.appendSwitch('use-gl', 'desktop')
   app.commandLine.appendSwitch('ozone-platform', 'x11')

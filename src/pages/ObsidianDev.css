@@ -1,0 +1,287 @@
+/* ════════════════════════════════════════════════════════════════
+   Obsidian Dev — single-column sandbox, matches Obsidian design language
+   ════════════════════════════════════════════════════════════════ */
+
+.obs-dev-page {
+    width: 100%;
+    height: 100%;
+    overflow-y: auto;
+    background: var(--bg-color, #0d1117);
+    color: var(--text-dark, #e6edf3);
+    font-family: var(--font-main, 'IBM Plex Sans', sans-serif);
+}
+
+.obs-dev-content {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 32px;
+    display: flex;
+    flex-direction: column;
+    gap: 28px;
+    animation: obsDevFadeIn 180ms ease;
+}
+
+@keyframes obsDevFadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Header ── */
+
+.obs-dev-head-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--text-muted, #7d8590);
+    margin-bottom: 8px;
+}
+
+.obs-dev-head-title {
+    font-size: 1.6rem;
+    font-weight: 700;
+    margin: 0 0 4px;
+    color: var(--text-dark, #e6edf3);
+}
+
+.obs-dev-head-subtitle {
+    font-size: 0.85rem;
+    color: var(--text-muted, #7d8590);
+    margin: 0;
+}
+
+/* ── Section card ── */
+
+.obs-dev-section {
+    background: var(--card-bg, #161b22);
+    border: 1px solid var(--border-color, #30363d);
+    border-radius: var(--border-radius, 6px);
+    padding: 18px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.obs-dev-section-label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: var(--text-muted, #7d8590);
+    margin: 0 0 6px;
+}
+
+.obs-dev-section-icon {
+    color: var(--text-muted, #7d8590);
+    flex-shrink: 0;
+}
+
+.obs-dev-hint {
+    font-size: 0.78rem;
+    line-height: 1.5;
+    color: var(--text-muted, #7d8590);
+    margin: 0 0 8px;
+}
+
+.obs-dev-hint code {
+    font-family: monospace;
+    font-size: 0.74rem;
+    padding: 1px 5px;
+    border-radius: 4px;
+    background: var(--surface-raised, #21262d);
+    color: var(--text-dark, #e6edf3);
+}
+
+.obs-dev-hint-active {
+    color: var(--success, #3fb950);
+    font-weight: 600;
+}
+
+/* ── Row (toggle / action) ── */
+
+.obs-dev-row {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    padding: 12px 0;
+    border-top: 1px solid var(--border-color, #30363d);
+}
+
+.obs-dev-row:first-of-type,
+.obs-dev-section-label + .obs-dev-row {
+    border-top: none;
+}
+
+.obs-dev-row-info {
+    flex: 1;
+    min-width: 0;
+}
+
+.obs-dev-row-title {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--text-dark, #e6edf3);
+    margin-bottom: 2px;
+}
+
+.obs-dev-row-title-icon {
+    color: var(--primary, #58a6ff);
+    flex-shrink: 0;
+}
+
+.obs-dev-row-desc {
+    font-size: 0.78rem;
+    line-height: 1.45;
+    color: var(--text-muted, #7d8590);
+}
+
+/* ── Action button ── */
+
+.obs-dev-btn {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 7px 16px;
+    background: var(--surface-raised, #21262d);
+    border: 1px solid var(--border-color, #30363d);
+    border-radius: var(--border-radius-sm, 4px);
+    color: var(--text-dark, #e6edf3);
+    font: inherit;
+    font-size: 0.82rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: border-color 120ms ease, background 120ms ease, color 120ms ease;
+}
+
+.obs-dev-btn:hover:not(:disabled) {
+    border-color: var(--primary, #58a6ff);
+    color: var(--text-light, #fff);
+}
+
+.obs-dev-btn:disabled {
+    opacity: 0.45;
+    cursor: not-allowed;
+}
+
+.obs-dev-btn.is-danger:hover:not(:disabled) {
+    border-color: var(--danger, #f85149);
+    color: var(--danger, #f85149);
+}
+
+/* ── Switch (ON/OFF) ── */
+
+.obs-dev-switch {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 12px 5px 8px;
+    background: var(--surface-raised, #21262d);
+    border: 1px solid var(--border-color, #30363d);
+    border-radius: 999px;
+    cursor: pointer;
+    transition: border-color 120ms ease, background 120ms ease;
+}
+
+.obs-dev-switch:hover {
+    border-color: var(--text-muted, #7d8590);
+}
+
+.obs-dev-switch-knob {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: var(--text-muted, #7d8590);
+    transition: background 120ms ease, box-shadow 120ms ease;
+}
+
+.obs-dev-switch-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    color: var(--text-muted, #7d8590);
+}
+
+.obs-dev-switch.is-on {
+    border-color: var(--primary, #58a6ff);
+    background: rgba(var(--primary-rgb, 88, 166, 255), 0.12);
+}
+
+.obs-dev-switch.is-on .obs-dev-switch-knob {
+    background: var(--primary, #58a6ff);
+    box-shadow: 0 0 8px rgba(var(--primary-rgb, 88, 166, 255), 0.6);
+}
+
+.obs-dev-switch.is-on .obs-dev-switch-label {
+    color: var(--primary, #58a6ff);
+}
+
+/* ── Seed status line ── */
+
+.obs-dev-status {
+    font-size: 0.78rem;
+    margin: 8px 0 0;
+    color: var(--text-muted, #7d8590);
+}
+
+.obs-dev-status.is-ok { color: var(--success, #3fb950); }
+.obs-dev-status.is-err { color: var(--danger, #f85149); }
+
+/* ── Workout preview ── */
+
+.obs-dev-muscle-group {
+    margin-top: 10px;
+}
+
+.obs-dev-category-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-muted, #7d8590);
+    margin: 8px 0 6px;
+}
+
+.obs-dev-muscle-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+}
+
+.obs-dev-muscle-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 5px 12px;
+    background: var(--surface-raised, #21262d);
+    border: 1px solid var(--border-color, #30363d);
+    border-radius: 999px;
+    font-size: 0.8rem;
+    color: var(--text-dark, #e6edf3);
+}
+
+.obs-dev-muscle-chip.is-resting {
+    opacity: 0.5;
+}
+
+.obs-dev-muscle-rest {
+    font-size: 0.68rem;
+    font-weight: 600;
+    color: var(--accent, #d29922);
+}
+
+@media (max-width: 640px) {
+    .obs-dev-content { padding: 20px 16px; }
+    .obs-dev-row { flex-direction: column; align-items: flex-start; gap: 10px; }
+}

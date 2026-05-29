@@ -1050,3 +1050,16 @@
 .op-inline-picker-clear:hover {
   background: rgba(248, 81, 73, 0.05);
 }
+
+/* ── Obsidian — Starry Night: the wide painting sidebar sits right next to
+   the planner's subject column, which made the two read as a "double nav".
+   Detach the subject panel into a floating content card with an ultramarine
+   gutter so it clearly belongs to the page, not the navigation. ── */
+[data-theme="obsidian-starry-night"] .op-subject-panel {
+  margin: 12px 0 12px 12px;
+  border: 1px solid var(--border-color);
+  border-right: 1px solid var(--border-color);
+  border-radius: var(--border-radius-sm);
+  background: rgba(8, 18, 50, 0.45);
+  overflow: hidden;
+}

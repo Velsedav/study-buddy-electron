@@ -7,6 +7,7 @@ import { getChaptersForSubject } from '../lib/chapters'
 import type { Chapter, FocusType } from '../lib/chapters'
 import { TECHNIQUES, CATEGORY_LABELS, CATEGORY_COLORS, getTierColor, type TierType, type TechCategory } from '../lib/techniques'
 import { useUndoRedo } from '../lib/undo'
+import { ANALYTICS_CATEGORY_COLORS } from '../lib/analytics-utils'
 import {
   generateBlocks,
   formatSessionSummary,
@@ -390,12 +391,6 @@ function ConfigStrip({
 const TIER_ORDER: TierType[] = ['S', 'A', 'B', 'C', 'D', 'E', 'F']
 const CATEGORY_ORDER: TechCategory[] = ['comprendre', 'memoriser', 'faire']
 
-const PICKER_CATEGORY_COLORS: Record<TechCategory, string> = {
-  comprendre: '#38bdf8',  // sky — distinct from navy bg
-  memoriser:  '#f472b6',  // pink/rose
-  faire:      '#34d399',  // emerald
-}
-
 const FOCUS_TO_CATEGORY: Record<NonNullable<FocusType>, TechCategory> = {
   skill:         'faire',
   comprehension: 'comprendre',
@@ -456,7 +451,7 @@ function InlineTechniquePicker({ currentId, suggestedCategory, onSelect, onClose
               <span className="op-inline-tech-tier" style={{ color: getTierColor(t.tier) }}>{t.tier}</span>
               <span className="op-inline-tech-name">{t.name}</span>
               {t.category && (
-                <span className="op-inline-tech-cat" style={{ color: PICKER_CATEGORY_COLORS[t.category] }}>
+                <span className="op-inline-tech-cat" style={{ color: ANALYTICS_CATEGORY_COLORS[t.category] }}>
                   {CATEGORY_LABELS[t.category]}
                 </span>
               )}
@@ -474,9 +469,9 @@ function InlineTechniquePicker({ currentId, suggestedCategory, onSelect, onClose
                 <div
                   className="op-inline-picker-col-header"
                   style={{
-                    color: PICKER_CATEGORY_COLORS[cat],
+                    color: ANALYTICS_CATEGORY_COLORS[cat],
                     borderBottom: cat === suggestedCategory
-                      ? `2px solid ${PICKER_CATEGORY_COLORS[cat]}`
+                      ? `2px solid ${ANALYTICS_CATEGORY_COLORS[cat]}`
                       : undefined,
                   }}
                 >

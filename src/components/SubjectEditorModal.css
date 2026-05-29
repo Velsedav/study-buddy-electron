@@ -99,6 +99,20 @@
     white-space: nowrap;
     font-weight: 600;
     font-size: 0.9rem;
+    cursor: text;
+}
+
+.chapter-rename-input {
+    flex: 1;
+    font-weight: 600;
+    font-size: 0.9rem;
+    background: transparent;
+    border: none;
+    border-bottom: 1.5px solid var(--primary);
+    outline: none;
+    color: inherit;
+    padding: 0;
+    min-width: 0;
 }
 
 .chapter-item-name.sub-chapter {

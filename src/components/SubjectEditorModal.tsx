@@ -7,7 +7,7 @@ async function getAppData(): Promise<string> {
   if (!_userData) _userData = await fsAPI().getUserDataPath();
   return _userData;
 }
-import { createSubject, updateSubject } from '../lib/db';
+import { createSubject, updateSubject, renameChapterInDb } from '../lib/db';
 import { resizeImage } from '../lib/image';
 import type { Subject, Tag } from '../lib/db';
 import TagPicker from './TagPicker';
@@ -16,7 +16,7 @@ import { playSFX, SFX } from '../lib/sounds';
 import { useSettings } from '../lib/settings';
 import { useTranslation } from '../lib/i18n';
 import {
-    getChaptersForSubject, addChapter, deleteChapter,
+    getChaptersForSubject, addChapter, deleteChapter, renameChapter,
     incrementStudyCount, updateChapterFocusType, updateChapterSpacing, updateChapterSources,
     getDefaultSpacing, parseSpacing,
     type Chapter, type ChapterSource, type FocusType, FOCUS_TYPE_LABELS, FOCUS_TYPE_COLORS
@@ -75,6 +75,8 @@ export default function SubjectEditorModal({ onClose, onSaved, editingSubject }:
     const [chapters, setChapters] = useState<Chapter[]>([]);
     const [newChapterName, setNewChapterName] = useState('');
     const [newChapterMeasures, setNewChapterMeasures] = useState('');
+    const [renamingChapterId, setRenamingChapterId] = useState<string | null>(null);
+    const [renamingChapterValue, setRenamingChapterValue] = useState('');
     const [editingSpacingId, setEditingSpacingId] = useState<string | null>(null);
     const [expandedSourcesId, setExpandedSourcesId] = useState<string | null>(null);
     const [newSourceLabel, setNewSourceLabel] = useState('');
@@ -336,6 +338,17 @@ export default function SubjectEditorModal({ onClose, onSaved, editingSubject }:
         setChapters(chapters.filter(c => !idsToDelete.includes(c.id)));
     };
 
+    const handleCommitRename = async (id: string) => {
+        const newName = renamingChapterValue.trim();
+        if (!newName) { setRenamingChapterId(null); return; }
+        const ch = chapters.find(c => c.id === id);
+        if (!ch || newName === ch.name) { setRenamingChapterId(null); return; }
+        await renameChapterInDb(effectiveSubjectId, ch.name, newName);
+        renameChapter(id, newName);
+        setChapters(getChaptersForSubject(effectiveSubjectId));
+        setRenamingChapterId(null);
+    };
+
     const handleStudyChapter = (id: string) => {
         incrementStudyCount(id);
         setChapters(getChaptersForSubject(effectiveSubjectId));
@@ -496,7 +509,25 @@ export default function SubjectEditorModal({ onClose, onSaved, editingSubject }:
                                 return (
                                     <div key={ch.id} className={`chapter-item${isSubChapter ? ' sub-chapter' : ''}`}>
                                         <div className="chapter-item-header">
-                                            <span className={`chapter-item-name${isSubChapter ? ' sub-chapter' : ''}`}>{ch.name}</span>
+                                            {renamingChapterId === ch.id ? (
+                                                <input
+                                                    className="chapter-rename-input"
+                                                    autoFocus
+                                                    value={renamingChapterValue}
+                                                    onChange={e => setRenamingChapterValue(e.target.value)}
+                                                    onBlur={() => handleCommitRename(ch.id)}
+                                                    onKeyDown={e => {
+                                                        if (e.key === 'Enter') handleCommitRename(ch.id);
+                                                        if (e.key === 'Escape') setRenamingChapterId(null);
+                                                    }}
+                                                />
+                                            ) : (
+                                                <span
+                                                    className={`chapter-item-name${isSubChapter ? ' sub-chapter' : ''}`}
+                                                    title={t('subject_editor.rename_chapter_hint')}
+                                                    onClick={() => { setRenamingChapterId(ch.id); setRenamingChapterValue(ch.name); }}
+                                                >{ch.name}</span>
+                                            )}
                                             <div className="chapter-item-dots">
                                                 {ch.studyCount > 0 && (
                                                     <span className="chapter-study-count-badge">

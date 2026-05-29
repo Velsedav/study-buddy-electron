@@ -15,7 +15,7 @@ import type { Theme, WeekStart, MetacognitionDay } from '../lib/settings';
 import { getAutostart, setAutostart } from '../lib/autostart';
 import { CustomSelect } from '../components/CustomSelect';
 import { SFX, SFX_LABELS, SFX_GROUPS, loadVolumeSettings, saveVolumeSettings, testSFX, playSFX } from '../lib/sounds';
-import type { SoundEffect, VolumeSettings } from '../lib/sounds';
+import type { SoundEffect, VolumeSettings, AudioProfile } from '../lib/sounds';
 import { getDefaultSpacing, setDefaultSpacing, parseSpacing, DEFAULT_SPACING } from '../lib/chapters';
 import { THEME_GROUPS } from './settingsThemeGroups';
 import './ObsidianSettings.css';
@@ -156,7 +156,7 @@ export default function ObsidianSettings() {
                     ))}
                 </nav>
                 <main className="obs-settings-panel" key={category}>
-                    <div className="obs-settings-panel-content">
+                    <div className={`obs-settings-panel-content${category === 'audio' ? ' obs-settings-panel-content--wide' : ''}`}>
                         {category === 'look-and-feel' && <LookAndFeelPanel />}
                         {category === 'learning' && <LearningPanel />}
                         {category === 'audio' && <AudioPanel />}
@@ -406,10 +406,68 @@ function AudioPanel() {
             individual: { ...prev.individual, [effect]: val }
         }));
     };
+    const handleProfile = (profile: AudioProfile) => {
+        setVolumeSettings(prev => ({ ...prev, profile }));
+    };
+    const handlePickCustom = async (effect: SoundEffect) => {
+        const dialogAPI = (window as any).electronAPI?.dialog;
+        if (!dialogAPI) return;
+        const filePath: string | null = await dialogAPI.openFile({
+            title: t('settings.audio_pick_custom') || 'Pick sound file',
+            filters: [{ name: 'Audio', extensions: ['mp3', 'wav', 'ogg', 'oga', 'm4a', 'aac', 'flac', 'opus', 'webm'] }],
+            properties: ['openFile'],
+        });
+        if (!filePath) return;
+        setVolumeSettings(prev => ({
+            ...prev,
+            custom: { ...prev.custom, [effect]: filePath },
+        }));
+    };
+    const handleClearCustom = (effect: SoundEffect) => {
+        setVolumeSettings(prev => {
+            const nextCustom = { ...prev.custom };
+            delete nextCustom[effect];
+            return { ...prev, custom: nextCustom };
+        });
+    };
+
+    const profileOptions: { value: AudioProfile; label: string; hint: string }[] = [
+        { value: 'auto',     label: t('settings.audio_profile_auto')     || 'Match visual theme',
+                             hint:  t('settings.audio_profile_auto_hint') || 'Terminal themes → terminal sounds, others → glass sounds' },
+        { value: 'glass',    label: t('settings.audio_profile_glass')    || 'Glass',
+                             hint:  t('settings.audio_profile_glass_hint') || 'Always use glassmorphism sounds' },
+        { value: 'terminal', label: t('settings.audio_profile_terminal') || 'Terminal',
+                             hint:  t('settings.audio_profile_terminal_hint') || 'Always use terminal sounds' },
+    ];
+    const activeProfile = volumeSettings.profile ?? 'auto';
 
     return (
         <>
             <h1 className="obs-settings-panel-title">{t('settings.audio') || 'Audio'}</h1>
+
+            <section className="obs-settings-section">
+                <h2 className="obs-settings-section-label">{t('settings.audio_profile') || 'Audio profile'}</h2>
+                <p className="obs-settings-hint">
+                    {t('settings.audio_profile_desc') || 'Pick which sound pack to use, independent of your visual theme.'}
+                </p>
+                <div className="obs-settings-row" style={{ gap: 8, flexWrap: 'wrap', marginTop: 6 }}>
+                    {profileOptions.map(opt => (
+                        <button
+                            key={opt.value}
+                            type="button"
+                            className={`btn ${activeProfile === opt.value ? 'btn-primary' : 'btn-secondary'}`}
+                            onClick={() => { handleProfile(opt.value); playSFX(SFX.CHECK); }}
+                            onMouseEnter={() => playSFX(SFX.HOVER)}
+                            title={opt.hint}
+                        >
+                            {opt.label}
+                        </button>
+                    ))}
+                </div>
+                <p className="obs-settings-hint" style={{ marginTop: 6 }}>
+                    {profileOptions.find(o => o.value === activeProfile)?.hint}
+                </p>
+            </section>
 
             <section className="obs-settings-section">
                 <h2 className="obs-settings-section-label">{t('settings.master_volume') || 'Master volume'}</h2>
@@ -433,37 +491,67 @@ function AudioPanel() {
                         <span style={{ marginRight: 6 }}>{group.icon}</span>
                         {t(group.labelKey) || group.labelKey}
                     </h2>
-                    {group.effects.map((effect) => {
-                        const label = SFX_LABELS[effect] || effect;
-                        const value = volumeSettings.individual[effect] ?? 100;
-                        return (
-                            <div key={effect} className="obs-settings-row" style={{ gap: 12, padding: '4px 0' }}>
-                                <span style={{ flex: '0 0 160px', fontSize: '0.82rem', color: 'var(--text-dark)' }}>{label}</span>
-                                <input
-                                    type="range"
-                                    min={0}
-                                    max={100}
-                                    step={1}
-                                    value={value}
-                                    onChange={(e) => handleIndividualVolume(effect, Number(e.target.value))}
-                                    style={{ flex: 1, accentColor: 'var(--primary)' }}
-                                />
-                                <span style={{ flex: '0 0 36px', fontSize: '0.78rem', color: 'var(--text-muted)', textAlign: 'right' }}>
-                                    {value}%
-                                </span>
-                                <button
-                                    type="button"
-                                    className="btn btn-icon"
-                                    onClick={() => testSFX(effect)}
-                                    onMouseEnter={() => playSFX(SFX.HOVER)}
-                                    aria-label={t('settings.test') || 'Test'}
-                                    title={t('settings.test') || 'Test'}
-                                >
-                                    <Play size={14} />
-                                </button>
-                            </div>
-                        );
-                    })}
+                    <div className="obs-settings-sfx-grid">
+                        {group.effects.map((effect) => {
+                            const label = SFX_LABELS[effect] || effect;
+                            const value = volumeSettings.individual[effect] ?? 100;
+                            const customPath = volumeSettings.custom?.[effect];
+                            const customName = customPath ? customPath.split(/[\\/]/).pop() : null;
+                            return (
+                                <div key={effect} className="obs-settings-sfx-row">
+                                    <span
+                                        className={`obs-settings-sfx-row__label${customPath ? ' obs-settings-sfx-row__label--custom' : ''}`}
+                                        title={customPath ? `${label} — ${customName}` : label}
+                                    >
+                                        {label}
+                                        {customPath && <span style={{ marginLeft: 6, fontSize: '0.7rem', opacity: 0.75 }}>· {customName}</span>}
+                                    </span>
+                                    <input
+                                        type="range"
+                                        min={0}
+                                        max={100}
+                                        step={1}
+                                        value={value}
+                                        onChange={(e) => handleIndividualVolume(effect, Number(e.target.value))}
+                                        className="obs-settings-sfx-row__volume"
+                                    />
+                                    <span className="obs-settings-sfx-row__pct">{value}%</span>
+                                    <button
+                                        type="button"
+                                        className="btn btn-icon"
+                                        onClick={() => testSFX(effect)}
+                                        onMouseEnter={() => playSFX(SFX.HOVER)}
+                                        aria-label={t('settings.test') || 'Test'}
+                                        title={t('settings.test') || 'Test'}
+                                    >
+                                        <Play size={14} />
+                                    </button>
+                                    <button
+                                        type="button"
+                                        className="btn btn-icon"
+                                        onClick={() => handlePickCustom(effect)}
+                                        onMouseEnter={() => playSFX(SFX.HOVER)}
+                                        aria-label={t('settings.audio_pick_custom') || 'Pick sound file'}
+                                        title={customPath || (t('settings.audio_pick_custom') || 'Pick sound file')}
+                                    >
+                                        <FolderOpen size={14} />
+                                    </button>
+                                    {customPath && (
+                                        <button
+                                            type="button"
+                                            className="btn btn-icon"
+                                            onClick={() => handleClearCustom(effect)}
+                                            onMouseEnter={() => playSFX(SFX.HOVER)}
+                                            aria-label={t('settings.audio_clear_custom') || 'Reset to default sound'}
+                                            title={t('settings.audio_clear_custom') || 'Reset to default sound'}
+                                        >
+                                            <X size={14} />
+                                        </button>
+                                    )}
+                                </div>
+                            );
+                        })}
+                    </div>
                 </section>
             ))}
         </>

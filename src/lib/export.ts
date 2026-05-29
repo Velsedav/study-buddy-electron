@@ -288,7 +288,7 @@ async function mergeBingoDb(data: Record<string, any[]>) {
     try { await db.execute(`INSERT OR IGNORE INTO media_items (id,subobjective_id,kind,data,created_at) VALUES (?,?,?,?,?)`, [m.id, m.subobjective_id, m.kind, m.data, m.created_at]); } catch {}
   }
   for (const s of data.bingo_year_slots ?? []) {
-    try { await db.execute(`INSERT OR IGNORE INTO bingo_year_slots (slot_index,year,objective_id) VALUES (?,?,?)`, [s.slot_index, s.year, s.objective_id ?? null]); } catch {}
+    try { await db.execute(`INSERT OR REPLACE INTO bingo_year_slots (slot_index,year,objective_id) VALUES (?,?,?)`, [s.slot_index, s.year, s.objective_id ?? null]); } catch {}
   }
   for (const q of data.bingo_quotes ?? []) {
     try { await db.execute(`INSERT OR IGNORE INTO bingo_quotes (id,text,created_at) VALUES (?,?,?)`, [q.id, q.text, q.created_at]); } catch {}

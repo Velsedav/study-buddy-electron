@@ -108,6 +108,58 @@
     gap: 32px;
 }
 
+/* Wider container for panels (like Audio) that benefit from a two-column grid */
+.obs-settings-panel-content--wide {
+    max-width: 1080px;
+}
+
+/* Two-column grid for sound rows inside an audio group */
+.obs-settings-sfx-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px 24px;
+}
+
+@media (max-width: 1100px) {
+    .obs-settings-sfx-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.obs-settings-sfx-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    padding: 4px 0;
+    min-width: 0;
+}
+
+.obs-settings-sfx-row__label {
+    flex: 1 1 0;
+    min-width: 0;
+    font-size: 0.82rem;
+    color: var(--text-dark);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.obs-settings-sfx-row__label--custom {
+    color: var(--primary);
+}
+
+.obs-settings-sfx-row__volume {
+    flex: 0 0 110px;
+    accent-color: var(--primary);
+}
+
+.obs-settings-sfx-row__pct {
+    flex: 0 0 32px;
+    font-size: 0.74rem;
+    color: var(--text-muted);
+    text-align: right;
+}
+
 .obs-settings-panel-title {
     font-size: 1.6rem;
     font-weight: 700;

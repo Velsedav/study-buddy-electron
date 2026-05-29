@@ -12,7 +12,7 @@
 The existing themes are visual reskins only. The Obsidian theme goes further: it introduces a restructured layout and a new Home page interaction model designed for users who:
 
 - Are self-taught with many subjects across diverse domains (20–100+)
-- Use the app as a therapeutic/motivational tool (CBT, ADHD management, depression)
+- Use the app as a therapeutic/motivational tool (CBT, ADHD management, depression, anxiety, lack of confidence etc.)
 - Find the current card-based Home page and multi-step session start flow slow and cluttered
 
 **Success criteria:**
@@ -93,7 +93,7 @@ Replaces the mascot quote bubble. Spans full width at bottom of main content are
 - **Text:** `#7d8590`, IBM Plex Sans italic, 12px
 - **Quote rotation:** same 4.5s interval logic as current implementation
 - **Right side:** `[✎]` pencil icon opens QuoteEditorModal
-- **Purpose:** always visible on every page including mid-session — critical for users relying on quotes for motivation/CBT/ADHD support
+- **Purpose:** always visible on every page including mid-session — critical for users relying on quotes for motivation/CBT/ADHD support/Other problems
 
 ### Overall Grid
 
