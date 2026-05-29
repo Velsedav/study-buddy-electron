@@ -3,7 +3,7 @@ import type { ReactNode } from 'react';
 import { setAudioTheme, preloadCustomSounds } from './sounds';
 
 export type Theme = 'obsidian' | 'obsidian-terminal-green' | 'obsidian-terminal-orange' | 'obsidian-designers-republic' | 'obsidian-tdr-acid' | 'obsidian-kokedera' | 'obsidian-cyberpunk' | 'obsidian-dracula' | 'obsidian-nord' | 'obsidian-monokai' | 'obsidian-tokyo-night' | 'obsidian-solarized-dark' | 'obsidian-gruvbox' | 'obsidian-catppuccin' | 'obsidian-catppuccin-latte' | 'obsidian-catppuccin-frappe' | 'obsidian-catppuccin-macchiato' | 'obsidian-ayu' | 'obsidian-starry-night'
-  | 'obsidian-pastel' | 'obsidian-neumorphism' | 'obsidian-neobrutalism'
+  | 'obsidian-pastel'
   | 'obsidian-classic-uniform' | 'obsidian-cosmic-manicure' | 'obsidian-chibi-moon'
   | 'obsidian-transformation-ribbon' | 'obsidian-honey-lemon' | 'obsidian-ai-pro'
   | 'obsidian-cyber-scan' | 'obsidian-terminal-red' | 'obsidian-terminal-cyan'
@@ -13,8 +13,8 @@ export type Theme = 'obsidian' | 'obsidian-terminal-green' | 'obsidian-terminal-
 /** Classic theme ids removed in the redesign unification → obsidian equivalents. */
 const LEGACY_THEME_MAP: Record<string, Theme> = {
   'pastel': 'obsidian-pastel',
-  'neumorphism': 'obsidian-neumorphism',
-  'neobrutalism': 'obsidian-neobrutalism',
+  'neumorphism': 'obsidian',
+  'neobrutalism': 'obsidian',
   'classic-uniform': 'obsidian-classic-uniform',
   'cosmic-manicure': 'obsidian-cosmic-manicure',
   'chibi-moon': 'obsidian-chibi-moon',

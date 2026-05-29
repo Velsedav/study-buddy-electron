@@ -55,8 +55,6 @@ export const THEME_GROUPS: { name: string; themes: ThemeOption[] }[] = [
     { id: 'obsidian-kokedera', name: 'Kokedera', color: '#5ae65a' },
   ]},
   { name: 'Playful', themes: [
-    { id: 'obsidian-neumorphism', name: 'Neumorphism', color: '#9baec8' },
-    { id: 'obsidian-neobrutalism', name: 'Neobrutalism', color: '#ff5757' },
     { id: 'obsidian-honey-lemon', name: 'Honey Lemon', color: '#c79a00' },
     { id: 'obsidian-cyberpunk', name: 'Cyberpunk', color: '#fcee0a' },
   ]},
