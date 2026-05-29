@@ -1,6 +1,5 @@
 import { type MetacognitionLog } from '../lib/db';
 import ObsidianMetacognitionLogs from './ObsidianMetacognitionLogs';
-import './MetacognitionLogs.css';
 
 export function getMonthKey(dateStr: string): string {
     const d = new Date(dateStr);
