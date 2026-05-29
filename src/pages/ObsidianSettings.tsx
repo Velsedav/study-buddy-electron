@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
-import { Palette, Brain, Volume2, Database, Power, Zap, Keyboard } from 'lucide-react';
+import { Palette, Brain, Volume2, Database, Power, Zap, Keyboard, Play } from 'lucide-react';
 import { useTranslation } from '../lib/i18n';
 import { useSettings } from '../lib/settings';
 import type { Theme, WeekStart, MetacognitionDay } from '../lib/settings';
 import { getAutostart, setAutostart } from '../lib/autostart';
 import { CustomSelect } from '../components/CustomSelect';
-import { playSFX, SFX } from '../lib/sounds';
+import { SFX, SFX_LABELS, SFX_GROUPS, loadVolumeSettings, saveVolumeSettings, testSFX, playSFX } from '../lib/sounds';
+import type { SoundEffect, VolumeSettings } from '../lib/sounds';
 import { getDefaultSpacing, setDefaultSpacing, parseSpacing, DEFAULT_SPACING } from '../lib/chapters';
 import { THEME_GROUPS } from './settingsThemeGroups';
 import './ObsidianSettings.css';
@@ -273,10 +274,81 @@ function ShortcutList() {
 
 function AudioPanel() {
     const { t } = useTranslation();
+    const [volumeSettings, setVolumeSettings] = useState<VolumeSettings>(loadVolumeSettings);
+
+    useEffect(() => {
+        saveVolumeSettings(volumeSettings);
+    }, [volumeSettings]);
+
+    const handleMasterVolume = (val: number) => {
+        setVolumeSettings(prev => ({ ...prev, master: val }));
+    };
+    const handleIndividualVolume = (effect: SoundEffect, val: number) => {
+        setVolumeSettings(prev => ({
+            ...prev,
+            individual: { ...prev.individual, [effect]: val }
+        }));
+    };
+
     return (
         <>
             <h1 className="obs-settings-panel-title">{t('settings.audio') || 'Audio'}</h1>
-            <p className="obs-settings-panel-subtitle">Master and per-effect volume.</p>
+
+            <section className="obs-settings-section">
+                <h2 className="obs-settings-section-label">{t('settings.master_volume') || 'Master volume'}</h2>
+                <input
+                    type="range"
+                    min={0}
+                    max={100}
+                    step={1}
+                    value={volumeSettings.master}
+                    onChange={(e) => handleMasterVolume(Number(e.target.value))}
+                    style={{ width: '100%', accentColor: 'var(--primary)' }}
+                />
+                <p className="obs-settings-hint">
+                    {volumeSettings.master}% — {t('settings.master_volume_hint') || 'set to 0 to mute everything'}
+                </p>
+            </section>
+
+            {SFX_GROUPS.map((group) => (
+                <section key={group.labelKey} className="obs-settings-section">
+                    <h2 className="obs-settings-section-label">
+                        <span style={{ marginRight: 6 }}>{group.icon}</span>
+                        {t(group.labelKey) || group.labelKey}
+                    </h2>
+                    {group.effects.map((effect) => {
+                        const label = SFX_LABELS[effect] || effect;
+                        const value = volumeSettings.individual[effect] ?? 100;
+                        return (
+                            <div key={effect} className="obs-settings-row" style={{ gap: 12, padding: '4px 0' }}>
+                                <span style={{ flex: '0 0 160px', fontSize: '0.82rem', color: 'var(--text-dark)' }}>{label}</span>
+                                <input
+                                    type="range"
+                                    min={0}
+                                    max={100}
+                                    step={1}
+                                    value={value}
+                                    onChange={(e) => handleIndividualVolume(effect, Number(e.target.value))}
+                                    style={{ flex: 1, accentColor: 'var(--primary)' }}
+                                />
+                                <span style={{ flex: '0 0 36px', fontSize: '0.78rem', color: 'var(--text-muted)', textAlign: 'right' }}>
+                                    {value}%
+                                </span>
+                                <button
+                                    type="button"
+                                    className="btn btn-icon"
+                                    onClick={() => testSFX(effect)}
+                                    onMouseEnter={() => playSFX(SFX.HOVER)}
+                                    aria-label={t('settings.test') || 'Test'}
+                                    title={t('settings.test') || 'Test'}
+                                >
+                                    <Play size={14} />
+                                </button>
+                            </div>
+                        );
+                    })}
+                </section>
+            ))}
         </>
     );
 }
