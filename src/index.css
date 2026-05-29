@@ -6672,6 +6672,23 @@ input[type="checkbox"] {
   background: var(--primary-hover);
 }
 
+/* Obsidian secondary buttons: subdued surface look (not bright --secondary).
+   Uses each theme's own surface/text tokens so contrast holds on every
+   variant, including the light Catppuccin Latte. Fixes white-on-light text
+   on Pause, Passer le bloc, + Ajouter, zone d'ombre +, Réinitialiser,
+   Importer, and unselected sound-profile buttons. */
+[data-theme="obsidian"] .btn-secondary,
+[data-theme^="obsidian-"] .btn-secondary {
+  background: var(--surface-raised);
+  color: var(--text-dark);
+  border: 1px solid var(--border-color);
+}
+[data-theme="obsidian"] .btn-secondary:hover,
+[data-theme^="obsidian-"] .btn-secondary:hover {
+  background: var(--card-bg);
+  filter: none;
+}
+
 /* ════════════════════════════════════════════════════════════════
    OBSIDIAN VARIANTS — required four (terminal-green, terminal-orange,
    designers-republic, cyberpunk)
@@ -6760,13 +6777,13 @@ input[type="checkbox"] {
 [data-theme="obsidian-terminal-orange"] .btn-primary:hover { background: var(--primary-hover); }
 
 [data-theme="obsidian-designers-republic"] {
-  --font-main: 'IBM Plex Sans', sans-serif;
-  --font-heading: 'IBM Plex Sans', sans-serif;
+  --font-main: 'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif;
+  --font-heading: 'Space Grotesk', 'Helvetica Neue', Arial, sans-serif;
   --bg-color: #0a0a14;
   --bg-gradient: var(--bg-color);
   --card-bg: #14142e;
-  --surface-raised: color-mix(in srgb, var(--card-bg) 92%, white);
-  --border-color: color-mix(in srgb, var(--card-bg) 82%, white);
+  --surface-raised: color-mix(in srgb, var(--card-bg) 88%, white);
+  --border-color: rgba(255, 0, 102, 0.32);
   --primary: #ff0066;
   --primary-rgb: 255, 0, 102;
   --primary-hover: color-mix(in srgb, var(--primary) 90%, white);
@@ -6776,29 +6793,307 @@ input[type="checkbox"] {
   --danger: #ff3366;
   --text-dark: #f0f0ff;
   --text-light: color-mix(in srgb, var(--text-dark) 94%, white);
-  --text-muted: color-mix(in srgb, var(--text-dark) 50%, var(--bg-color));
-  --border-radius: 6px;
-  --border-radius-sm: 4px;
-  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
-  --shadow-md: 0 1px 3px rgba(0, 0, 0, 0.4);
-  --shadow-lg: 0 2px 6px rgba(0, 0, 0, 0.5);
-  --transition: all 0.15s ease;
+  --text-muted: color-mix(in srgb, var(--text-dark) 55%, var(--bg-color));
+  /* Razor-sharp TDR geometry */
+  --border-radius: 0px;
+  --border-radius-sm: 0px;
+  --shadow-sm: 2px 2px 0 rgba(0, 0, 0, 0.45);
+  --shadow-md: 3px 3px 0 rgba(0, 0, 0, 0.55);
+  --shadow-lg: 5px 5px 0 rgba(0, 0, 0, 0.6);
+  --transition: all 0.1s ease;
   --sidebar-bg: var(--card-bg);
   --glass-border: var(--border-color);
-  --input-border: var(--border-color);
+  --input-border: var(--primary);
   --input-bg-focus: var(--bg-color);
-  --input-focus-ring: rgba(var(--primary-rgb), 0.2);
+  --input-focus-ring: rgba(var(--primary-rgb), 0.25);
   --bubble-bg: var(--card-bg);
   --h-0: var(--card-bg);
   --h-1: color-mix(in srgb, var(--card-bg) 75%, var(--primary));
   --h-2: color-mix(in srgb, var(--card-bg) 50%, var(--primary));
   --h-3: var(--primary);
   --h-4: var(--primary-hover);
+  /* TDR signature tokens — reused by the obsidian-tdr structural block below */
+  --tdr-rule: var(--primary);
+  --tdr-dot: rgba(255, 0, 102, 0.12);
 }
-[data-theme="obsidian-designers-republic"] .glass { background: var(--card-bg); border: 1px solid var(--border-color); backdrop-filter: none; }
-[data-theme="obsidian-designers-republic"] .btn { border-radius: var(--border-radius-sm); }
-[data-theme="obsidian-designers-republic"] .btn-primary { background: var(--primary); color: var(--bg-color); }
-[data-theme="obsidian-designers-republic"] .btn-primary:hover { background: var(--primary-hover); }
+:is([data-theme="obsidian-designers-republic"], [data-theme="obsidian-tdr-acid"]) .glass { background: var(--card-bg); border: 1.5px solid var(--tdr-rule); backdrop-filter: none; }
+:is([data-theme="obsidian-designers-republic"], [data-theme="obsidian-tdr-acid"]) .btn { border-radius: 0; }
+:is([data-theme="obsidian-designers-republic"], [data-theme="obsidian-tdr-acid"]) .btn-primary { background: var(--primary); color: var(--bg-color); }
+:is([data-theme="obsidian-designers-republic"], [data-theme="obsidian-tdr-acid"]) .btn-primary:hover { background: var(--primary-hover); }
+
+/* ── Obsidian TDR Acid: lime on near-black, TDR signature ── */
+[data-theme="obsidian-tdr-acid"] {
+  --font-main: 'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif;
+  --font-heading: 'Space Grotesk', 'Helvetica Neue', Arial, sans-serif;
+  --bg-color: #0d0d0d;
+  --bg-gradient: var(--bg-color);
+  --card-bg: #141414;
+  --surface-raised: color-mix(in srgb, var(--card-bg) 86%, white);
+  --border-color: rgba(170, 255, 0, 0.32);
+  --primary: #aaff00;
+  --primary-rgb: 170, 255, 0;
+  --primary-hover: #bbff33;
+  --secondary: #77cc00;
+  --accent: #ccff66;
+  --success: #00ff88;
+  --danger: #ff3355;
+  --danger-rgb: 255, 51, 85;
+  --text-dark: #f0ede6;
+  --text-light: #ffffff;
+  --text-muted: #8a8a82;
+  --border-radius: 0px;
+  --border-radius-sm: 0px;
+  --shadow-sm: 2px 2px 0 rgba(0, 0, 0, 0.5);
+  --shadow-md: 3px 3px 0 rgba(0, 0, 0, 0.6);
+  --shadow-lg: 5px 5px 0 rgba(0, 0, 0, 0.7);
+  --transition: all 0.1s ease;
+  --sidebar-bg: #080808;
+  --glass-border: var(--border-color);
+  --input-border: var(--primary);
+  --input-bg-focus: var(--card-bg);
+  --input-focus-ring: rgba(var(--primary-rgb), 0.25);
+  --bubble-bg: var(--card-bg);
+  --h-0: #0d1a00;
+  --h-1: #224400;
+  --h-2: #558800;
+  --h-3: var(--primary);
+  --h-4: #ccff66;
+  --tdr-rule: var(--primary);
+  --tdr-dot: rgba(170, 255, 0, 0.12);
+}
+[data-theme="obsidian-tdr-acid"] .glass { background: var(--card-bg); border: 1.5px solid var(--tdr-rule); backdrop-filter: none; }
+[data-theme="obsidian-tdr-acid"] .btn { border-radius: 0; }
+[data-theme="obsidian-tdr-acid"] .btn-primary { background: var(--primary); color: var(--bg-color); }
+[data-theme="obsidian-tdr-acid"] .btn-primary:hover { background: var(--primary-hover); }
+
+/* ── Obsidian Kokedera: moss garden, damp stone ──
+   Palette from the Kokedera VS Code theme by 7th-Layer:
+     Background #121a11 · Surface #1a2619 · Selection #2a3d26 · Border #3a4a35
+     Primary text #c8d8b8 · Muted #7a9070 · Comments #4a5a44
+     Keywords #4ca64c · Cursor/active #5ae65a · Functions #8fbf6f
+     Types #3d9970 · Strings #d4c88e · Numbers #c49a5c
+     Warnings #bfa243 · Errors #c45a5a · Special #c19ce0 */
+[data-theme="obsidian-kokedera"] {
+  --font-main: 'IBM Plex Sans', sans-serif;
+  --font-heading: 'IBM Plex Sans', sans-serif;
+  --bg-color: #121a11;
+  --bg-gradient: var(--bg-color);
+  --card-bg: #1a2619;
+  --surface-raised: #2a3d26;
+  --border-color: #3a4a35;
+  --primary: #4ca64c;
+  --primary-rgb: 76, 166, 76;
+  --primary-hover: #5ae65a;
+  --secondary: #8fbf6f;
+  --accent: #d4c88e;
+  --success: #5ae65a;
+  --warning: #bfa243;
+  --danger: #c45a5a;
+  --danger-rgb: 196, 90, 90;
+  --text-dark: #c8d8b8;
+  --text-light: #e2eed4;
+  --text-muted: #7a9070;
+  --border-radius: 6px;
+  --border-radius-sm: 4px;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.45);
+  --shadow-md: 0 2px 8px rgba(0, 0, 0, 0.55);
+  --shadow-lg: 0 4px 14px rgba(0, 0, 0, 0.65);
+  --transition: all 0.18s ease;
+  --sidebar-bg: #1a2619;
+  --glass-border: var(--border-color);
+  --input-border: var(--border-color);
+  --input-bg-focus: var(--bg-color);
+  --input-focus-ring: rgba(var(--primary-rgb), 0.25);
+  --bubble-bg: var(--card-bg);
+  --h-0: #1a2619;
+  --h-1: #2a3d26;
+  --h-2: #4a5a44;
+  --h-3: var(--primary);
+  --h-4: #5ae65a;
+}
+[data-theme="obsidian-kokedera"] .glass { background: var(--card-bg); border: 1px solid var(--border-color); backdrop-filter: none; }
+[data-theme="obsidian-kokedera"] .btn { border-radius: var(--border-radius-sm); }
+[data-theme="obsidian-kokedera"] .btn-primary { background: var(--primary); color: var(--bg-color); }
+[data-theme="obsidian-kokedera"] .btn-primary:hover { background: var(--primary-hover); }
+
+/* Faint moss dapple — layered radials in the theme's own moss greens.
+   Kept very low opacity so it never fights the content. */
+[data-theme="obsidian-kokedera"] .obsidian-main-wrapper .main-content,
+[data-theme="obsidian-kokedera"] .ohi-page,
+[data-theme="obsidian-kokedera"] .obs-meta-page,
+[data-theme="obsidian-kokedera"] .obs-learn-page,
+[data-theme="obsidian-kokedera"] .obs-settings-page,
+[data-theme="obsidian-kokedera"] .obs-learn-main,
+[data-theme="obsidian-kokedera"] .obs-meta-main {
+  background-image:
+    radial-gradient(circle at 20% 30%, rgba(143, 191, 111, 0.06) 0, transparent 38%),
+    radial-gradient(circle at 75% 65%, rgba(76, 166, 76, 0.05) 0, transparent 42%),
+    radial-gradient(circle at 50% 90%, rgba(61, 153, 112, 0.04) 0, transparent 30%);
+  background-color: var(--bg-color);
+  background-attachment: fixed;
+}
+
+/* Sidebar leans a touch deeper than the floor — like a shaded stone path */
+[data-theme="obsidian-kokedera"] .obsidian-sidebar {
+  background: var(--sidebar-bg);
+  border-right: 1px solid var(--border-color);
+}
+
+/* Quote bar: soft serif italic feel via letter-spacing, no italic font swap */
+[data-theme="obsidian-kokedera"] .obsidian-quote-bar {
+  background: var(--sidebar-bg);
+  border-top: 1px solid var(--border-color);
+}
+[data-theme="obsidian-kokedera"] .obsidian-quote-text {
+  color: var(--secondary);
+  font-style: italic;
+  letter-spacing: 0.02em;
+}
+
+/* Cursor-bright accent on the active nav-link stripe */
+[data-theme="obsidian-kokedera"] .obsidian-nav-active {
+  color: var(--primary-hover);
+  background: rgba(var(--primary-rgb), 0.15);
+}
+[data-theme="obsidian-kokedera"] .obsidian-nav-active::before {
+  background: var(--primary-hover);
+}
+
+/* ━━ OBSIDIAN-TDR STRUCTURAL SIGNATURE ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   Brings the original TDR vibe (dot grid, registration stripe, sidebar
+   crosshair, L-bracket corner marks, sharp edges, Space Grotesk display)
+   into the obsidian layout shell. */
+
+/* Dot grid: technical drawing paper.
+   Each obsidian page sets its own opaque `background: var(--bg-color)`, so the
+   grid has to be painted on the page roots themselves, not just .main-content. */
+:is([data-theme="obsidian-designers-republic"], [data-theme="obsidian-tdr-acid"]) .obsidian-main-wrapper .main-content,
+:is([data-theme="obsidian-designers-republic"], [data-theme="obsidian-tdr-acid"]) .ohi-page,
+:is([data-theme="obsidian-designers-republic"], [data-theme="obsidian-tdr-acid"]) .obs-meta-page,
+:is([data-theme="obsidian-designers-republic"], [data-theme="obsidian-tdr-acid"]) .obs-learn-page,
+:is([data-theme="obsidian-designers-republic"], [data-theme="obsidian-tdr-acid"]) .obs-settings-page,
+:is([data-theme="obsidian-designers-republic"], [data-theme="obsidian-tdr-acid"]) .obs-learn-main,
+:is([data-theme="obsidian-designers-republic"], [data-theme="obsidian-tdr-acid"]) .obs-meta-main {
+  background-image: radial-gradient(circle, var(--tdr-dot) 1px, transparent 1px);
+  background-size: 20px 20px;
+  background-color: var(--bg-color);
+}
+
+/* Registration stripe along the top edge of the main pane */
+:is([data-theme="obsidian-designers-republic"], [data-theme="obsidian-tdr-acid"]) .obsidian-main-wrapper {
+  position: relative;
+}
+:is([data-theme="obsidian-designers-republic"], [data-theme="obsidian-tdr-acid"]) .obsidian-main-wrapper::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  height: 3px;
+  background: var(--primary);
+  z-index: 5;
+  pointer-events: none;
+}
+
+/* Sidebar: dark band with primary right-rule */
+:is([data-theme="obsidian-designers-republic"], [data-theme="obsidian-tdr-acid"]) .obsidian-sidebar {
+  background: var(--sidebar-bg);
+  border-right: 2px solid var(--primary);
+  position: relative;
+}
+
+/* Navigation: uppercase grotesque */
+:is([data-theme="obsidian-designers-republic"], [data-theme="obsidian-tdr-acid"]) .obsidian-nav-link {
+  font-family: var(--font-heading);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  border-radius: 0;
+}
+:is([data-theme="obsidian-designers-republic"], [data-theme="obsidian-tdr-acid"]) .obsidian-nav-active {
+  background: rgba(var(--primary-rgb), 0.18);
+}
+:is([data-theme="obsidian-designers-republic"], [data-theme="obsidian-tdr-acid"]) .obsidian-nav-active::before {
+  border-radius: 0;
+  width: 4px;
+}
+
+/* Quote bar: same engineering-print accent */
+:is([data-theme="obsidian-designers-republic"], [data-theme="obsidian-tdr-acid"]) .obsidian-quote-bar {
+  border-top: 1px solid var(--primary);
+}
+:is([data-theme="obsidian-designers-republic"], [data-theme="obsidian-tdr-acid"]) .obsidian-quote-text {
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  font-style: normal;
+  font-family: var(--font-heading);
+  font-size: 11px;
+}
+
+/* Card frames: sharp edges, primary 1.5px border, hard-edge shadow */
+:is([data-theme="obsidian-designers-republic"], [data-theme="obsidian-tdr-acid"]) .ohi-board-group,
+:is([data-theme="obsidian-designers-republic"], [data-theme="obsidian-tdr-acid"]) .ohi-table-wrap,
+:is([data-theme="obsidian-designers-republic"], [data-theme="obsidian-tdr-acid"]) .ohi-list-wrap,
+:is([data-theme="obsidian-designers-republic"], [data-theme="obsidian-tdr-acid"]) .ohi-split-pane,
+:is([data-theme="obsidian-designers-republic"], [data-theme="obsidian-tdr-acid"]) .obs-meta-card,
+:is([data-theme="obsidian-designers-republic"], [data-theme="obsidian-tdr-acid"]) .obs-learn-card,
+:is([data-theme="obsidian-designers-republic"], [data-theme="obsidian-tdr-acid"]) .obs-learn-lesson,
+:is([data-theme="obsidian-designers-republic"], [data-theme="obsidian-tdr-acid"]) .obs-meta-field-value,
+:is([data-theme="obsidian-designers-republic"], [data-theme="obsidian-tdr-acid"]) .obs-learn-quiz-option,
+:is([data-theme="obsidian-designers-republic"], [data-theme="obsidian-tdr-acid"]) .obs-learn-lesson-image,
+:is([data-theme="obsidian-designers-republic"], [data-theme="obsidian-tdr-acid"]) .obs-meta-btn {
+  border-radius: 0;
+}
+
+/* Cards get the registration L-bracket in the top-right corner */
+:is([data-theme="obsidian-designers-republic"], [data-theme="obsidian-tdr-acid"]) .ohi-board-group,
+:is([data-theme="obsidian-designers-republic"], [data-theme="obsidian-tdr-acid"]) .obs-meta-card:not(.is-empty),
+:is([data-theme="obsidian-designers-republic"], [data-theme="obsidian-tdr-acid"]) .obs-learn-card,
+:is([data-theme="obsidian-designers-republic"], [data-theme="obsidian-tdr-acid"]) .obs-learn-lesson {
+  position: relative;
+  border: 1.5px solid var(--primary);
+  box-shadow: var(--shadow-md);
+}
+
+:is([data-theme="obsidian-designers-republic"], [data-theme="obsidian-tdr-acid"]) .ohi-board-group::after,
+:is([data-theme="obsidian-designers-republic"], [data-theme="obsidian-tdr-acid"]) .obs-meta-card:not(.is-empty)::after,
+:is([data-theme="obsidian-designers-republic"], [data-theme="obsidian-tdr-acid"]) .obs-learn-card::after,
+:is([data-theme="obsidian-designers-republic"], [data-theme="obsidian-tdr-acid"]) .obs-learn-lesson::after {
+  content: '';
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  width: 12px;
+  height: 12px;
+  border-top: 1.5px solid var(--primary);
+  border-right: 1.5px solid var(--primary);
+  pointer-events: none;
+  z-index: 1;
+}
+
+/* Display type uses Space Grotesk */
+:is([data-theme="obsidian-designers-republic"], [data-theme="obsidian-tdr-acid"]) .ohi-stat,
+:is([data-theme="obsidian-designers-republic"], [data-theme="obsidian-tdr-acid"]) .ohi-stat-val,
+:is([data-theme="obsidian-designers-republic"], [data-theme="obsidian-tdr-acid"]) .obs-learn-rail-title-main,
+:is([data-theme="obsidian-designers-republic"], [data-theme="obsidian-tdr-acid"]) .obs-learn-section-title,
+:is([data-theme="obsidian-designers-republic"], [data-theme="obsidian-tdr-acid"]) .obs-learn-intro-title,
+:is([data-theme="obsidian-designers-republic"], [data-theme="obsidian-tdr-acid"]) .obs-meta-rail-title,
+:is([data-theme="obsidian-designers-republic"], [data-theme="obsidian-tdr-acid"]) .obs-meta-head-title,
+:is([data-theme="obsidian-designers-republic"], [data-theme="obsidian-tdr-acid"]) .obs-settings-panel-title {
+  font-family: var(--font-heading);
+}
+
+:is([data-theme="obsidian-designers-republic"], [data-theme="obsidian-tdr-acid"]) .obs-learn-rail-eyebrow,
+:is([data-theme="obsidian-designers-republic"], [data-theme="obsidian-tdr-acid"]) .obs-meta-rail-eyebrow,
+:is([data-theme="obsidian-designers-republic"], [data-theme="obsidian-tdr-acid"]) .obs-meta-head-eyebrow,
+:is([data-theme="obsidian-designers-republic"], [data-theme="obsidian-tdr-acid"]) .obs-learn-intro-eyebrow,
+:is([data-theme="obsidian-designers-republic"], [data-theme="obsidian-tdr-acid"]) .obs-meta-card-num,
+:is([data-theme="obsidian-designers-republic"], [data-theme="obsidian-tdr-acid"]) .obs-learn-card-num,
+:is([data-theme="obsidian-designers-republic"], [data-theme="obsidian-tdr-acid"]) .obs-learn-rail-item-num,
+:is([data-theme="obsidian-designers-republic"], [data-theme="obsidian-tdr-acid"]) .obs-learn-quiz-head,
+:is([data-theme="obsidian-designers-republic"], [data-theme="obsidian-tdr-acid"]) .obs-learn-chapter-title {
+  font-family: var(--font-heading);
+  letter-spacing: 0.08em;
+}
 
 [data-theme="obsidian-cyberpunk"] {
   --font-main: 'IBM Plex Sans', sans-serif;
@@ -7128,6 +7423,129 @@ input[type="checkbox"] {
 [data-theme="obsidian-catppuccin"] .btn-primary { background: var(--primary); color: var(--bg-color); }
 [data-theme="obsidian-catppuccin"] .btn-primary:hover { background: var(--primary-hover); }
 
+[data-theme="obsidian-catppuccin-latte"] {
+  --font-main: 'IBM Plex Sans', sans-serif;
+  --font-heading: 'IBM Plex Sans', sans-serif;
+  --bg-color: #eff1f5;
+  --bg-gradient: var(--bg-color);
+  --card-bg: #e6e9ef;
+  --surface-raised: color-mix(in srgb, var(--card-bg) 92%, black);
+  --border-color: color-mix(in srgb, var(--card-bg) 82%, black);
+  --primary: #8839ef;
+  --primary-rgb: 136, 57, 239;
+  --primary-hover: color-mix(in srgb, var(--primary) 90%, black);
+  --secondary: #ea76cb;
+  --accent: #df8e1d;
+  --success: #40a02b;
+  --danger: #d20f39;
+  --text-dark: #4c4f69;
+  --text-light: color-mix(in srgb, var(--text-dark) 94%, black);
+  --text-muted: color-mix(in srgb, var(--text-dark) 50%, var(--bg-color));
+  --border-radius: 6px;
+  --border-radius-sm: 4px;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.12);
+  --shadow-md: 0 1px 3px rgba(0, 0, 0, 0.12);
+  --shadow-lg: 0 2px 6px rgba(0, 0, 0, 0.16);
+  --transition: all 0.15s ease;
+  --sidebar-bg: var(--card-bg);
+  --glass-border: var(--border-color);
+  --input-border: var(--border-color);
+  --input-bg-focus: var(--bg-color);
+  --input-focus-ring: rgba(var(--primary-rgb), 0.2);
+  --bubble-bg: var(--card-bg);
+  --h-0: var(--card-bg);
+  --h-1: color-mix(in srgb, var(--card-bg) 75%, var(--primary));
+  --h-2: color-mix(in srgb, var(--card-bg) 50%, var(--primary));
+  --h-3: var(--primary);
+  --h-4: var(--primary-hover);
+}
+[data-theme="obsidian-catppuccin-latte"] .glass { background: var(--card-bg); border: 1px solid var(--border-color); backdrop-filter: none; }
+[data-theme="obsidian-catppuccin-latte"] .btn { border-radius: var(--border-radius-sm); }
+[data-theme="obsidian-catppuccin-latte"] .btn-primary { background: var(--primary); color: #ffffff; }
+[data-theme="obsidian-catppuccin-latte"] .btn-primary:hover { background: var(--primary-hover); }
+
+[data-theme="obsidian-catppuccin-frappe"] {
+  --font-main: 'IBM Plex Sans', sans-serif;
+  --font-heading: 'IBM Plex Sans', sans-serif;
+  --bg-color: #303446;
+  --bg-gradient: var(--bg-color);
+  --card-bg: #414559;
+  --surface-raised: color-mix(in srgb, var(--card-bg) 92%, white);
+  --border-color: color-mix(in srgb, var(--card-bg) 82%, white);
+  --primary: #ca9ee6;
+  --primary-rgb: 202, 158, 230;
+  --primary-hover: color-mix(in srgb, var(--primary) 90%, white);
+  --secondary: #f4b8e4;
+  --accent: #e5c890;
+  --success: #a6d189;
+  --danger: #e78284;
+  --text-dark: #c6d0f5;
+  --text-light: color-mix(in srgb, var(--text-dark) 94%, white);
+  --text-muted: color-mix(in srgb, var(--text-dark) 50%, var(--bg-color));
+  --border-radius: 6px;
+  --border-radius-sm: 4px;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 2px 6px rgba(0, 0, 0, 0.5);
+  --transition: all 0.15s ease;
+  --sidebar-bg: var(--card-bg);
+  --glass-border: var(--border-color);
+  --input-border: var(--border-color);
+  --input-bg-focus: var(--bg-color);
+  --input-focus-ring: rgba(var(--primary-rgb), 0.2);
+  --bubble-bg: var(--card-bg);
+  --h-0: var(--card-bg);
+  --h-1: color-mix(in srgb, var(--card-bg) 75%, var(--primary));
+  --h-2: color-mix(in srgb, var(--card-bg) 50%, var(--primary));
+  --h-3: var(--primary);
+  --h-4: var(--primary-hover);
+}
+[data-theme="obsidian-catppuccin-frappe"] .glass { background: var(--card-bg); border: 1px solid var(--border-color); backdrop-filter: none; }
+[data-theme="obsidian-catppuccin-frappe"] .btn { border-radius: var(--border-radius-sm); }
+[data-theme="obsidian-catppuccin-frappe"] .btn-primary { background: var(--primary); color: var(--bg-color); }
+[data-theme="obsidian-catppuccin-frappe"] .btn-primary:hover { background: var(--primary-hover); }
+
+[data-theme="obsidian-catppuccin-macchiato"] {
+  --font-main: 'IBM Plex Sans', sans-serif;
+  --font-heading: 'IBM Plex Sans', sans-serif;
+  --bg-color: #24273a;
+  --bg-gradient: var(--bg-color);
+  --card-bg: #363a4f;
+  --surface-raised: color-mix(in srgb, var(--card-bg) 92%, white);
+  --border-color: color-mix(in srgb, var(--card-bg) 82%, white);
+  --primary: #c6a0f6;
+  --primary-rgb: 198, 160, 246;
+  --primary-hover: color-mix(in srgb, var(--primary) 90%, white);
+  --secondary: #f5bde6;
+  --accent: #eed49f;
+  --success: #a6da95;
+  --danger: #ed8796;
+  --text-dark: #cad3f5;
+  --text-light: color-mix(in srgb, var(--text-dark) 94%, white);
+  --text-muted: color-mix(in srgb, var(--text-dark) 50%, var(--bg-color));
+  --border-radius: 6px;
+  --border-radius-sm: 4px;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 2px 6px rgba(0, 0, 0, 0.5);
+  --transition: all 0.15s ease;
+  --sidebar-bg: var(--card-bg);
+  --glass-border: var(--border-color);
+  --input-border: var(--border-color);
+  --input-bg-focus: var(--bg-color);
+  --input-focus-ring: rgba(var(--primary-rgb), 0.2);
+  --bubble-bg: var(--card-bg);
+  --h-0: var(--card-bg);
+  --h-1: color-mix(in srgb, var(--card-bg) 75%, var(--primary));
+  --h-2: color-mix(in srgb, var(--card-bg) 50%, var(--primary));
+  --h-3: var(--primary);
+  --h-4: var(--primary-hover);
+}
+[data-theme="obsidian-catppuccin-macchiato"] .glass { background: var(--card-bg); border: 1px solid var(--border-color); backdrop-filter: none; }
+[data-theme="obsidian-catppuccin-macchiato"] .btn { border-radius: var(--border-radius-sm); }
+[data-theme="obsidian-catppuccin-macchiato"] .btn-primary { background: var(--primary); color: var(--bg-color); }
+[data-theme="obsidian-catppuccin-macchiato"] .btn-primary:hover { background: var(--primary-hover); }
+
 [data-theme="obsidian-ayu"] {
   --font-main: 'IBM Plex Sans', sans-serif;
   --font-heading: 'IBM Plex Sans', sans-serif;
@@ -7168,3 +7586,827 @@ input[type="checkbox"] {
 [data-theme="obsidian-ayu"] .btn { border-radius: var(--border-radius-sm); }
 [data-theme="obsidian-ayu"] .btn-primary { background: var(--primary); color: var(--bg-color); }
 [data-theme="obsidian-ayu"] .btn-primary:hover { background: var(--primary-hover); }
+
+/* ── Obsidian — Starry Night: Van Gogh palette on the redesign tokens ── */
+[data-theme="obsidian-starry-night"] {
+  --font-main: 'IBM Plex Sans', sans-serif;
+  --font-heading: 'IBM Plex Sans', sans-serif;
+  --bg-color: #0d1b3e;
+  --bg-gradient: linear-gradient(160deg, #090f28 0%, #0d1b3e 45%, #101e48 100%);
+  --card-bg: #13234d;
+  --surface-raised: #1b2c5c;
+  --border-color: rgba(74, 143, 200, 0.28);
+  --primary: #e8c84a;
+  --primary-rgb: 232, 200, 74;
+  --primary-hover: #f2d95c;
+  --secondary: #4a8fc8;
+  --accent: #7bbdea;
+  --success: #6db87a;
+  --danger: #c85c4a;
+  --danger-rgb: 200, 92, 74;
+  --text-dark: #f0e8d4;
+  --text-light: #ffffff;
+  --text-muted: #8ca8cc;
+  --border-radius: 14px;
+  --border-radius-sm: 8px;
+  --shadow-sm: 0 4px 14px rgba(5, 12, 40, 0.55);
+  --shadow-md: 0 8px 28px rgba(5, 12, 40, 0.65), 0 0 10px rgba(232, 200, 74, 0.07);
+  --shadow-lg: 0 14px 44px rgba(5, 12, 40, 0.78), 0 0 24px rgba(232, 200, 74, 0.10);
+  --transition: all 0.3s cubic-bezier(0.25, 0.8, 0.25, 1);
+  --sidebar-bg: var(--card-bg);
+  --glass-border: rgba(74, 143, 200, 0.32);
+  --input-border: rgba(232, 200, 74, 0.28);
+  --input-bg-focus: rgba(8, 18, 50, 0.88);
+  --input-focus-ring: rgba(232, 200, 74, 0.18);
+  --bubble-bg: rgba(8, 18, 50, 0.82);
+  --h-0: rgba(8, 18, 50, 0.45);
+  --h-1: rgba(74, 143, 200, 0.35);
+  --h-2: rgba(232, 200, 74, 0.50);
+  --h-3: rgba(232, 200, 74, 0.78);
+  --h-4: #e8c84a;
+}
+[data-theme="obsidian-starry-night"] .glass { background: var(--card-bg); border: 1px solid var(--border-color); backdrop-filter: none; }
+[data-theme="obsidian-starry-night"] .btn { border-radius: var(--border-radius-sm); }
+[data-theme="obsidian-starry-night"] .btn-primary { background: var(--primary); color: #0a1428; font-weight: 600; }
+[data-theme="obsidian-starry-night"] .btn-primary:hover { background: var(--primary-hover); box-shadow: 0 0 16px rgba(232, 200, 74, 0.40); }
+
+/* ── Obsidian palette variants ported from classic themes ── */
+
+[data-theme="obsidian-pastel"] {
+  --font-main: 'IBM Plex Sans', sans-serif;
+  --font-heading: 'IBM Plex Sans', sans-serif;
+  --bg-color: #fce8f2;
+  --bg-gradient: var(--bg-color);
+  --card-bg: #fff4f9;
+  --surface-raised: color-mix(in srgb, var(--card-bg) 92%, black);
+  --border-color: color-mix(in srgb, var(--card-bg) 82%, black);
+  --primary: #f08cb8;
+  --primary-rgb: 240, 140, 184;
+  --primary-hover: color-mix(in srgb, var(--primary) 90%, black);
+  --secondary: #7ec8db;
+  --accent: #f7c842;
+  --success: #8ed85e;
+  --danger: #ca2200;
+  --text-dark: #4a4453;
+  --text-light: color-mix(in srgb, var(--text-dark) 94%, black);
+  --text-muted: #6e6878;
+  --border-radius: 6px;
+  --border-radius-sm: 4px;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.12);
+  --shadow-md: 0 1px 3px rgba(0, 0, 0, 0.12);
+  --shadow-lg: 0 2px 6px rgba(0, 0, 0, 0.16);
+  --transition: all 0.15s ease;
+  --sidebar-bg: var(--card-bg);
+  --glass-border: var(--border-color);
+  --input-border: var(--border-color);
+  --input-bg-focus: var(--bg-color);
+  --input-focus-ring: rgba(var(--primary-rgb), 0.2);
+  --bubble-bg: var(--card-bg);
+  --h-0: var(--card-bg);
+  --h-1: color-mix(in srgb, var(--card-bg) 75%, var(--primary));
+  --h-2: color-mix(in srgb, var(--card-bg) 50%, var(--primary));
+  --h-3: var(--primary);
+  --h-4: var(--primary-hover);
+}
+[data-theme="obsidian-pastel"] .glass { background: var(--card-bg); border: 1px solid var(--border-color); backdrop-filter: none; }
+[data-theme="obsidian-pastel"] .btn { border-radius: var(--border-radius-sm); }
+[data-theme="obsidian-pastel"] .btn-primary { background: var(--primary); color: var(--bg-color); }
+[data-theme="obsidian-pastel"] .btn-primary:hover { background: var(--primary-hover); }
+
+[data-theme="obsidian-neumorphism"] {
+  --font-main: 'IBM Plex Sans', sans-serif;
+  --font-heading: 'IBM Plex Sans', sans-serif;
+  --bg-color: #e0e5ec;
+  --bg-gradient: var(--bg-color);
+  --card-bg: #eef1f6;
+  --surface-raised: color-mix(in srgb, var(--card-bg) 92%, black);
+  --border-color: color-mix(in srgb, var(--card-bg) 82%, black);
+  --primary: #9baec8;
+  --primary-rgb: 155, 174, 200;
+  --primary-hover: color-mix(in srgb, var(--primary) 90%, black);
+  --secondary: #d1d9e6;
+  --accent: #ff914d;
+  --success: #3fb950;
+  --danger: #f85149;
+  --text-dark: #3a4b63;
+  --text-light: color-mix(in srgb, var(--text-dark) 94%, black);
+  --text-muted: #6e84a3;
+  --border-radius: 6px;
+  --border-radius-sm: 4px;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.12);
+  --shadow-md: 0 1px 3px rgba(0, 0, 0, 0.12);
+  --shadow-lg: 0 2px 6px rgba(0, 0, 0, 0.16);
+  --transition: all 0.15s ease;
+  --sidebar-bg: var(--card-bg);
+  --glass-border: var(--border-color);
+  --input-border: var(--border-color);
+  --input-bg-focus: var(--bg-color);
+  --input-focus-ring: rgba(var(--primary-rgb), 0.2);
+  --bubble-bg: var(--card-bg);
+  --h-0: var(--card-bg);
+  --h-1: color-mix(in srgb, var(--card-bg) 75%, var(--primary));
+  --h-2: color-mix(in srgb, var(--card-bg) 50%, var(--primary));
+  --h-3: var(--primary);
+  --h-4: var(--primary-hover);
+}
+[data-theme="obsidian-neumorphism"] .glass { background: var(--card-bg); border: 1px solid var(--border-color); backdrop-filter: none; }
+[data-theme="obsidian-neumorphism"] .btn { border-radius: var(--border-radius-sm); }
+[data-theme="obsidian-neumorphism"] .btn-primary { background: var(--primary); color: var(--bg-color); }
+[data-theme="obsidian-neumorphism"] .btn-primary:hover { background: var(--primary-hover); }
+
+[data-theme="obsidian-neobrutalism"] {
+  --font-main: 'IBM Plex Sans', sans-serif;
+  --font-heading: 'IBM Plex Sans', sans-serif;
+  --bg-color: #ffde59;
+  --bg-gradient: var(--bg-color);
+  --card-bg: #ffffff;
+  --surface-raised: color-mix(in srgb, var(--card-bg) 92%, black);
+  --border-color: color-mix(in srgb, var(--card-bg) 82%, black);
+  --primary: #ff5757;
+  --primary-rgb: 255, 87, 87;
+  --primary-hover: color-mix(in srgb, var(--primary) 90%, black);
+  --secondary: #5ce1e6;
+  --accent: #5ce1e6;
+  --success: #3fb950;
+  --danger: #f85149;
+  --text-dark: #1a1a1a;
+  --text-light: color-mix(in srgb, var(--text-dark) 94%, black);
+  --text-muted: #4a4a4a;
+  --border-radius: 6px;
+  --border-radius-sm: 4px;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.12);
+  --shadow-md: 0 1px 3px rgba(0, 0, 0, 0.12);
+  --shadow-lg: 0 2px 6px rgba(0, 0, 0, 0.16);
+  --transition: all 0.15s ease;
+  --sidebar-bg: var(--card-bg);
+  --glass-border: var(--border-color);
+  --input-border: var(--border-color);
+  --input-bg-focus: var(--bg-color);
+  --input-focus-ring: rgba(var(--primary-rgb), 0.2);
+  --bubble-bg: var(--card-bg);
+  --h-0: var(--card-bg);
+  --h-1: color-mix(in srgb, var(--card-bg) 75%, var(--primary));
+  --h-2: color-mix(in srgb, var(--card-bg) 50%, var(--primary));
+  --h-3: var(--primary);
+  --h-4: var(--primary-hover);
+}
+[data-theme="obsidian-neobrutalism"] .glass { background: var(--card-bg); border: 1px solid var(--border-color); backdrop-filter: none; }
+[data-theme="obsidian-neobrutalism"] .btn { border-radius: var(--border-radius-sm); }
+[data-theme="obsidian-neobrutalism"] .btn-primary { background: var(--primary); color: var(--bg-color); }
+[data-theme="obsidian-neobrutalism"] .btn-primary:hover { background: var(--primary-hover); }
+
+[data-theme="obsidian-classic-uniform"] {
+  --font-main: 'IBM Plex Sans', sans-serif;
+  --font-heading: 'IBM Plex Sans', sans-serif;
+  --bg-color: #f8f6fc;
+  --bg-gradient: var(--bg-color);
+  --card-bg: #ffffff;
+  --surface-raised: color-mix(in srgb, var(--card-bg) 92%, black);
+  --border-color: color-mix(in srgb, var(--card-bg) 82%, black);
+  --primary: #c90928;
+  --primary-rgb: 201, 9, 40;
+  --primary-hover: color-mix(in srgb, var(--primary) 90%, black);
+  --secondary: #e0b800;
+  --accent: #c90928;
+  --success: #3fb950;
+  --danger: #f85149;
+  --text-dark: #121c3b;
+  --text-light: color-mix(in srgb, var(--text-dark) 94%, black);
+  --text-muted: #576796;
+  --border-radius: 6px;
+  --border-radius-sm: 4px;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.12);
+  --shadow-md: 0 1px 3px rgba(0, 0, 0, 0.12);
+  --shadow-lg: 0 2px 6px rgba(0, 0, 0, 0.16);
+  --transition: all 0.15s ease;
+  --sidebar-bg: var(--card-bg);
+  --glass-border: var(--border-color);
+  --input-border: var(--border-color);
+  --input-bg-focus: var(--bg-color);
+  --input-focus-ring: rgba(var(--primary-rgb), 0.2);
+  --bubble-bg: var(--card-bg);
+  --h-0: var(--card-bg);
+  --h-1: color-mix(in srgb, var(--card-bg) 75%, var(--primary));
+  --h-2: color-mix(in srgb, var(--card-bg) 50%, var(--primary));
+  --h-3: var(--primary);
+  --h-4: var(--primary-hover);
+}
+[data-theme="obsidian-classic-uniform"] .glass { background: var(--card-bg); border: 1px solid var(--border-color); backdrop-filter: none; }
+[data-theme="obsidian-classic-uniform"] .btn { border-radius: var(--border-radius-sm); }
+[data-theme="obsidian-classic-uniform"] .btn-primary { background: var(--primary); color: var(--bg-color); }
+[data-theme="obsidian-classic-uniform"] .btn-primary:hover { background: var(--primary-hover); }
+
+[data-theme="obsidian-cosmic-manicure"] {
+  --font-main: 'IBM Plex Sans', sans-serif;
+  --font-heading: 'IBM Plex Sans', sans-serif;
+  --bg-color: #1a0b33;
+  --bg-gradient: var(--bg-color);
+  --card-bg: #2a1550;
+  --surface-raised: color-mix(in srgb, var(--card-bg) 92%, white);
+  --border-color: color-mix(in srgb, var(--card-bg) 82%, white);
+  --primary: #ff1faa;
+  --primary-rgb: 255, 31, 170;
+  --primary-hover: color-mix(in srgb, var(--primary) 90%, white);
+  --secondary: #9024f2;
+  --accent: #00f0ff;
+  --success: #3fb950;
+  --danger: #f85149;
+  --text-dark: #f3e9ff;
+  --text-light: color-mix(in srgb, var(--text-dark) 94%, white);
+  --text-muted: #b89fd6;
+  --border-radius: 6px;
+  --border-radius-sm: 4px;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 2px 6px rgba(0, 0, 0, 0.5);
+  --transition: all 0.15s ease;
+  --sidebar-bg: var(--card-bg);
+  --glass-border: var(--border-color);
+  --input-border: var(--border-color);
+  --input-bg-focus: var(--bg-color);
+  --input-focus-ring: rgba(var(--primary-rgb), 0.2);
+  --bubble-bg: var(--card-bg);
+  --h-0: var(--card-bg);
+  --h-1: color-mix(in srgb, var(--card-bg) 75%, var(--primary));
+  --h-2: color-mix(in srgb, var(--card-bg) 50%, var(--primary));
+  --h-3: var(--primary);
+  --h-4: var(--primary-hover);
+}
+[data-theme="obsidian-cosmic-manicure"] .glass { background: var(--card-bg); border: 1px solid var(--border-color); backdrop-filter: none; }
+[data-theme="obsidian-cosmic-manicure"] .btn { border-radius: var(--border-radius-sm); }
+[data-theme="obsidian-cosmic-manicure"] .btn-primary { background: var(--primary); color: var(--bg-color); }
+[data-theme="obsidian-cosmic-manicure"] .btn-primary:hover { background: var(--primary-hover); }
+
+[data-theme="obsidian-chibi-moon"] {
+  --font-main: 'IBM Plex Sans', sans-serif;
+  --font-heading: 'IBM Plex Sans', sans-serif;
+  --bg-color: #ffeff9;
+  --bg-gradient: var(--bg-color);
+  --card-bg: #ffffff;
+  --surface-raised: color-mix(in srgb, var(--card-bg) 92%, black);
+  --border-color: color-mix(in srgb, var(--card-bg) 82%, black);
+  --primary: #ff4db8;
+  --primary-rgb: 255, 77, 184;
+  --primary-hover: color-mix(in srgb, var(--primary) 90%, black);
+  --secondary: #e0a800;
+  --accent: #e3002b;
+  --success: #3fb950;
+  --danger: #e3002b;
+  --text-dark: #5e1c44;
+  --text-light: color-mix(in srgb, var(--text-dark) 94%, black);
+  --text-muted: #a66a8e;
+  --border-radius: 6px;
+  --border-radius-sm: 4px;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.12);
+  --shadow-md: 0 1px 3px rgba(0, 0, 0, 0.12);
+  --shadow-lg: 0 2px 6px rgba(0, 0, 0, 0.16);
+  --transition: all 0.15s ease;
+  --sidebar-bg: var(--card-bg);
+  --glass-border: var(--border-color);
+  --input-border: var(--border-color);
+  --input-bg-focus: var(--bg-color);
+  --input-focus-ring: rgba(var(--primary-rgb), 0.2);
+  --bubble-bg: var(--card-bg);
+  --h-0: var(--card-bg);
+  --h-1: color-mix(in srgb, var(--card-bg) 75%, var(--primary));
+  --h-2: color-mix(in srgb, var(--card-bg) 50%, var(--primary));
+  --h-3: var(--primary);
+  --h-4: var(--primary-hover);
+}
+[data-theme="obsidian-chibi-moon"] .glass { background: var(--card-bg); border: 1px solid var(--border-color); backdrop-filter: none; }
+[data-theme="obsidian-chibi-moon"] .btn { border-radius: var(--border-radius-sm); }
+[data-theme="obsidian-chibi-moon"] .btn-primary { background: var(--primary); color: var(--bg-color); }
+[data-theme="obsidian-chibi-moon"] .btn-primary:hover { background: var(--primary-hover); }
+
+[data-theme="obsidian-transformation-ribbon"] {
+  --font-main: 'IBM Plex Sans', sans-serif;
+  --font-heading: 'IBM Plex Sans', sans-serif;
+  --bg-color: #e5d8f0;
+  --bg-gradient: var(--bg-color);
+  --card-bg: #f4eefb;
+  --surface-raised: color-mix(in srgb, var(--card-bg) 92%, black);
+  --border-color: color-mix(in srgb, var(--card-bg) 82%, black);
+  --primary: #9d5ceb;
+  --primary-rgb: 157, 92, 235;
+  --primary-hover: color-mix(in srgb, var(--primary) 90%, black);
+  --secondary: #42b2b8;
+  --accent: #d9a800;
+  --success: #3fb950;
+  --danger: #f85149;
+  --text-dark: #381f5e;
+  --text-light: color-mix(in srgb, var(--text-dark) 94%, black);
+  --text-muted: #7354a6;
+  --border-radius: 6px;
+  --border-radius-sm: 4px;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.12);
+  --shadow-md: 0 1px 3px rgba(0, 0, 0, 0.12);
+  --shadow-lg: 0 2px 6px rgba(0, 0, 0, 0.16);
+  --transition: all 0.15s ease;
+  --sidebar-bg: var(--card-bg);
+  --glass-border: var(--border-color);
+  --input-border: var(--border-color);
+  --input-bg-focus: var(--bg-color);
+  --input-focus-ring: rgba(var(--primary-rgb), 0.2);
+  --bubble-bg: var(--card-bg);
+  --h-0: var(--card-bg);
+  --h-1: color-mix(in srgb, var(--card-bg) 75%, var(--primary));
+  --h-2: color-mix(in srgb, var(--card-bg) 50%, var(--primary));
+  --h-3: var(--primary);
+  --h-4: var(--primary-hover);
+}
+[data-theme="obsidian-transformation-ribbon"] .glass { background: var(--card-bg); border: 1px solid var(--border-color); backdrop-filter: none; }
+[data-theme="obsidian-transformation-ribbon"] .btn { border-radius: var(--border-radius-sm); }
+[data-theme="obsidian-transformation-ribbon"] .btn-primary { background: var(--primary); color: var(--bg-color); }
+[data-theme="obsidian-transformation-ribbon"] .btn-primary:hover { background: var(--primary-hover); }
+
+[data-theme="obsidian-honey-lemon"] {
+  --font-main: 'IBM Plex Sans', sans-serif;
+  --font-heading: 'IBM Plex Sans', sans-serif;
+  --bg-color: #fff9c4;
+  --bg-gradient: var(--bg-color);
+  --card-bg: #fffef2;
+  --surface-raised: color-mix(in srgb, var(--card-bg) 92%, black);
+  --border-color: color-mix(in srgb, var(--card-bg) 82%, black);
+  --primary: #c79a00;
+  --primary-rgb: 199, 154, 0;
+  --primary-hover: color-mix(in srgb, var(--primary) 90%, black);
+  --secondary: #fbc02d;
+  --accent: #ff5722;
+  --success: #3fb950;
+  --danger: #ff5722;
+  --text-dark: #212121;
+  --text-light: color-mix(in srgb, var(--text-dark) 94%, black);
+  --text-muted: #757575;
+  --border-radius: 6px;
+  --border-radius-sm: 4px;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.12);
+  --shadow-md: 0 1px 3px rgba(0, 0, 0, 0.12);
+  --shadow-lg: 0 2px 6px rgba(0, 0, 0, 0.16);
+  --transition: all 0.15s ease;
+  --sidebar-bg: var(--card-bg);
+  --glass-border: var(--border-color);
+  --input-border: var(--border-color);
+  --input-bg-focus: var(--bg-color);
+  --input-focus-ring: rgba(var(--primary-rgb), 0.2);
+  --bubble-bg: var(--card-bg);
+  --h-0: var(--card-bg);
+  --h-1: color-mix(in srgb, var(--card-bg) 75%, var(--primary));
+  --h-2: color-mix(in srgb, var(--card-bg) 50%, var(--primary));
+  --h-3: var(--primary);
+  --h-4: var(--primary-hover);
+}
+[data-theme="obsidian-honey-lemon"] .glass { background: var(--card-bg); border: 1px solid var(--border-color); backdrop-filter: none; }
+[data-theme="obsidian-honey-lemon"] .btn { border-radius: var(--border-radius-sm); }
+[data-theme="obsidian-honey-lemon"] .btn-primary { background: var(--primary); color: var(--bg-color); }
+[data-theme="obsidian-honey-lemon"] .btn-primary:hover { background: var(--primary-hover); }
+
+[data-theme="obsidian-ai-pro"] {
+  --font-main: 'IBM Plex Sans', sans-serif;
+  --font-heading: 'IBM Plex Sans', sans-serif;
+  --bg-color: #070b14;
+  --bg-gradient: var(--bg-color);
+  --card-bg: #131b2e;
+  --surface-raised: color-mix(in srgb, var(--card-bg) 92%, white);
+  --border-color: color-mix(in srgb, var(--card-bg) 82%, white);
+  --primary: #7c3aed;
+  --primary-rgb: 124, 58, 237;
+  --primary-hover: color-mix(in srgb, var(--primary) 90%, white);
+  --secondary: #06b6d4;
+  --accent: #f59e0b;
+  --success: #10b981;
+  --danger: #ef4444;
+  --text-dark: #e2e8f0;
+  --text-light: color-mix(in srgb, var(--text-dark) 94%, white);
+  --text-muted: #64748b;
+  --border-radius: 6px;
+  --border-radius-sm: 4px;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 2px 6px rgba(0, 0, 0, 0.5);
+  --transition: all 0.15s ease;
+  --sidebar-bg: var(--card-bg);
+  --glass-border: var(--border-color);
+  --input-border: var(--border-color);
+  --input-bg-focus: var(--bg-color);
+  --input-focus-ring: rgba(var(--primary-rgb), 0.2);
+  --bubble-bg: var(--card-bg);
+  --h-0: var(--card-bg);
+  --h-1: color-mix(in srgb, var(--card-bg) 75%, var(--primary));
+  --h-2: color-mix(in srgb, var(--card-bg) 50%, var(--primary));
+  --h-3: var(--primary);
+  --h-4: var(--primary-hover);
+}
+[data-theme="obsidian-ai-pro"] .glass { background: var(--card-bg); border: 1px solid var(--border-color); backdrop-filter: none; }
+[data-theme="obsidian-ai-pro"] .btn { border-radius: var(--border-radius-sm); }
+[data-theme="obsidian-ai-pro"] .btn-primary { background: var(--primary); color: var(--bg-color); }
+[data-theme="obsidian-ai-pro"] .btn-primary:hover { background: var(--primary-hover); }
+
+[data-theme="obsidian-cyber-scan"] {
+  --font-main: 'IBM Plex Sans', sans-serif;
+  --font-heading: 'IBM Plex Sans', sans-serif;
+  --bg-color: #050510;
+  --bg-gradient: var(--bg-color);
+  --card-bg: #0e1430;
+  --surface-raised: color-mix(in srgb, var(--card-bg) 92%, white);
+  --border-color: color-mix(in srgb, var(--card-bg) 82%, white);
+  --primary: #b8ff00;
+  --primary-rgb: 184, 255, 0;
+  --primary-hover: color-mix(in srgb, var(--primary) 90%, white);
+  --secondary: #1f4dff;
+  --accent: #ff00aa;
+  --success: #00ff88;
+  --danger: #ff2244;
+  --text-dark: #d4ffaa;
+  --text-light: color-mix(in srgb, var(--text-dark) 94%, white);
+  --text-muted: #6a80a0;
+  --border-radius: 6px;
+  --border-radius-sm: 4px;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 2px 6px rgba(0, 0, 0, 0.5);
+  --transition: all 0.15s ease;
+  --sidebar-bg: var(--card-bg);
+  --glass-border: var(--border-color);
+  --input-border: var(--border-color);
+  --input-bg-focus: var(--bg-color);
+  --input-focus-ring: rgba(var(--primary-rgb), 0.2);
+  --bubble-bg: var(--card-bg);
+  --h-0: var(--card-bg);
+  --h-1: color-mix(in srgb, var(--card-bg) 75%, var(--primary));
+  --h-2: color-mix(in srgb, var(--card-bg) 50%, var(--primary));
+  --h-3: var(--primary);
+  --h-4: var(--primary-hover);
+}
+[data-theme="obsidian-cyber-scan"] .glass { background: var(--card-bg); border: 1px solid var(--border-color); backdrop-filter: none; }
+[data-theme="obsidian-cyber-scan"] .btn { border-radius: var(--border-radius-sm); }
+[data-theme="obsidian-cyber-scan"] .btn-primary { background: var(--primary); color: var(--bg-color); }
+[data-theme="obsidian-cyber-scan"] .btn-primary:hover { background: var(--primary-hover); }
+
+[data-theme="obsidian-terminal-red"] {
+  --font-main: 'IBM Plex Sans', sans-serif;
+  --font-heading: 'IBM Plex Sans', sans-serif;
+  --bg-color: #0d0000;
+  --bg-gradient: var(--bg-color);
+  --card-bg: #1f0a0a;
+  --surface-raised: color-mix(in srgb, var(--card-bg) 92%, white);
+  --border-color: color-mix(in srgb, var(--card-bg) 82%, white);
+  --primary: #ff3b3b;
+  --primary-rgb: 255, 59, 59;
+  --primary-hover: color-mix(in srgb, var(--primary) 90%, white);
+  --secondary: #cc0000;
+  --accent: #ff6666;
+  --success: #3fb950;
+  --danger: #ff2244;
+  --text-dark: #f5cccc;
+  --text-light: color-mix(in srgb, var(--text-dark) 94%, white);
+  --text-muted: #b07a7a;
+  --border-radius: 6px;
+  --border-radius-sm: 4px;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 2px 6px rgba(0, 0, 0, 0.5);
+  --transition: all 0.15s ease;
+  --sidebar-bg: var(--card-bg);
+  --glass-border: var(--border-color);
+  --input-border: var(--border-color);
+  --input-bg-focus: var(--bg-color);
+  --input-focus-ring: rgba(var(--primary-rgb), 0.2);
+  --bubble-bg: var(--card-bg);
+  --h-0: var(--card-bg);
+  --h-1: color-mix(in srgb, var(--card-bg) 75%, var(--primary));
+  --h-2: color-mix(in srgb, var(--card-bg) 50%, var(--primary));
+  --h-3: var(--primary);
+  --h-4: var(--primary-hover);
+}
+[data-theme="obsidian-terminal-red"] .glass { background: var(--card-bg); border: 1px solid var(--border-color); backdrop-filter: none; }
+[data-theme="obsidian-terminal-red"] .btn { border-radius: var(--border-radius-sm); }
+[data-theme="obsidian-terminal-red"] .btn-primary { background: var(--primary); color: var(--bg-color); }
+[data-theme="obsidian-terminal-red"] .btn-primary:hover { background: var(--primary-hover); }
+
+[data-theme="obsidian-terminal-cyan"] {
+  --font-main: 'IBM Plex Sans', sans-serif;
+  --font-heading: 'IBM Plex Sans', sans-serif;
+  --bg-color: #060a10;
+  --bg-gradient: var(--bg-color);
+  --card-bg: #101a28;
+  --surface-raised: color-mix(in srgb, var(--card-bg) 92%, white);
+  --border-color: color-mix(in srgb, var(--card-bg) 82%, white);
+  --primary: #00d4ff;
+  --primary-rgb: 0, 212, 255;
+  --primary-hover: color-mix(in srgb, var(--primary) 90%, white);
+  --secondary: #0099bb;
+  --accent: #00ffcc;
+  --success: #3fb950;
+  --danger: #f85149;
+  --text-dark: #c8e8f0;
+  --text-light: color-mix(in srgb, var(--text-dark) 94%, white);
+  --text-muted: #6a8a9a;
+  --border-radius: 6px;
+  --border-radius-sm: 4px;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 2px 6px rgba(0, 0, 0, 0.5);
+  --transition: all 0.15s ease;
+  --sidebar-bg: var(--card-bg);
+  --glass-border: var(--border-color);
+  --input-border: var(--border-color);
+  --input-bg-focus: var(--bg-color);
+  --input-focus-ring: rgba(var(--primary-rgb), 0.2);
+  --bubble-bg: var(--card-bg);
+  --h-0: var(--card-bg);
+  --h-1: color-mix(in srgb, var(--card-bg) 75%, var(--primary));
+  --h-2: color-mix(in srgb, var(--card-bg) 50%, var(--primary));
+  --h-3: var(--primary);
+  --h-4: var(--primary-hover);
+}
+[data-theme="obsidian-terminal-cyan"] .glass { background: var(--card-bg); border: 1px solid var(--border-color); backdrop-filter: none; }
+[data-theme="obsidian-terminal-cyan"] .btn { border-radius: var(--border-radius-sm); }
+[data-theme="obsidian-terminal-cyan"] .btn-primary { background: var(--primary); color: var(--bg-color); }
+[data-theme="obsidian-terminal-cyan"] .btn-primary:hover { background: var(--primary-hover); }
+
+[data-theme="obsidian-terminal-amber"] {
+  --font-main: 'IBM Plex Sans', sans-serif;
+  --font-heading: 'IBM Plex Sans', sans-serif;
+  --bg-color: #100a00;
+  --bg-gradient: var(--bg-color);
+  --card-bg: #221808;
+  --surface-raised: color-mix(in srgb, var(--card-bg) 92%, white);
+  --border-color: color-mix(in srgb, var(--card-bg) 82%, white);
+  --primary: #ffaa00;
+  --primary-rgb: 255, 170, 0;
+  --primary-hover: color-mix(in srgb, var(--primary) 90%, white);
+  --secondary: #cc7700;
+  --accent: #ff6600;
+  --success: #3fb950;
+  --danger: #f85149;
+  --text-dark: #f5d070;
+  --text-light: color-mix(in srgb, var(--text-dark) 94%, white);
+  --text-muted: #9a7a3a;
+  --border-radius: 6px;
+  --border-radius-sm: 4px;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 2px 6px rgba(0, 0, 0, 0.5);
+  --transition: all 0.15s ease;
+  --sidebar-bg: var(--card-bg);
+  --glass-border: var(--border-color);
+  --input-border: var(--border-color);
+  --input-bg-focus: var(--bg-color);
+  --input-focus-ring: rgba(var(--primary-rgb), 0.2);
+  --bubble-bg: var(--card-bg);
+  --h-0: var(--card-bg);
+  --h-1: color-mix(in srgb, var(--card-bg) 75%, var(--primary));
+  --h-2: color-mix(in srgb, var(--card-bg) 50%, var(--primary));
+  --h-3: var(--primary);
+  --h-4: var(--primary-hover);
+}
+[data-theme="obsidian-terminal-amber"] .glass { background: var(--card-bg); border: 1px solid var(--border-color); backdrop-filter: none; }
+[data-theme="obsidian-terminal-amber"] .btn { border-radius: var(--border-radius-sm); }
+[data-theme="obsidian-terminal-amber"] .btn-primary { background: var(--primary); color: var(--bg-color); }
+[data-theme="obsidian-terminal-amber"] .btn-primary:hover { background: var(--primary-hover); }
+
+[data-theme="obsidian-terminal-acid"] {
+  --font-main: 'IBM Plex Sans', sans-serif;
+  --font-heading: 'IBM Plex Sans', sans-serif;
+  --bg-color: #060a00;
+  --bg-gradient: var(--bg-color);
+  --card-bg: #131a08;
+  --surface-raised: color-mix(in srgb, var(--card-bg) 92%, white);
+  --border-color: color-mix(in srgb, var(--card-bg) 82%, white);
+  --primary: #aaff00;
+  --primary-rgb: 170, 255, 0;
+  --primary-hover: color-mix(in srgb, var(--primary) 90%, white);
+  --secondary: #77cc00;
+  --accent: #ccff66;
+  --success: #3fb950;
+  --danger: #f85149;
+  --text-dark: #d4ffaa;
+  --text-light: color-mix(in srgb, var(--text-dark) 94%, white);
+  --text-muted: #6a8040;
+  --border-radius: 6px;
+  --border-radius-sm: 4px;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 2px 6px rgba(0, 0, 0, 0.5);
+  --transition: all 0.15s ease;
+  --sidebar-bg: var(--card-bg);
+  --glass-border: var(--border-color);
+  --input-border: var(--border-color);
+  --input-bg-focus: var(--bg-color);
+  --input-focus-ring: rgba(var(--primary-rgb), 0.2);
+  --bubble-bg: var(--card-bg);
+  --h-0: var(--card-bg);
+  --h-1: color-mix(in srgb, var(--card-bg) 75%, var(--primary));
+  --h-2: color-mix(in srgb, var(--card-bg) 50%, var(--primary));
+  --h-3: var(--primary);
+  --h-4: var(--primary-hover);
+}
+[data-theme="obsidian-terminal-acid"] .glass { background: var(--card-bg); border: 1px solid var(--border-color); backdrop-filter: none; }
+[data-theme="obsidian-terminal-acid"] .btn { border-radius: var(--border-radius-sm); }
+[data-theme="obsidian-terminal-acid"] .btn-primary { background: var(--primary); color: var(--bg-color); }
+[data-theme="obsidian-terminal-acid"] .btn-primary:hover { background: var(--primary-hover); }
+
+[data-theme="obsidian-terminal-blue"] {
+  --font-main: 'IBM Plex Sans', sans-serif;
+  --font-heading: 'IBM Plex Sans', sans-serif;
+  --bg-color: #00061a;
+  --bg-gradient: var(--bg-color);
+  --card-bg: #0a1430;
+  --surface-raised: color-mix(in srgb, var(--card-bg) 92%, white);
+  --border-color: color-mix(in srgb, var(--card-bg) 82%, white);
+  --primary: #4499ff;
+  --primary-rgb: 68, 153, 255;
+  --primary-hover: color-mix(in srgb, var(--primary) 90%, white);
+  --secondary: #0066dd;
+  --accent: #00ccff;
+  --success: #3fb950;
+  --danger: #f85149;
+  --text-dark: #cfe2ff;
+  --text-light: color-mix(in srgb, var(--text-dark) 94%, white);
+  --text-muted: #5a7aaa;
+  --border-radius: 6px;
+  --border-radius-sm: 4px;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 2px 6px rgba(0, 0, 0, 0.5);
+  --transition: all 0.15s ease;
+  --sidebar-bg: var(--card-bg);
+  --glass-border: var(--border-color);
+  --input-border: var(--border-color);
+  --input-bg-focus: var(--bg-color);
+  --input-focus-ring: rgba(var(--primary-rgb), 0.2);
+  --bubble-bg: var(--card-bg);
+  --h-0: var(--card-bg);
+  --h-1: color-mix(in srgb, var(--card-bg) 75%, var(--primary));
+  --h-2: color-mix(in srgb, var(--card-bg) 50%, var(--primary));
+  --h-3: var(--primary);
+  --h-4: var(--primary-hover);
+}
+[data-theme="obsidian-terminal-blue"] .glass { background: var(--card-bg); border: 1px solid var(--border-color); backdrop-filter: none; }
+[data-theme="obsidian-terminal-blue"] .btn { border-radius: var(--border-radius-sm); }
+[data-theme="obsidian-terminal-blue"] .btn-primary { background: var(--primary); color: var(--bg-color); }
+[data-theme="obsidian-terminal-blue"] .btn-primary:hover { background: var(--primary-hover); }
+
+[data-theme="obsidian-tdr-blue"] {
+  --font-main: 'IBM Plex Sans', sans-serif;
+  --font-heading: 'IBM Plex Sans', sans-serif;
+  --bg-color: #f0ede6;
+  --bg-gradient: var(--bg-color);
+  --card-bg: #ffffff;
+  --surface-raised: color-mix(in srgb, var(--card-bg) 92%, black);
+  --border-color: color-mix(in srgb, var(--card-bg) 82%, black);
+  --primary: #0055cc;
+  --primary-rgb: 0, 85, 204;
+  --primary-hover: color-mix(in srgb, var(--primary) 90%, black);
+  --secondary: #003d99;
+  --accent: #4488ee;
+  --success: #3fb950;
+  --danger: #f85149;
+  --text-dark: #0d0d0d;
+  --text-light: color-mix(in srgb, var(--text-dark) 94%, black);
+  --text-muted: #5a5a5a;
+  --border-radius: 6px;
+  --border-radius-sm: 4px;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.12);
+  --shadow-md: 0 1px 3px rgba(0, 0, 0, 0.12);
+  --shadow-lg: 0 2px 6px rgba(0, 0, 0, 0.16);
+  --transition: all 0.15s ease;
+  --sidebar-bg: var(--card-bg);
+  --glass-border: var(--border-color);
+  --input-border: var(--border-color);
+  --input-bg-focus: var(--bg-color);
+  --input-focus-ring: rgba(var(--primary-rgb), 0.2);
+  --bubble-bg: var(--card-bg);
+  --h-0: var(--card-bg);
+  --h-1: color-mix(in srgb, var(--card-bg) 75%, var(--primary));
+  --h-2: color-mix(in srgb, var(--card-bg) 50%, var(--primary));
+  --h-3: var(--primary);
+  --h-4: var(--primary-hover);
+}
+[data-theme="obsidian-tdr-blue"] .glass { background: var(--card-bg); border: 1px solid var(--border-color); backdrop-filter: none; }
+[data-theme="obsidian-tdr-blue"] .btn { border-radius: var(--border-radius-sm); }
+[data-theme="obsidian-tdr-blue"] .btn-primary { background: var(--primary); color: var(--bg-color); }
+[data-theme="obsidian-tdr-blue"] .btn-primary:hover { background: var(--primary-hover); }
+
+[data-theme="obsidian-tdr-ember"] {
+  --font-main: 'IBM Plex Sans', sans-serif;
+  --font-heading: 'IBM Plex Sans', sans-serif;
+  --bg-color: #f0ede6;
+  --bg-gradient: var(--bg-color);
+  --card-bg: #ffffff;
+  --surface-raised: color-mix(in srgb, var(--card-bg) 92%, black);
+  --border-color: color-mix(in srgb, var(--card-bg) 82%, black);
+  --primary: #e86000;
+  --primary-rgb: 232, 96, 0;
+  --primary-hover: color-mix(in srgb, var(--primary) 90%, black);
+  --secondary: #bf4f00;
+  --accent: #ff9933;
+  --success: #3fb950;
+  --danger: #f85149;
+  --text-dark: #0d0d0d;
+  --text-light: color-mix(in srgb, var(--text-dark) 94%, black);
+  --text-muted: #5a5a5a;
+  --border-radius: 6px;
+  --border-radius-sm: 4px;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.12);
+  --shadow-md: 0 1px 3px rgba(0, 0, 0, 0.12);
+  --shadow-lg: 0 2px 6px rgba(0, 0, 0, 0.16);
+  --transition: all 0.15s ease;
+  --sidebar-bg: var(--card-bg);
+  --glass-border: var(--border-color);
+  --input-border: var(--border-color);
+  --input-bg-focus: var(--bg-color);
+  --input-focus-ring: rgba(var(--primary-rgb), 0.2);
+  --bubble-bg: var(--card-bg);
+  --h-0: var(--card-bg);
+  --h-1: color-mix(in srgb, var(--card-bg) 75%, var(--primary));
+  --h-2: color-mix(in srgb, var(--card-bg) 50%, var(--primary));
+  --h-3: var(--primary);
+  --h-4: var(--primary-hover);
+}
+[data-theme="obsidian-tdr-ember"] .glass { background: var(--card-bg); border: 1px solid var(--border-color); backdrop-filter: none; }
+[data-theme="obsidian-tdr-ember"] .btn { border-radius: var(--border-radius-sm); }
+[data-theme="obsidian-tdr-ember"] .btn-primary { background: var(--primary); color: var(--bg-color); }
+[data-theme="obsidian-tdr-ember"] .btn-primary:hover { background: var(--primary-hover); }
+
+[data-theme="obsidian-tdr-night"] {
+  --font-main: 'IBM Plex Sans', sans-serif;
+  --font-heading: 'IBM Plex Sans', sans-serif;
+  --bg-color: #0d0d0d;
+  --bg-gradient: var(--bg-color);
+  --card-bg: #1c1c1c;
+  --surface-raised: color-mix(in srgb, var(--card-bg) 92%, white);
+  --border-color: color-mix(in srgb, var(--card-bg) 82%, white);
+  --primary: #ff1a2d;
+  --primary-rgb: 255, 26, 45;
+  --primary-hover: color-mix(in srgb, var(--primary) 90%, white);
+  --secondary: #cc0016;
+  --accent: #ff6677;
+  --success: #3fb950;
+  --danger: #f85149;
+  --text-dark: #f0ede6;
+  --text-light: color-mix(in srgb, var(--text-dark) 94%, white);
+  --text-muted: #888888;
+  --border-radius: 6px;
+  --border-radius-sm: 4px;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 2px 6px rgba(0, 0, 0, 0.5);
+  --transition: all 0.15s ease;
+  --sidebar-bg: var(--card-bg);
+  --glass-border: var(--border-color);
+  --input-border: var(--border-color);
+  --input-bg-focus: var(--bg-color);
+  --input-focus-ring: rgba(var(--primary-rgb), 0.2);
+  --bubble-bg: var(--card-bg);
+  --h-0: var(--card-bg);
+  --h-1: color-mix(in srgb, var(--card-bg) 75%, var(--primary));
+  --h-2: color-mix(in srgb, var(--card-bg) 50%, var(--primary));
+  --h-3: var(--primary);
+  --h-4: var(--primary-hover);
+}
+[data-theme="obsidian-tdr-night"] .glass { background: var(--card-bg); border: 1px solid var(--border-color); backdrop-filter: none; }
+[data-theme="obsidian-tdr-night"] .btn { border-radius: var(--border-radius-sm); }
+[data-theme="obsidian-tdr-night"] .btn-primary { background: var(--primary); color: var(--bg-color); }
+[data-theme="obsidian-tdr-night"] .btn-primary:hover { background: var(--primary-hover); }
+
+[data-theme="obsidian-tdr-warp"] {
+  --font-main: 'IBM Plex Sans', sans-serif;
+  --font-heading: 'IBM Plex Sans', sans-serif;
+  --bg-color: #0d0d0d;
+  --bg-gradient: var(--bg-color);
+  --card-bg: #1c1c1c;
+  --surface-raised: color-mix(in srgb, var(--card-bg) 92%, white);
+  --border-color: color-mix(in srgb, var(--card-bg) 82%, white);
+  --primary: #f5d000;
+  --primary-rgb: 245, 208, 0;
+  --primary-hover: color-mix(in srgb, var(--primary) 90%, white);
+  --secondary: #c8aa00;
+  --accent: #ffe566;
+  --success: #3fb950;
+  --danger: #f85149;
+  --text-dark: #f0ede6;
+  --text-light: color-mix(in srgb, var(--text-dark) 94%, white);
+  --text-muted: #888888;
+  --border-radius: 6px;
+  --border-radius-sm: 4px;
+  --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --shadow-md: 0 1px 3px rgba(0, 0, 0, 0.4);
+  --shadow-lg: 0 2px 6px rgba(0, 0, 0, 0.5);
+  --transition: all 0.15s ease;
+  --sidebar-bg: var(--card-bg);
+  --glass-border: var(--border-color);
+  --input-border: var(--border-color);
+  --input-bg-focus: var(--bg-color);
+  --input-focus-ring: rgba(var(--primary-rgb), 0.2);
+  --bubble-bg: var(--card-bg);
+  --h-0: var(--card-bg);
+  --h-1: color-mix(in srgb, var(--card-bg) 75%, var(--primary));
+  --h-2: color-mix(in srgb, var(--card-bg) 50%, var(--primary));
+  --h-3: var(--primary);
+  --h-4: var(--primary-hover);
+}
+[data-theme="obsidian-tdr-warp"] .glass { background: var(--card-bg); border: 1px solid var(--border-color); backdrop-filter: none; }
+[data-theme="obsidian-tdr-warp"] .btn { border-radius: var(--border-radius-sm); }
+[data-theme="obsidian-tdr-warp"] .btn-primary { background: var(--primary); color: var(--bg-color); }
+[data-theme="obsidian-tdr-warp"] .btn-primary:hover { background: var(--primary-hover); }
