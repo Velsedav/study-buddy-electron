@@ -221,3 +221,10 @@
         padding: 24px;
     }
 }
+
+/* ── Theme picker grid inside the panel ── */
+.obs-settings-theme-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
