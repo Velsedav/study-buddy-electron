@@ -339,8 +339,8 @@ export default function Layout() {
         return () => { if (typingRef.current) clearTimeout(typingRef.current); };
     }, [currentQuote, isTerminal]);
 
-    // ── Obsidian layout ─────────────────────────────────────────────────────
-    if (theme === 'obsidian') {
+    // ── Obsidian layout (also applies to every obsidian-* variant) ────────
+    if (theme.startsWith('obsidian')) {
         return (
             <div className="layout obsidian-layout">
                 <nav className="obsidian-sidebar">
