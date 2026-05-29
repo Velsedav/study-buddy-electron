@@ -16,233 +16,11 @@
   --shadow: 4px 4px 0 var(--black);
   font-family: var(--mono);
   color: var(--black);
+  padding: 24px;
 }
 
-[data-theme="classic-uniform"] .bingoals-root {
-  --red:    #f8f6fc;
-  --white:  #ffffff;
-  --black:  #121c3b;
-  --green:  #fce31c;
-  --border: 2px solid var(--black);
-  --shadow: 4px 4px 0 var(--black);
-}
-
-[data-theme="cosmic-manicure"] .bingoals-root {
-  --red:    #1a0b33;
-  --white:  #ff1faa;
-  --black:  #00f0ff;
-  --green:  #00ff99;
-  --border: 1px solid rgba(255,31,170,0.5);
-  --shadow: 0 0 12px rgba(255,31,170,0.4);
-  color: #ff1faa;
-}
-
-[data-theme="chibi-moon"] .bingoals-root {
-  --red:    #ffeff9;
-  --white:  #ffffff;
-  --black:  #5e1c44;
-  --green:  #8ed85e;
-  --border: 2px solid var(--black);
-  --shadow: 4px 4px 0 var(--black);
-}
-
-[data-theme="transformation-ribbon"] .bingoals-root {
-  --red:    #e5d8f0;
-  --white:  #ffffff;
-  --black:  #381f5e;
-  --green:  #8ed85e;
-  --border: 2px solid var(--black);
-  --shadow: 4px 4px 0 var(--black);
-}
-
-[data-theme="neumorphism"] .bingoals-root {
-  --red:    #e0e5ec;
-  --white:  rgba(255,255,255,0.9);
-  --black:  #7d8fa3;
-  --green:  #6db88a;
-  --border: 2px solid rgba(182,187,194,0.5);
-  --shadow: 4px 4px 10px rgba(182,187,194,0.65), -2px -2px 6px rgba(255,255,255,0.72);
-  color: #3a4b63;
-}
-
-[data-theme="neobrutalism"] .bingoals-root {
-  --red:    #ffde59;
-  --white:  #000000;
-  --black:  #000000;
-  --green:  #00cc44;
-  --border: 3px solid #000000;
-  --shadow: 5px 5px 0 #000000;
-  color: #000000;
-}
-
-[data-theme="honey-lemon"] .bingoals-root {
-  --red:    #fdd835;
-  --white:  #ffffff;
-  --black:  #212121;
-  --green:  #4caf50;
-  --border: 2px solid var(--black);
-  --shadow: 4px 4px 0 var(--black);
-  color: #212121;
-}
-
-[data-theme="terminal-orange"] .bingoals-root {
-  --red:    #0d0600;
-  --white:  #ff8c00;
-  --black:  #000000;
-  --green:  #ffae42;
-  --border: 1px solid rgba(255,140,0,0.5);
-  --shadow: 0 0 10px rgba(255,140,0,0.4);
-  --mono:   'JetBrains Mono', 'Cascadia Mono', monospace;
-  color: #ff8c00;
-}
-
-[data-theme="terminal-green"] .bingoals-root {
-  --red:    #000d00;
-  --white:  #00cc00;
-  --black:  #000000;
-  --green:  #66ff66;
-  --border: 1px solid rgba(0,255,0,0.5);
-  --shadow: 0 0 10px rgba(0,255,0,0.4);
-  --mono:   'JetBrains Mono', 'Cascadia Mono', monospace;
-  color: #00cc00;
-}
-
-[data-theme="terminal-amber"] .bingoals-root {
-  --red:    #1a1000;
-  --white:  #ffaa00;
-  --black:  #100a00;
-  --green:  #ff6600;
-  --border: 1px solid rgba(255,170,0,0.5);
-  --shadow: 0 0 10px rgba(255,170,0,0.4);
-  --mono:   'JetBrains Mono', 'Cascadia Mono', monospace;
-  color: #ffaa00;
-}
-
-[data-theme="terminal-acid"] .bingoals-root {
-  --red:    #0d1a00;
-  --white:  #aaff00;
-  --black:  #060a00;
-  --green:  #ccff66;
-  --border: 1px solid rgba(170,255,0,0.5);
-  --shadow: 0 0 10px rgba(170,255,0,0.4);
-  --mono:   'JetBrains Mono', 'Cascadia Mono', monospace;
-  color: #aaff00;
-}
-
-[data-theme="terminal-blue"] .bingoals-root {
-  --red:    #000e2a;
-  --white:  #4499ff;
-  --black:  #00061a;
-  --green:  #00ccff;
-  --border: 1px solid rgba(68,153,255,0.5);
-  --shadow: 0 0 10px rgba(68,153,255,0.4);
-  --mono:   'JetBrains Mono', 'Cascadia Mono', monospace;
-  color: #4499ff;
-}
-
-[data-theme="terminal-red"] .bingoals-root {
-  --red:    #0d0000;
-  --white:  #ff1a1a;
-  --black:  #000000;
-  --green:  #ff6666;
-  --border: 1px solid var(--white);
-  --shadow: 0 0 10px rgba(255,26,26,0.4);
-  --mono:   'JetBrains Mono', monospace;
-  color: #ff1a1a;
-}
-
-[data-theme="terminal-cyan"] .bingoals-root {
-  --red:    #060a10;
-  --white:  #00d4ff;
-  --black:  #000000;
-  --green:  #00ffcc;
-  --border: 1px solid rgba(0,212,255,0.5);
-  --shadow: 0 0 10px rgba(0,212,255,0.4);
-  --mono:   'JetBrains Mono', 'Cascadia Mono', monospace;
-  color: #00d4ff;
-}
-
-/* Light TDR: panel = near-black, text = cream (high contrast) */
-[data-theme="designers-republic"] .bingoals-root {
-  --red:    #f0ede6;
-  --white:  #f0ede6;
-  --black:  #0d0d0d;
-  --green:  #1a7a00;
-  --border: 1.5px solid #0d0d0d;
-  --shadow: 3px 3px 0 rgba(13, 13, 13, 0.2);
-  --mono:   'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif;
-  color: #0d0d0d;
-}
-
-[data-theme="tdr-blue"] .bingoals-root {
-  --red:    #f0ede6;
-  --white:  #f0ede6;
-  --black:  #0d0d0d;
-  --green:  #1a7a00;
-  --border: 1.5px solid #0d0d0d;
-  --shadow: 3px 3px 0 rgba(13, 13, 13, 0.2);
-  --mono:   'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif;
-  color: #0d0d0d;
-}
-
-[data-theme="tdr-ember"] .bingoals-root {
-  --red:    #f0ede6;
-  --white:  #f0ede6;
-  --black:  #0d0d0d;
-  --green:  #1a7a00;
-  --border: 1.5px solid #0d0d0d;
-  --shadow: 3px 3px 0 rgba(13, 13, 13, 0.2);
-  --mono:   'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif;
-  color: #0d0d0d;
-}
-
-/* Dark TDR: panel = slightly lighter dark, text = cream (high contrast) */
-[data-theme="tdr-night"] .bingoals-root {
-  --red:    #252525;
-  --white:  #f0ede6;
-  --black:  #252525;
-  --green:  #22aa44;
-  --border: 1.5px solid rgba(240, 237, 230, 0.15);
-  --shadow: 3px 3px 0 rgba(0, 0, 0, 0.5);
-  --mono:   'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif;
-  color: #f0ede6;
-}
-
-[data-theme="tdr-warp"] .bingoals-root {
-  --red:    #252525;
-  --white:  #f0ede6;
-  --black:  #252525;
-  --green:  #22aa44;
-  --border: 1.5px solid rgba(240, 237, 230, 0.15);
-  --shadow: 3px 3px 0 rgba(0, 0, 0, 0.5);
-  --mono:   'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif;
-  color: #f0ede6;
-}
-
-[data-theme="tdr-acid"] .bingoals-root {
-  --red:    #252525;
-  --white:  #f0ede6;
-  --black:  #252525;
-  --green:  #00ff88;
-  --border: 1.5px solid rgba(240, 237, 230, 0.15);
-  --shadow: 3px 3px 0 rgba(0, 0, 0, 0.5);
-  --mono:   'IBM Plex Sans', 'Helvetica Neue', Arial, sans-serif;
-  color: #f0ede6;
-}
-
-[data-theme="cyber-scan"] .bingoals-root {
-  --red:    #070b22;
-  --white:  #b8ff00;
-  --black:  #d4ffaa;
-  --green:  #00ff88;
-  --border: 1px solid rgba(184, 255, 0, 0.4);
-  --shadow: 0 0 14px rgba(184, 255, 0, 0.3);
-  --mono:   'Plus Jakarta Sans', sans-serif;
-  color: #b8ff00;
-}
-
-[data-theme="cyber-scan"] .bingoals-root .panel {
-  background: rgba(17, 51, 255, 0.12);
+@media (min-width: 1200px) {
+  .bingoals-root { padding: 32px; }
 }
 
 /* ── Reset inside bingoals-root ── */
@@ -275,52 +53,6 @@
 .bingoals-root .bingo-count-input[type=number],
 .bingoals-root .bingo-target-caption[type=number] {
   -moz-appearance: textfield;
-}
-
-/* ── Terminal theme: inversion hover (overrides panel-context specificity) ── */
-[data-theme^="terminal-"] .bingoals-root .btn:hover,
-[data-theme^="terminal-"] .bingoals-root .panel .btn:hover {
-  background: var(--primary) !important;
-  color: var(--bg-color) !important;
-  border-color: var(--primary) !important;
-  box-shadow: none !important;
-  text-shadow: none !important;
-}
-
-[data-theme^="terminal-"] .bingoals-root .btn-primary,
-[data-theme^="terminal-"] .bingoals-root .btn-primary:hover {
-  color: var(--bg-color) !important;
-  text-shadow: none !important;
-}
-
-[data-theme^="terminal-"] .bingoals-root .btn-danger:hover {
-  background: var(--danger) !important;
-  color: #000 !important;
-  border-color: var(--danger) !important;
-  text-shadow: none !important;
-}
-
-/* TDR: btn-danger = filled signal red, white text — clearly a stop action */
-[data-theme="designers-republic"] .bingoals-root .btn-danger,
-[data-theme^="tdr-"] .bingoals-root .btn-danger {
-  background: var(--danger) !important;
-  color: #ffffff !important;
-  border: 1.5px solid var(--danger) !important;
-  font-weight: 700 !important;
-}
-
-[data-theme="designers-republic"] .bingoals-root .btn-danger:hover,
-[data-theme^="tdr-"] .bingoals-root .btn-danger:hover {
-  background: #0d0d0d !important;
-  border-color: #0d0d0d !important;
-  color: var(--danger) !important;
-}
-
-/* TDR: panel accent labels — use primary for emphasis labels, cream for body */
-[data-theme="designers-republic"] .bingoals-root .panel .muted,
-[data-theme^="tdr-"] .bingoals-root .panel .muted {
-  color: rgba(240, 237, 230, 0.55);
-  opacity: 1;
 }
 
 /* ── Button resting state + hover (plain .btn) ── */
@@ -449,7 +181,8 @@
 }
 
 .bingoals-root .cardTitle,
-.bingoals-root .cardMeta,
+.bingoals-root .cardProgressLine,
+.bingoals-root .cardLinkChip,
 .bingoals-root .cardProgressBar,
 .bingoals-root .hoverProgress {
   position: relative;
@@ -478,12 +211,6 @@
   line-height: 1.15;
 }
 
-.bingoals-root .cardMeta {
-  display: grid;
-  gap: 6px;
-  font-size: 12px;
-  opacity: .9;
-}
 
 .bingoals-root .cardProgressBar {
   position: absolute;
@@ -515,6 +242,125 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+}
+
+/* ── Card progress line (replaces cardMeta) ── */
+
+.bingoals-root .cardProgressLine {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
+  opacity: .9;
+  margin-bottom: 6px;
+  flex-wrap: wrap;
+}
+
+.bingoals-root .cardProgressCount {
+  flex: 1;
+  min-width: 0;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.bingoals-root .cardTimeBadge {
+  font-size: 11px;
+  opacity: 0.7;
+  white-space: nowrap;
+}
+
+/* ── Status dot ── */
+
+.bingoals-root .cardStatusDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+.bingoals-root .cardStatusDot--green  { background: var(--success); }
+.bingoals-root .cardStatusDot--orange { background: var(--accent); }
+.bingoals-root .cardStatusDot--red    { background: var(--danger); }
+.bingoals-root .cardStatusDot--neutral { background: transparent; }
+
+/* ── At-rest link chip ── */
+
+.bingoals-root .cardLinkChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 10px;
+  padding: 2px 7px;
+  border-radius: 20px;
+  border: 1px solid var(--glass-border);
+  background: rgba(var(--primary-rgb), 0.1);
+  color: inherit;
+  cursor: pointer;
+  max-width: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  margin-bottom: 4px;
+  transition: background 100ms;
+}
+.bingoals-root .cardLinkChip:hover {
+  background: rgba(var(--primary-rgb), 0.22);
+}
+.bingoals-root .cardLinkChip span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ── Hover panel: thumbnail + links + progress ── */
+
+.bingoals-root .hoverThumb {
+  display: block;
+  width: 100%;
+  height: 72px;
+  object-fit: cover;
+  border-radius: 4px;
+  margin-bottom: 6px;
+}
+
+.bingoals-root .hoverLinks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  margin-bottom: 6px;
+}
+
+.bingoals-root .hoverLinkChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  font-size: 10px;
+  padding: 2px 7px;
+  border-radius: 20px;
+  border: 1px solid var(--glass-border);
+  background: rgba(var(--primary-rgb), 0.1);
+  color: inherit;
+  cursor: pointer;
+  max-width: 160px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  transition: background 100ms;
+}
+.bingoals-root .hoverLinkChip:hover {
+  background: rgba(var(--primary-rgb), 0.22);
+}
+.bingoals-root .hoverLinkChip span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bingoals-root .hoverProgressLine {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  font-size: 12px;
 }
 
 /* ── Pills / bars ── */
@@ -558,12 +404,6 @@
   border-radius: 50% !important;
   background: #e53935;
   flex-shrink: 0;
-}
-
-/* Terminal themes: global `border-radius: 0 !important` in index.css kills the circle.
-   Embrace the square but use --black (the dark contrasting color per terminal theme). */
-[data-theme^="terminal-"] .bingoals-root .bingo-rec-dot {
-  background: var(--black);
 }
 
 /* Square on STOP — universal stop symbol */
@@ -777,6 +617,23 @@
 
 .bingoals-root .memories-actions .bingo-memories-play {
   margin-left: 10px;
+}
+
+.bingoals-root .bingo-memories-play {
+  opacity: 0.85;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  color: inherit;
+  transition: opacity 120ms ease, background 120ms ease;
+}
+.bingoals-root .bingo-memories-play:hover {
+  opacity: 1;
+  background: rgba(255, 255, 255, 0.12);
+}
+.bingoals-root .bingo-memories-play:disabled {
+  opacity: 0.35;
+  cursor: not-allowed;
+  background: rgba(255, 255, 255, 0.03);
 }
 
 .bingoals-root .slide {
@@ -1049,297 +906,15 @@
   border-color: rgba(255,255,255,0.3);
 }
 
-/* ── Neobrutalism card (keep hard-shadow brutalist style) ── */
-
-[data-theme="terminal-amber"] .bingoals-root .card {
-  background: #1a1000;
-  color: #ffaa00;
-  border: 1px solid #ffaa00;
-  border-radius: 0;
-  box-shadow: 0 0 10px rgba(255,170,0,0.3);
-}
-
-[data-theme="terminal-amber"] .bingoals-root .card:hover {
-  border-color: #ffbb33;
-  background: #2a1e00;
-  box-shadow: 0 0 15px rgba(255,170,0,0.6);
-}
-
-[data-theme="terminal-acid"] .bingoals-root .card {
-  background: #060a00;
-  color: #aaff00;
-  border: 1px solid #aaff00;
-  border-radius: 0;
-  box-shadow: 0 0 10px rgba(170,255,0,0.3);
-}
-
-[data-theme="terminal-acid"] .bingoals-root .card:hover {
-  border-color: #bbff33;
-  background: #0d1a00;
-  box-shadow: 0 0 18px rgba(170,255,0,0.6);
-}
-
-[data-theme="terminal-blue"] .bingoals-root .card {
-  background: #000e2a;
-  color: #4499ff;
-  border: 1px solid #4499ff;
-  border-radius: 0;
-  box-shadow: 0 0 10px rgba(68,153,255,0.3);
-}
-
-[data-theme="terminal-blue"] .bingoals-root .card:hover {
-  border-color: #66aaff;
-  background: #001844;
-  box-shadow: 0 0 15px rgba(68,153,255,0.6);
-}
-
-[data-theme="neobrutalism"] .bingoals-root .card {
-  background: #000;
-  color: #fff;
-  border: 3px solid #000;
-  border-radius: 0;
-  box-shadow: 5px 5px 0 #000;
-}
-
-[data-theme="neobrutalism"] .bingoals-root .card:hover {
-  transform: translate(-2px, -2px);
-  background: #fff;
-  border-color: #ff0055;
-  color: #000;
-  box-shadow: 8px 8px 0 #000;
-}
-
-[data-theme="neobrutalism"] .bingoals-root .card:active {
-  transform: translate(0, 0);
-  box-shadow: 3px 3px 0 #000;
-}
-
-/* ── Terminal cards (keep dark/glow style) ── */
-
-[data-theme="terminal-orange"] .bingoals-root .card {
-  background: #0d0600;
-  color: #ff8c00;
-  border: 1px solid #ff8c00;
-  border-radius: 0;
-  box-shadow: 0 0 10px rgba(255,140,0,0.3);
-}
-
-[data-theme="terminal-orange"] .bingoals-root .card:hover {
-  border-color: #ff9d21;
-  background: #1a0d00;
-  box-shadow: 0 0 15px rgba(255,140,0,0.6);
-}
-
-[data-theme="terminal-green"] .bingoals-root .card {
-  background: #000d00;
-  color: #00cc00;
-  border: 1px solid #00ff00;
-  border-radius: 0;
-  box-shadow: 0 0 10px rgba(0,255,0,0.3);
-}
-
-[data-theme="terminal-green"] .bingoals-root .card:hover {
-  border-color: #33ff33;
-  background: #001a00;
-  box-shadow: 0 0 15px rgba(0,255,0,0.6);
-}
-
-[data-theme="terminal-red"] .bingoals-root .card {
-  background: #0d0000;
-  color: #ff1a1a;
-  border: 1px solid #ff1a1a;
-  border-radius: 0;
-  box-shadow: 0 0 10px rgba(255,26,26,0.3);
-}
-
-[data-theme="terminal-red"] .bingoals-root .card:hover {
-  border-color: #ff3333;
-  background: #1a0000;
-  box-shadow: 0 0 15px rgba(255,26,26,0.6);
-}
-
-[data-theme="terminal-cyan"] .bingoals-root .card {
-  background: #060a10;
-  color: #00d4ff;
-  border: 1px solid #00d4ff;
-  border-radius: 0;
-  box-shadow: 0 0 10px rgba(0,212,255,0.3);
-}
-
-[data-theme="terminal-cyan"] .bingoals-root .card:hover {
-  border-color: #33ddff;
-  background: #001522;
-  box-shadow: 0 0 15px rgba(0,212,255,0.6);
-}
-
-[data-theme="designers-republic"] .bingoals-root .card,
-[data-theme="tdr-blue"] .bingoals-root .card,
-[data-theme="tdr-ember"] .bingoals-root .card {
-  background: #ffffff;
-  color: #0d0d0d;
-  border: 1.5px solid #0d0d0d;
-  border-radius: 0;
-  box-shadow: 3px 3px 0 rgba(13, 13, 13, 0.2);
-}
-
-[data-theme="designers-republic"] .bingoals-root .card:hover {
-  border-color: #e8001d;
-  background: #ffffff;
-  box-shadow: 5px 5px 0 rgba(232, 0, 29, 0.3);
-}
-
-[data-theme="tdr-blue"] .bingoals-root .card:hover {
-  border-color: #0055cc;
-  background: #ffffff;
-  box-shadow: 5px 5px 0 rgba(0, 85, 204, 0.3);
-}
-
-[data-theme="tdr-ember"] .bingoals-root .card:hover {
-  border-color: #e86000;
-  background: #ffffff;
-  box-shadow: 5px 5px 0 rgba(232, 96, 0, 0.3);
-}
-
-[data-theme="tdr-night"] .bingoals-root .card,
-[data-theme="tdr-warp"] .bingoals-root .card,
-[data-theme="tdr-acid"] .bingoals-root .card {
-  background: #1a1a1a;
-  color: #f0ede6;
-  border: 1.5px solid rgba(240, 237, 230, 0.15);
-  border-radius: 0;
-  box-shadow: 3px 3px 0 rgba(0, 0, 0, 0.5);
-}
-
-[data-theme="tdr-night"] .bingoals-root .card:hover {
-  border-color: #ff1a2d;
-  box-shadow: 5px 5px 0 rgba(255, 26, 45, 0.3);
-}
-
-[data-theme="tdr-warp"] .bingoals-root .card:hover {
-  border-color: #f5d000;
-  box-shadow: 5px 5px 0 rgba(245, 208, 0, 0.3);
-}
-
-[data-theme="tdr-acid"] .bingoals-root .card:hover {
-  border-color: #aaff00;
-  box-shadow: 5px 5px 0 rgba(170, 255, 0, 0.3);
-}
-
-/* ── Cosmic manicure card hover ── */
-
-[data-theme="cosmic-manicure"] .bingoals-root .card:hover {
-  background: #2d0d55;
-  border-color: #00f0ff;
-  color: #ff1faa;
-  box-shadow: 0 0 18px rgba(255,31,170,0.5);
-}
-
-/* ── Neumorphism card hover ── */
-
-[data-theme="neumorphism"] .bingoals-root .card:hover {
-  background: #e8ecf2;
-  border-color: #9baec8;
-  color: #3a4b63;
-  box-shadow: 6px 6px 16px rgba(182,187,194,0.65), -4px -4px 12px rgba(255,255,255,0.8);
-}
-
-/* ── Dark-theme card hoverProgress overrides ── */
-
-[data-theme="neobrutalism"] .bingoals-root .hoverProgress,
-[data-theme="tdr-night"] .bingoals-root .hoverProgress,
-[data-theme="tdr-warp"] .bingoals-root .hoverProgress,
-[data-theme="tdr-acid"] .bingoals-root .hoverProgress {
-  background: rgba(0,0,0,0.75);
-  border-top: 1px solid rgba(255,255,255,0.15);
+.bingoals-root .card--has-cover .cardLinkChip,
+.bingoals-root .card--has-cover .hoverLinkChip {
+  border-color: rgba(255,255,255,0.3);
+  background: rgba(255,255,255,0.15);
   color: #fff;
 }
-
-[data-theme^="terminal-"] .bingoals-root .hoverProgress {
-  background: rgba(0,0,0,0.75);
-  border-top: 1px solid rgba(255,255,255,0.15);
-  color: var(--white);
-}
-
-/* ── Terminal panelDone ── */
-
-[data-theme="terminal-orange"] .bingoals-root .panelDone {
-  background: #1a0d00;
-  color: #ff8c00;
-}
-
-[data-theme="terminal-orange"] .bingoals-root .panelDone .muted,
-[data-theme="terminal-orange"] .bingoals-root .panelDone .memories .muted {
-  color: #ff8c00;
-  opacity: 0.6;
-}
-
-[data-theme="terminal-green"] .bingoals-root .panelDone {
-  background: #001a00;
-  color: #00cc00;
-}
-
-[data-theme="terminal-green"] .bingoals-root .panelDone .muted,
-[data-theme="terminal-green"] .bingoals-root .panelDone .memories .muted {
-  color: #00cc00;
-  opacity: 0.6;
-}
-
-[data-theme="terminal-red"] .bingoals-root .panelDone {
-  background: #1a0000;
-  color: #ff1a1a;
-}
-
-[data-theme="terminal-red"] .bingoals-root .panelDone .muted,
-[data-theme="terminal-red"] .bingoals-root .panelDone .memories .muted {
-  color: #ff1a1a;
-  opacity: 0.6;
-}
-
-[data-theme="terminal-cyan"] .bingoals-root .panelDone {
-  background: #001522;
-  color: #00d4ff;
-}
-
-[data-theme="terminal-cyan"] .bingoals-root .panelDone .muted,
-[data-theme="terminal-cyan"] .bingoals-root .panelDone .memories .muted {
-  color: #00d4ff;
-  opacity: 0.6;
-}
-
-[data-theme="designers-republic"] .bingoals-root .panelDone,
-[data-theme="tdr-blue"] .bingoals-root .panelDone,
-[data-theme="tdr-ember"] .bingoals-root .panelDone {
-  background: #f0ede6;
-  color: #0d0d0d;
-  border: 1.5px solid #0d0d0d;
-}
-
-[data-theme="designers-republic"] .bingoals-root .panelDone .muted,
-[data-theme="designers-republic"] .bingoals-root .panelDone .memories .muted,
-[data-theme="tdr-blue"] .bingoals-root .panelDone .muted,
-[data-theme="tdr-blue"] .bingoals-root .panelDone .memories .muted,
-[data-theme="tdr-ember"] .bingoals-root .panelDone .muted,
-[data-theme="tdr-ember"] .bingoals-root .panelDone .memories .muted {
-  color: #5a5a5a;
-  opacity: 1;
-}
-
-[data-theme="tdr-night"] .bingoals-root .panelDone,
-[data-theme="tdr-warp"] .bingoals-root .panelDone,
-[data-theme="tdr-acid"] .bingoals-root .panelDone {
-  background: #141414;
-  color: #f0ede6;
-  border: 1.5px solid rgba(240, 237, 230, 0.15);
-}
-
-[data-theme="tdr-night"] .bingoals-root .panelDone .muted,
-[data-theme="tdr-night"] .bingoals-root .panelDone .memories .muted,
-[data-theme="tdr-warp"] .bingoals-root .panelDone .muted,
-[data-theme="tdr-warp"] .bingoals-root .panelDone .memories .muted,
-[data-theme="tdr-acid"] .bingoals-root .panelDone .muted,
-[data-theme="tdr-acid"] .bingoals-root .panelDone .memories .muted {
-  color: #888888;
-  opacity: 1;
+.bingoals-root .card--has-cover .cardLinkChip:hover,
+.bingoals-root .card--has-cover .hoverLinkChip:hover {
+  background: rgba(255,255,255,0.25);
 }
 
 /* ── Title year badge ── */
@@ -1417,26 +992,34 @@
   justify-content: flex-end;
 }
 
-.bingoals-root .panel .bingo-mark-done-btn {
+.bingoals-root .bingo-mark-done-btn {
   font-size: 0.83em;
-  opacity: 0.65;
-  transition: opacity 120ms ease;
+  opacity: 0.85;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  color: inherit;
+  transition: opacity 120ms ease, background 120ms ease;
 }
 
-.bingoals-root .panel .bingo-mark-done-btn:hover {
+.bingoals-root .bingo-mark-done-btn:hover {
   opacity: 1;
+  background: rgba(255, 255, 255, 0.12);
 }
 
-.bingoals-root .panel .bingo-memory-action-btn,
-.bingoals-root .panel label.bingo-memory-action-btn {
+.bingoals-root .bingo-memory-action-btn,
+.bingoals-root label.bingo-memory-action-btn {
   font-size: 0.78em;
-  opacity: 0.55;
-  transition: opacity 120ms ease;
+  opacity: 0.85;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  color: inherit;
+  transition: opacity 120ms ease, background 120ms ease;
 }
 
-.bingoals-root .panel .bingo-memory-action-btn:hover,
-.bingoals-root .panel label.bingo-memory-action-btn:hover {
+.bingoals-root .bingo-memory-action-btn:hover,
+.bingoals-root label.bingo-memory-action-btn:hover {
   opacity: 1;
+  background: rgba(255, 255, 255, 0.12);
 }
 
 .bingoals-root .bingo-section-label {
@@ -1845,4 +1428,1080 @@
 
 .bingoals-root .panelDone .quote {
   color: var(--black);
+}
+
+/* ════════════════════════════════════════════════════════════════
+   DETAIL PAGE (BingoObjectivePage) — layout, compact, grid, active
+   ════════════════════════════════════════════════════════════════ */
+
+/* ── Objective page header ── */
+
+.bingoals-root .objPage-header { margin-bottom: 16px; }
+
+.bingoals-root .objPage-headerTitleRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 6px;
+}
+
+.bingoals-root .objPage-headerTitleText {
+  flex: 1;
+  font-size: 1.15rem;
+  font-weight: 800;
+  letter-spacing: -0.01em;
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bingoals-root .objPage-headerProgressRow {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 4px;
+}
+
+.bingoals-root .objPage-headerProgressLabel {
+  font-size: 0.82rem;
+  font-weight: 700;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+
+.bingoals-root .objPage-headerBar {
+  flex: 1;
+  height: 3px;
+  background: rgba(255,255,255,0.1);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.bingoals-root .objPage-headerBarFill {
+  height: 100%;
+  background: var(--primary);
+  border-radius: 2px;
+  transition: width 300ms ease;
+}
+
+.bingoals-root .objPage-headerMeta {
+  font-size: 0.75rem;
+  opacity: 0.5;
+  display: flex;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.bingoals-root .objPage-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.bingoals-root .objPage-viewToggle { display: flex; gap: 2px; }
+
+.bingoals-root .objPage-viewBtn {
+  padding: 4px 10px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  border-radius: 4px;
+  background: transparent;
+  border: 1px solid rgba(255,255,255,0.12);
+  color: inherit;
+  cursor: pointer;
+  opacity: 0.45;
+  transition: opacity 100ms ease, background 100ms ease;
+}
+
+.bingoals-root .objPage-viewBtn:hover { opacity: 0.85; }
+
+.bingoals-root .objPage-viewBtn--active {
+  background: rgba(255,255,255,0.1);
+  border-color: rgba(255,255,255,0.25);
+  opacity: 1;
+}
+
+/* ── Page layout grid ── */
+
+.bingoals-root .objPage-layout {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  gap: 0;
+}
+
+.bingoals-root .objPage-listCol { min-width: 0; }
+
+.bingoals-root .objPage-activeCol { display: none; }
+.bingoals-root .objPage-memoriesCol { display: none; }
+
+@media (min-width: 900px) {
+  .bingoals-root .objPage-layout {
+    flex-direction: row;
+    align-items: flex-start;
+    gap: 20px;
+  }
+  .bingoals-root .objPage-listCol { flex: 0 0 300px; min-width: 0; }
+  .bingoals-root .objPage-activeCol { display: block; flex: 1; min-width: 0; }
+}
+
+@media (min-width: 1400px) {
+  .bingoals-root .objPage-listCol { flex-basis: 320px; }
+  .bingoals-root .objPage-activeCol { flex: 1; max-width: 600px; min-width: 0; }
+  .bingoals-root .objPage-memoriesCol { display: block; flex: 1; min-width: 0; }
+  /* At 4K memoriesCol takes over — hide inline memories in activeCol */
+  .bingoals-root .objPage-activeCol .subTimerMemories { display: none; }
+}
+
+/* Larger timer in active col context */
+@media (min-width: 900px) {
+  .bingoals-root .objPage-activeCol .bingo-instrument-timer { font-size: 4rem; }
+}
+@media (min-width: 1400px) {
+  .bingoals-root .objPage-activeCol .bingo-instrument-timer { font-size: 5rem; }
+  .bingoals-root .objPage-activeCol .bingo-instrument-face { padding: 20px 16px 14px; }
+}
+
+/* ── Narrow overlay ── */
+
+.bingoals-root .objPage-overlay {
+  position: fixed;
+  left: 0; right: 0; bottom: 0;
+  height: 95dvh;
+  background: var(--card-bg, rgba(20,20,35,0.97));
+  border-radius: 16px 16px 0 0;
+  box-shadow: 0 -4px 40px rgba(0,0,0,0.45);
+  transform: translateY(100%);
+  transition: transform 300ms cubic-bezier(0.32, 0.72, 0, 1);
+  z-index: 200;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.bingoals-root .objPage-overlay--open { transform: translateY(0); }
+
+.bingoals-root .objPage-overlay-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 14px 12px 10px;
+  border-bottom: 1px solid rgba(255,255,255,0.08);
+  flex-shrink: 0;
+}
+
+.bingoals-root .objPage-overlay-title {
+  flex: 1;
+  font-weight: 700;
+  font-size: 0.88rem;
+  text-align: center;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bingoals-root .objPage-overlay-body {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  overscroll-behavior: contain;
+}
+
+/* Hide overlay on mid/wide — columns handle it */
+@media (min-width: 900px) {
+  .bingoals-root .objPage-overlay { display: none; }
+}
+
+/* Larger timer inside overlay */
+.bingoals-root .objPage-overlay-body .bingo-instrument-timer { font-size: 5rem; }
+.bingoals-root .objPage-overlay-body .bingo-instrument-face { padding: 20px 16px 14px; }
+
+/* Slightly taller start/stop in active contexts */
+.bingoals-root .objPage-activeCol .bingo-start-btn,
+.bingoals-root .objPage-overlay-body .bingo-start-btn {
+  padding: 14px;
+  font-size: 1rem;
+}
+
+/* ── Link chip + add-link button (reused by memStrip + subFullCard) ── */
+
+@keyframes subDotPulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.35; transform: scale(0.7); }
+}
+
+.bingoals-root .subCompactChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  padding: 2px 8px;
+  border-radius: 20px;
+  font-size: 0.7rem;
+  font-weight: 600;
+  white-space: nowrap;
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.16);
+  color: inherit;
+  cursor: pointer;
+  transition: background 80ms ease;
+  flex-shrink: 0;
+}
+
+.bingoals-root .subCompactChip:hover { background: rgba(255,255,255,0.18); }
+
+.bingoals-root .subCompactAddLink {
+  padding: 2px 6px;
+  font-size: 0.68rem;
+  font-weight: 600;
+  border-radius: 4px;
+  border: 1px dashed rgba(255,255,255,0.2);
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+  flex-shrink: 0;
+  transition: opacity 100ms ease;
+  opacity: 0.7;
+}
+
+.bingoals-root .subCompactAddLink:hover { opacity: 1; }
+
+/* ── Grid view ── */
+
+.bingoals-root .subGrid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+}
+
+@media (min-width: 1400px) {
+  .bingoals-root .subGrid { grid-template-columns: repeat(3, 1fr); }
+}
+
+.bingoals-root .subGridTile {
+  position: relative;
+  border-radius: 8px;
+  overflow: hidden;
+  min-height: 120px;
+  cursor: pointer;
+  background-size: cover;
+  background-position: center;
+  border: 2px solid transparent;
+  transition: transform 100ms ease, box-shadow 100ms ease;
+}
+
+.bingoals-root .subGridTile:hover {
+  transform: scale(1.02);
+  box-shadow: 0 4px 16px rgba(0,0,0,0.3);
+}
+
+.bingoals-root .subGridTile--active { border-color: var(--primary); }
+
+.bingoals-root .subGridDoneOverlay {
+  display: none;
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.55);
+  align-items: center;
+  justify-content: center;
+  font-size: 2rem;
+  z-index: 2;
+}
+
+.bingoals-root .subGridTile--done .subGridDoneOverlay { display: flex; }
+
+.bingoals-root .subGridProgress {
+  position: absolute;
+  top: 6px; left: 6px;
+  font-size: 0.65rem;
+  font-weight: 700;
+  background: rgba(0,0,0,0.45);
+  border-radius: 10px;
+  padding: 1px 7px;
+  color: #fff;
+  z-index: 3;
+}
+
+.bingoals-root .subGridAddLink {
+  position: absolute;
+  top: 6px; right: 6px;
+  padding: 2px 6px;
+  font-size: 0.65rem;
+  font-weight: 600;
+  background: rgba(0,0,0,0.4);
+  border: 1px dashed rgba(255,255,255,0.3);
+  border-radius: 4px;
+  color: #fff;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 100ms ease;
+  z-index: 3;
+}
+
+.bingoals-root .subGridTile:hover .subGridAddLink { opacity: 1; }
+
+.bingoals-root .subGridScrim {
+  position: absolute;
+  left: 0; right: 0; bottom: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.72) 0%, transparent 100%);
+  padding: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  z-index: 1;
+}
+
+.bingoals-root .subGridTitle {
+  font-size: 0.77rem;
+  font-weight: 700;
+  color: #fff;
+  text-shadow: 0 1px 3px rgba(0,0,0,0.6);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bingoals-root .subGridLinks { display: flex; gap: 3px; flex-wrap: wrap; }
+
+.bingoals-root .subGridChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 1px 6px;
+  border-radius: 10px;
+  font-size: 0.62rem;
+  font-weight: 600;
+  background: rgba(0,0,0,0.5);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: #fff;
+  cursor: pointer;
+  transition: background 80ms ease;
+  white-space: nowrap;
+}
+
+.bingoals-root .subGridChip:hover { background: rgba(0,0,0,0.7); }
+
+/* ── Active panel — link chips above timer ── */
+
+.bingoals-root .subTimerLinks {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+  margin-bottom: 14px;
+}
+
+.bingoals-root .subTimerLinkChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 14px;
+  border-radius: 20px;
+  font-size: 0.82rem;
+  font-weight: 600;
+  background: rgba(255,255,255,0.1);
+  border: 1px solid rgba(255,255,255,0.2);
+  color: inherit;
+  cursor: pointer;
+  transition: background 100ms ease;
+}
+
+.bingoals-root .subTimerLinkChip:hover { background: rgba(255,255,255,0.2); }
+
+/* ── Memories divider in active panel ── */
+
+.bingoals-root .subMemoriesDivider {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 20px 0 12px;
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  opacity: 0.4;
+}
+
+.bingoals-root .subMemoriesDivider::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: currentColor;
+  opacity: 0.4;
+}
+
+/* ── Active panel title (center column / overlay) ── */
+
+.bingoals-root .subActiveTitle {
+  font-size: 1rem;
+  font-weight: 800;
+  letter-spacing: 0.02em;
+  margin-bottom: 12px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: inherit;
+  opacity: 1;
+}
+
+.bingoals-root .bingo-section-label {
+  opacity: 0.75;
+  font-weight: 700;
+  letter-spacing: 0.6px;
+}
+
+/* ════════════════════════════════════════════════════════════════
+   FULL VIEW — dashboard grid of dense cards
+   ════════════════════════════════════════════════════════════════ */
+
+/* When listView==='full', list column claims full row; active/memories cols hidden */
+.bingoals-root .objPage-layout--full { flex-direction: column !important; }
+.bingoals-root .objPage-layout--full .objPage-listCol {
+  flex: 1 1 auto !important;
+  width: 100%;
+  min-width: 0;
+}
+.bingoals-root .objPage-layout--full .objPage-activeCol,
+.bingoals-root .objPage-layout--full .objPage-memoriesCol { display: none !important; }
+
+.bingoals-root .subFullGrid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 14px;
+}
+
+@media (min-width: 720px) {
+  .bingoals-root .subFullGrid { grid-template-columns: repeat(2, 1fr); }
+}
+
+@media (min-width: 1500px) {
+  .bingoals-root .subFullGrid { grid-template-columns: repeat(3, 1fr); }
+}
+
+@media (min-width: 2200px) {
+  .bingoals-root .subFullGrid { grid-template-columns: repeat(4, 1fr); }
+}
+
+.bingoals-root .subFullCard {
+  background: rgba(255,255,255,0.03);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 10px;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
+  transition: border-color 150ms ease, box-shadow 150ms ease;
+}
+
+.bingoals-root .subFullCard:hover { border-color: rgba(255,255,255,0.18); }
+
+.bingoals-root .subFullCard--running {
+  border-color: var(--danger, #e53935);
+  box-shadow: 0 0 0 1px var(--danger, #e53935), 0 0 24px -8px var(--danger, #e53935);
+}
+
+.bingoals-root .subFullCard--done {
+  border-color: rgba(76, 175, 80, 0.55);
+  background: rgba(76, 175, 80, 0.05);
+}
+
+.bingoals-root .subFullCard-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.bingoals-root .subFullCard-cover {
+  width: 48px;
+  height: 48px;
+  border-radius: 6px;
+  background-size: cover;
+  background-position: center;
+  background-color: rgba(255,255,255,0.06);
+  flex-shrink: 0;
+}
+
+.bingoals-root .subFullCard-titleCol {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.bingoals-root .subFullCard-title {
+  font-size: 0.9rem;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  cursor: pointer;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  color: inherit;
+  opacity: 0.95;
+}
+
+.bingoals-root .subFullCard-titleInput {
+  font-size: 0.9rem;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+}
+
+.bingoals-root .subFullCard-progress {
+  font-size: 0.72rem;
+  opacity: 0.55;
+  font-variant-numeric: tabular-nums;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.bingoals-root .subFullCard-percent {
+  font-size: 0.78rem;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums;
+  padding: 3px 10px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 12px;
+  flex-shrink: 0;
+  color: inherit;
+}
+
+.bingoals-root .subFullCard--done .subFullCard-percent {
+  background: rgba(76, 175, 80, 0.3);
+  color: #fff;
+}
+
+.bingoals-root .subFullCard-links {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  align-items: center;
+}
+
+.bingoals-root .subFullCard-addLink {
+  padding: 2px 8px;
+  font-size: 0.68rem;
+  font-weight: 600;
+  border-radius: 4px;
+  border: 1px dashed rgba(255,255,255,0.25);
+  background: transparent;
+  color: inherit;
+  opacity: 0.5;
+  cursor: pointer;
+  transition: opacity 100ms ease;
+}
+
+.bingoals-root .subFullCard:hover .subFullCard-addLink,
+.bingoals-root .subFullCard-addLink:hover { opacity: 1; }
+
+/* SubobjectiveTimerPanel sits inside the card — reset its own paddings/margins
+   so the card controls spacing. */
+.bingoals-root .subFullCard .bingo-panel-left {
+  padding: 0;
+  background: transparent;
+  border: none;
+}
+
+.bingoals-root .subFullCard .bingo-instrument-face {
+  padding: 12px 12px 10px;
+}
+
+.bingoals-root .subFullCard .bingo-instrument-timer {
+  font-size: 2.4rem;
+}
+
+.bingoals-root .subFullCard .bingo-start-btn { margin-bottom: 8px; }
+
+.bingoals-root .subFullCard .bingo-tick-bar { margin-top: 6px; }
+
+.bingoals-root .subFullCard .bingo-instrument-footer { margin-top: 8px; }
+
+/* ════════════════════════════════════════════════════════════════
+   MEMORIES VIEW — per-subobjective horizontal strips of memory cards
+   ════════════════════════════════════════════════════════════════ */
+
+/* When listView==='memories', list column takes the full width.
+   activeCol + memoriesCol + slide-up overlay are all hidden — the strip
+   header already exposes start/stop, mark-done, links and add controls,
+   so the big timer panel and slide-up overlay are redundant here. */
+.bingoals-root .objPage-layout--memories {
+  flex-direction: column !important;
+}
+.bingoals-root .objPage-layout--memories .objPage-listCol {
+  flex: 1 1 auto !important;
+  width: 100%;
+  min-width: 0;
+}
+.bingoals-root .objPage-layout--memories .objPage-activeCol,
+.bingoals-root .objPage-layout--memories .objPage-memoriesCol { display: none !important; }
+
+/* Hide the slide-up overlay (sibling of objPage-layout) when in memories view */
+.bingoals-root .objPage-layout--memories ~ .objPage-overlay { display: none !important; }
+
+/* ── Strip container ── */
+
+.bingoals-root .memStrip {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 12px;
+  margin-bottom: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  background: rgba(255, 255, 255, 0.025);
+  transition: border-color 150ms ease, opacity 200ms ease;
+  min-width: 0;
+}
+
+.bingoals-root .memStrip:hover { border-color: rgba(255, 255, 255, 0.16); }
+
+.bingoals-root .memStrip--done { opacity: 0.55; }
+.bingoals-root .memStrip--done:hover { opacity: 0.8; }
+
+.bingoals-root .memStrip--running {
+  border-color: var(--danger, #e53935);
+  box-shadow: 0 0 0 1px var(--danger, #e53935), 0 0 28px -10px var(--danger, #e53935);
+}
+
+.bingoals-root .memStrip--active {
+  border-left: 3px solid var(--primary);
+  padding-left: 10px;
+}
+
+@media (min-width: 720px) {
+  .bingoals-root .memStrip {
+    flex-direction: row;
+    align-items: stretch;
+    gap: 14px;
+    padding: 14px;
+  }
+}
+
+/* ── Strip header (left region) ── */
+
+.bingoals-root .memStrip-header {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  min-width: 0;
+  flex-shrink: 0;
+}
+
+@media (min-width: 720px) {
+  .bingoals-root .memStrip-header { width: 240px; }
+}
+
+@media (min-width: 1400px) {
+  .bingoals-root .memStrip-header { width: 280px; }
+}
+
+.bingoals-root .memStrip-headerTop {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+
+.bingoals-root .memStrip-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: rgba(255, 255, 255, 0.2);
+}
+.bingoals-root .memStrip-dot--done { background: var(--success, #4caf50); }
+.bingoals-root .memStrip-dot--active { background: var(--primary); }
+.bingoals-root .memStrip-dot--running {
+  background: var(--danger, #e53935);
+  animation: subDotPulse 1s ease-in-out infinite;
+}
+
+.bingoals-root .memStrip-title {
+  flex: 1;
+  min-width: 0;
+  font-size: 0.85rem;
+  font-weight: 800;
+  letter-spacing: 0.3px;
+  text-transform: uppercase;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: pointer;
+  color: inherit;
+  opacity: 0.95;
+}
+
+.bingoals-root .memStrip-progress {
+  font-size: 0.7rem;
+  font-variant-numeric: tabular-nums;
+  opacity: 0.5;
+  white-space: nowrap;
+}
+
+.bingoals-root .memStrip-headerActions {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.bingoals-root .memStrip-startBtn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 12px;
+  font-size: 0.78rem;
+  font-weight: 700;
+  border-radius: 6px;
+  cursor: pointer;
+  background: var(--primary);
+  color: #fff;
+  border: 1px solid transparent;
+}
+.bingoals-root .memStrip-startBtn--stop {
+  background: var(--danger, #e53935);
+}
+
+.bingoals-root .memStrip-headerLinks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  align-items: center;
+}
+
+/* ── Track (right region) — horizontal scroll ── */
+
+.bingoals-root .memStrip-track {
+  flex: 1;
+  min-width: 0;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scrollbar-width: none;
+  position: relative;
+}
+.bingoals-root .memStrip-track::-webkit-scrollbar { display: none; }
+
+.bingoals-root .memStrip-trackInner {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 8px;
+  padding: 2px;
+  align-items: stretch;
+}
+
+/* Right-edge fade gradient hint when content overflows */
+.bingoals-root .memStrip-track::after {
+  content: '';
+  position: sticky;
+  right: 0;
+  top: 0;
+  bottom: 0;
+  width: 30px;
+  pointer-events: none;
+  background: linear-gradient(to right, transparent, rgba(0, 0, 0, 0.35));
+}
+
+/* ── Memory card base ── */
+
+.bingoals-root .memStrip-card {
+  position: relative;
+  width: 180px;
+  height: 180px;
+  border-radius: 8px;
+  overflow: hidden;
+  flex-shrink: 0;
+  cursor: pointer;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  transition: transform 120ms ease, box-shadow 120ms ease;
+}
+
+@media (min-width: 720px) {
+  .bingoals-root .memStrip-card { width: 220px; height: 220px; }
+}
+
+@media (min-width: 1400px) {
+  .bingoals-root .memStrip-card { width: 260px; height: 260px; }
+}
+
+.bingoals-root .memStrip-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.3);
+}
+
+.bingoals-root .memStrip-card--image {
+  background-size: cover;
+  background-position: center;
+}
+
+.bingoals-root .memStrip-card--quote {
+  display: flex;
+  align-items: flex-start;
+  padding: 14px 14px 12px;
+  font-style: italic;
+  font-size: 0.95rem;
+  line-height: 1.45;
+  color: #fff;
+}
+
+.bingoals-root .memStrip-quoteMark {
+  position: absolute;
+  top: -12px;
+  left: 6px;
+  font-size: 5rem;
+  opacity: 0.18;
+  font-family: Georgia, serif;
+  line-height: 1;
+  pointer-events: none;
+}
+
+.bingoals-root .memStrip-quoteText {
+  position: relative;
+  z-index: 1;
+  display: -webkit-box;
+  -webkit-line-clamp: 7;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.bingoals-root .memStrip-cardDelete {
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.65);
+  border: none;
+  color: #fff;
+  font-size: 0.7rem;
+  line-height: 1;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 100ms ease;
+  z-index: 4;
+}
+
+.bingoals-root .memStrip-card:hover .memStrip-cardDelete { opacity: 0.85; }
+.bingoals-root .memStrip-cardDelete:hover { opacity: 1 !important; background: var(--danger, #e53935); }
+
+/* Placeholder + add-picker cards */
+.bingoals-root .memStrip-card--placeholder {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  font-size: 0.72rem;
+  font-weight: 600;
+  background: transparent;
+  border: 1px dashed rgba(255, 255, 255, 0.18);
+  color: inherit;
+  opacity: 0.55;
+  padding: 8px;
+  cursor: pointer;
+  transition: opacity 100ms ease, border-color 100ms ease, background 100ms ease;
+}
+.bingoals-root .memStrip-card--placeholder:hover {
+  opacity: 0.95;
+  border-color: rgba(255, 255, 255, 0.4);
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.bingoals-root .memStrip-card--addTrigger {
+  font-size: 1.6rem;
+  font-weight: 300;
+}
+
+/* + add picker popover */
+.bingoals-root .memStrip-addPicker {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  right: 0;
+  width: 130px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px;
+  background: rgba(20, 20, 30, 0.95);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  border-radius: 8px;
+  z-index: 5;
+  box-shadow: 0 4px 18px rgba(0, 0, 0, 0.4);
+}
+
+.bingoals-root .memStrip-addPickerBtn {
+  padding: 6px 10px;
+  font-size: 0.74rem;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  color: inherit;
+  border-radius: 5px;
+  cursor: pointer;
+  text-align: left;
+}
+.bingoals-root .memStrip-addPickerBtn:hover { background: rgba(255, 255, 255, 0.14); }
+
+/* Hidden file input attached to each strip */
+.bingoals-root .memStrip-fileInput {
+  position: absolute;
+  width: 0;
+  height: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* ── Lightbox ── */
+
+.bingoals-root .memLightbox {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.88);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 300;
+  cursor: zoom-out;
+}
+
+.bingoals-root .memLightbox-image {
+  max-width: 95vw;
+  max-height: 95vh;
+  object-fit: contain;
+  user-select: none;
+  cursor: default;
+}
+
+.bingoals-root .memLightbox-close,
+.bingoals-root .memLightbox-delete {
+  position: absolute;
+  top: 16px;
+  padding: 8px 14px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: #fff;
+  cursor: pointer;
+}
+.bingoals-root .memLightbox-close { right: 16px; }
+.bingoals-root .memLightbox-delete {
+  left: 16px;
+  background: rgba(229, 57, 53, 0.25);
+  border-color: rgba(229, 57, 53, 0.6);
+}
+.bingoals-root .memLightbox-close:hover { background: rgba(255, 255, 255, 0.18); }
+.bingoals-root .memLightbox-delete:hover { background: rgba(229, 57, 53, 0.4); }
+
+/* ── Quote viewer (full-screen overlay for reading a long quote) ── */
+
+.bingoals-root .memQuoteViewer {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.88);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 300;
+  cursor: zoom-out;
+  padding: 60px 40px;
+}
+
+.bingoals-root .memQuoteViewer-body {
+  max-width: 720px;
+  max-height: 85vh;
+  overflow-y: auto;
+  position: relative;
+  cursor: default;
+  font-style: italic;
+  font-size: 1.6rem;
+  line-height: 1.55;
+  color: #fff;
+  text-align: left;
+  padding: 50px 40px 30px;
+  background: rgba(20, 20, 30, 0.85);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  border-radius: 12px;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.bingoals-root .memQuoteViewer-mark {
+  position: absolute;
+  top: -10px;
+  left: 20px;
+  font-size: 8rem;
+  opacity: 0.18;
+  font-family: Georgia, serif;
+  line-height: 1;
+  pointer-events: none;
+}
+
+.bingoals-root .memQuoteViewer-close,
+.bingoals-root .memQuoteViewer-delete {
+  position: absolute;
+  top: 16px;
+  padding: 8px 14px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  border-radius: 6px;
+  background: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.25);
+  color: #fff;
+  cursor: pointer;
+}
+.bingoals-root .memQuoteViewer-close { right: 16px; }
+.bingoals-root .memQuoteViewer-delete {
+  left: 16px;
+  background: rgba(229, 57, 53, 0.25);
+  border-color: rgba(229, 57, 53, 0.6);
+}
+.bingoals-root .memQuoteViewer-close:hover { background: rgba(255, 255, 255, 0.18); }
+.bingoals-root .memQuoteViewer-delete:hover { background: rgba(229, 57, 53, 0.4); }
+
+/* ── Quote entry textarea (AddQuoteModal) ── */
+
+.bingoals-root .bingo-quote-textarea,
+.bingo-quote-textarea {
+  width: 100%;
+  min-height: 120px;
+  font-family: inherit;
+  font-size: 0.95rem;
+  line-height: 1.5;
+  padding: 10px 12px;
+  border-radius: 6px;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  background: rgba(255, 255, 255, 0.04);
+  color: inherit;
+  resize: vertical;
+  white-space: pre-wrap;
+  box-sizing: border-box;
+}
+
+.bingoals-root .bingo-quote-textarea:focus,
+.bingo-quote-textarea:focus {
+  outline: none;
+  border-color: var(--primary, #4c8cf7);
+  background: rgba(255, 255, 255, 0.07);
+}
+
+/* ── Dashboard toolbar (replaces page-header on BingoDashboard) ── */
+
+.bingoals-root .bingo-toolbar {
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    margin-bottom: 16px;
+    gap: 12px;
 }

@@ -1,5 +1,5 @@
 import { TECHNIQUES, getTierColor, CATEGORY_LABELS, CATEGORY_COLORS } from '../lib/techniques';
-import type { TechCategory } from '../lib/techniques';
+import type { TechCategory, TierType } from '../lib/techniques';
 import { X, ExternalLink, ChevronRight } from 'lucide-react';
 import { playSFX } from '../lib/sounds';
 import { useSettings } from '../lib/settings';
@@ -23,6 +23,9 @@ interface TechniquePickerModalProps {
     subjectName?: string | null;
     chapterName?: string | null;
 }
+
+const TIER_ORDER: TierType[] = ['S', 'A', 'B', 'C', 'D', 'E', 'F'];
+const CATEGORY_ORDER: TechCategory[] = ['comprendre', 'memoriser', 'faire'];
 
 const DAILY_LINK_KEY = 'study-buddy-technique-link-date';
 const LEARNED_TECHS_KEY = 'study-buddy-learned-techs';
@@ -50,6 +53,20 @@ export default function TechniquePickerModal({ onClose, onSelect, currentSelecti
     const { theme } = useSettings();
     const { t } = useTranslation();
     const tiers = Array.from(new Set(TECHNIQUES.map(t => t.tier)));
+
+    const techsByCategory = useMemo(() => {
+        const map: Record<TechCategory, typeof TECHNIQUES> = { comprendre: [], memoriser: [], faire: [] };
+        const uncategorized: typeof TECHNIQUES = [];
+        for (const t of TECHNIQUES) {
+            if (t.category && map[t.category]) map[t.category].push(t);
+            else uncategorized.push(t);
+        }
+        for (const cat of CATEGORY_ORDER) {
+            map[cat].sort((a, b) => TIER_ORDER.indexOf(a.tier) - TIER_ORDER.indexOf(b.tier));
+        }
+        uncategorized.sort((a, b) => TIER_ORDER.indexOf(a.tier) - TIER_ORDER.indexOf(b.tier));
+        return { ...map, uncategorized };
+    }, []);
     const suggestedTechniqueName = useMemo(
         () => TECHNIQUES.find(tech => tech.id === suggestedTechniqueId)?.name,
         [suggestedTechniqueId]
@@ -253,62 +270,139 @@ export default function TechniquePickerModal({ onClose, onSelect, currentSelecti
                         )}
 
                         <div className="tech-picker-scroll">
-                            {tiers.map(tier => (
-                                <div key={tier} className="tech-tier-group">
-                                    <h3
-                                        className="tech-tier-heading"
-                                        style={{ '--tier-color': getTierColor(tier as any) } as React.CSSProperties}
-                                    >
-                                        Tier {tier}
-                                        <div className="tech-tier-underline" />
-                                    </h3>
-                                    {dfRatio > 30 && (tier === 'D' || tier === 'E' || tier === 'F') && (
-                                        <div className="tech-df-warning">
-                                            <strong>Warning:</strong> {dfRatio}% of your focus time is spent on D/F techniques. These are inefficient and create an illusion of competence. Consider Active Recall instead!
+                            {dfRatio > 30 && (
+                                <div className="tech-df-warning tech-df-warning-global">
+                                    <strong>Warning:</strong> {dfRatio}% of your focus time is spent on D/F techniques. These are inefficient and create an illusion of competence. Consider Active Recall instead!
+                                </div>
+                            )}
+
+                            {/* ── 3-column category layout (wide screens) ── */}
+                            <div className="tech-picker-category-grid">
+                                {CATEGORY_ORDER.map(cat => (
+                                    <div key={cat} className="tech-cat-col">
+                                        <div
+                                            className="tech-cat-col-header"
+                                            style={{ '--category-color': CATEGORY_COLORS[cat] } as React.CSSProperties}
+                                        >
+                                            {CATEGORY_LABELS[cat]}
                                         </div>
-                                    )}
-                                    <div className="tech-tier-techniques">
-                                        {TECHNIQUES.filter(t => t.tier === tier).map(t => {
-                                            const isRecommended = recommendedCategory && t.category === recommendedCategory;
-                                            const isSuggested = suggestedTechniqueId === t.id;
-                                            return (
-                                                <div
-                                                    key={t.id}
-                                                    className={`glass tech-card${currentSelection === t.id ? ' selected' : ''}${isRecommended ? ' recommended-technique' : ''}${isSuggested ? ' suggested-technique' : ''}`}
-                                                    onClick={() => { playSFX('glass_ui_check', theme); enterObjectiveStep(t.id); }}
-                                                    onMouseEnter={() => playSFX('glass_ui_hover', theme)}
-                                                >
-                                                    <div className="tech-card-header">
-                                                        <span className="tech-card-name">{t.name}</span>
-                                                        {t.category && (
+                                        <div className="tech-cat-col-cards">
+                                            {techsByCategory[cat].map(t => {
+                                                const isRecommended = recommendedCategory && t.category === recommendedCategory;
+                                                const isSuggested = suggestedTechniqueId === t.id;
+                                                return (
+                                                    <div
+                                                        key={t.id}
+                                                        className={`glass tech-card${currentSelection === t.id ? ' selected' : ''}${isRecommended ? ' recommended-technique' : ''}${isSuggested ? ' suggested-technique' : ''}`}
+                                                        onClick={() => { playSFX('glass_ui_check', theme); enterObjectiveStep(t.id); }}
+                                                        onMouseEnter={() => playSFX('glass_ui_hover', theme)}
+                                                    >
+                                                        <div className="tech-card-header">
+                                                            <span className="tech-card-name">{t.name}</span>
                                                             <span
-                                                                className="tech-category-tag"
-                                                                style={{ '--category-color': CATEGORY_COLORS[t.category] } as React.CSSProperties}
+                                                                className="tech-tier-badge"
+                                                                style={{ '--tier-color': getTierColor(t.tier) } as React.CSSProperties}
                                                             >
-                                                                {CATEGORY_LABELS[t.category]}
+                                                                {t.tier}
                                                             </span>
-                                                        )}
-                                                    </div>
-                                                    <div className="tech-card-summary">
-                                                        {t.advantage && (
-                                                            <div className="tech-advantage-pill">✦ {t.advantage}</div>
-                                                        )}
-                                                        <div className="tech-learn-btn-group">
-                                                            {renderLearnButton(
-                                                                t.externalLink ?? 'https://notebooklm.google.com/notebook/33dc2ca6-a3da-4218-b679-bd91ce99d7e7',
-                                                                t.id
+                                                        </div>
+                                                        <div className="tech-card-summary">
+                                                            {t.advantage && (
+                                                                <div className="tech-advantage-pill">✦ {t.advantage}</div>
                                                             )}
+                                                            <div className="tech-learn-btn-group">
+                                                                {renderLearnButton(
+                                                                    t.externalLink ?? 'https://notebooklm.google.com/notebook/33dc2ca6-a3da-4218-b679-bd91ce99d7e7',
+                                                                    t.id
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                        <div className="tech-card-detail">
+                                                            <div className="tech-card-hint">{t.hint}</div>
                                                         </div>
                                                     </div>
-                                                    <div className="tech-card-detail">
-                                                        <div className="tech-card-hint">{t.hint}</div>
-                                                    </div>
-                                                </div>
-                                            );
-                                        })}
+                                                );
+                                            })}
+                                        </div>
                                     </div>
-                                </div>
-                            ))}
+                                ))}
+                                {techsByCategory.uncategorized.length > 0 && (
+                                    <div className="tech-cat-avoid-row">
+                                        <span className="tech-cat-avoid-label">⚠ À éviter</span>
+                                        {techsByCategory.uncategorized.map(t => (
+                                            <div
+                                                key={t.id}
+                                                className={`glass tech-card tech-card-compact${currentSelection === t.id ? ' selected' : ''}`}
+                                                onClick={() => { playSFX('glass_ui_check', theme); enterObjectiveStep(t.id); }}
+                                                onMouseEnter={() => playSFX('glass_ui_hover', theme)}
+                                            >
+                                                <div className="tech-card-header">
+                                                    <span className="tech-card-name">{t.name}</span>
+                                                    <span className="tech-tier-badge" style={{ '--tier-color': getTierColor(t.tier) } as React.CSSProperties}>{t.tier}</span>
+                                                </div>
+                                                <div className="tech-card-detail">
+                                                    <div className="tech-card-hint">{t.hint}</div>
+                                                </div>
+                                            </div>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* ── Tier list (narrow screens fallback) ── */}
+                            <div className="tech-picker-tier-list">
+                                {tiers.map(tier => (
+                                    <div key={tier} className="tech-tier-group">
+                                        <h3
+                                            className="tech-tier-heading"
+                                            style={{ '--tier-color': getTierColor(tier as TierType) } as React.CSSProperties}
+                                        >
+                                            Tier {tier}
+                                            <div className="tech-tier-underline" />
+                                        </h3>
+                                        <div className="tech-tier-techniques">
+                                            {TECHNIQUES.filter(t => t.tier === tier).map(t => {
+                                                const isRecommended = recommendedCategory && t.category === recommendedCategory;
+                                                const isSuggested = suggestedTechniqueId === t.id;
+                                                return (
+                                                    <div
+                                                        key={t.id}
+                                                        className={`glass tech-card${currentSelection === t.id ? ' selected' : ''}${isRecommended ? ' recommended-technique' : ''}${isSuggested ? ' suggested-technique' : ''}`}
+                                                        onClick={() => { playSFX('glass_ui_check', theme); enterObjectiveStep(t.id); }}
+                                                        onMouseEnter={() => playSFX('glass_ui_hover', theme)}
+                                                    >
+                                                        <div className="tech-card-header">
+                                                            <span className="tech-card-name">{t.name}</span>
+                                                            {t.category && (
+                                                                <span
+                                                                    className="tech-category-tag"
+                                                                    style={{ '--category-color': CATEGORY_COLORS[t.category] } as React.CSSProperties}
+                                                                >
+                                                                    {CATEGORY_LABELS[t.category]}
+                                                                </span>
+                                                            )}
+                                                        </div>
+                                                        <div className="tech-card-summary">
+                                                            {t.advantage && (
+                                                                <div className="tech-advantage-pill">✦ {t.advantage}</div>
+                                                            )}
+                                                            <div className="tech-learn-btn-group">
+                                                                {renderLearnButton(
+                                                                    t.externalLink ?? 'https://notebooklm.google.com/notebook/33dc2ca6-a3da-4218-b679-bd91ce99d7e7',
+                                                                    t.id
+                                                                )}
+                                                            </div>
+                                                        </div>
+                                                        <div className="tech-card-detail">
+                                                            <div className="tech-card-hint">{t.hint}</div>
+                                                        </div>
+                                                    </div>
+                                                );
+                                            })}
+                                        </div>
+                                    </div>
+                                ))}
+                            </div>
                         </div>
                     </>
                 )}

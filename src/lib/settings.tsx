@@ -1,13 +1,50 @@
 import { createContext, useContext, useState, useEffect } from 'react';
 import type { ReactNode } from 'react';
-import { setAudioTheme } from './sounds';
+import { setAudioTheme, preloadCustomSounds } from './sounds';
 
-export type Theme = 'pastel' | 'neumorphism' | 'neobrutalism' | 'terminal-orange' | 'terminal-green' | 'terminal-red' | 'terminal-cyan' | 'terminal-amber' | 'terminal-acid' | 'terminal-blue' | 'classic-uniform' | 'cosmic-manicure' | 'chibi-moon' | 'transformation-ribbon' | 'honey-lemon' | 'ai-pro' | 'cyber-scan' | 'starry-night' | 'designers-republic' | 'tdr-blue' | 'tdr-ember' | 'tdr-night' | 'tdr-warp' | 'tdr-acid';
+export type Theme = 'obsidian' | 'obsidian-terminal-green' | 'obsidian-terminal-orange' | 'obsidian-designers-republic' | 'obsidian-tdr-acid' | 'obsidian-kokedera' | 'obsidian-cyberpunk' | 'obsidian-dracula' | 'obsidian-nord' | 'obsidian-monokai' | 'obsidian-tokyo-night' | 'obsidian-solarized-dark' | 'obsidian-gruvbox' | 'obsidian-catppuccin' | 'obsidian-catppuccin-latte' | 'obsidian-catppuccin-frappe' | 'obsidian-catppuccin-macchiato' | 'obsidian-ayu' | 'obsidian-starry-night'
+  | 'obsidian-pastel'
+  | 'obsidian-classic-uniform' | 'obsidian-cosmic-manicure' | 'obsidian-chibi-moon'
+  | 'obsidian-transformation-ribbon' | 'obsidian-honey-lemon' | 'obsidian-ai-pro'
+  | 'obsidian-cyber-scan' | 'obsidian-terminal-red' | 'obsidian-terminal-cyan'
+  | 'obsidian-terminal-amber' | 'obsidian-terminal-acid' | 'obsidian-terminal-blue'
+  | 'obsidian-tdr-blue' | 'obsidian-tdr-ember' | 'obsidian-tdr-night' | 'obsidian-tdr-warp';
 
-/** True for any theme whose name starts with "terminal-". Works for future themes automatically. */
-export function isTerminalTheme(theme: Theme | string): boolean {
-    return theme.startsWith('terminal-');
+/** Classic theme ids removed in the redesign unification → obsidian equivalents. */
+const LEGACY_THEME_MAP: Record<string, Theme> = {
+  'pastel': 'obsidian-pastel',
+  'neumorphism': 'obsidian',
+  'neobrutalism': 'obsidian',
+  'classic-uniform': 'obsidian-classic-uniform',
+  'cosmic-manicure': 'obsidian-cosmic-manicure',
+  'chibi-moon': 'obsidian-chibi-moon',
+  'transformation-ribbon': 'obsidian-transformation-ribbon',
+  'honey-lemon': 'obsidian-honey-lemon',
+  'ai-pro': 'obsidian-ai-pro',
+  'cyber-scan': 'obsidian-cyber-scan',
+  'starry-night': 'obsidian-starry-night',
+  'designers-republic': 'obsidian-designers-republic',
+  'terminal-orange': 'obsidian-terminal-orange',
+  'terminal-green': 'obsidian-terminal-green',
+  'terminal-red': 'obsidian-terminal-red',
+  'terminal-cyan': 'obsidian-terminal-cyan',
+  'terminal-amber': 'obsidian-terminal-amber',
+  'terminal-acid': 'obsidian-terminal-acid',
+  'terminal-blue': 'obsidian-terminal-blue',
+  'tdr-blue': 'obsidian-tdr-blue',
+  'tdr-ember': 'obsidian-tdr-ember',
+  'tdr-night': 'obsidian-tdr-night',
+  'tdr-warp': 'obsidian-tdr-warp',
+  'tdr-acid': 'obsidian-tdr-acid',
+};
+
+/** Map a possibly-legacy stored theme id to a valid current Theme. */
+export function migrateTheme(theme: string): Theme {
+  if (theme in LEGACY_THEME_MAP) return LEGACY_THEME_MAP[theme];
+  if (theme.startsWith('obsidian')) return theme as Theme;
+  return 'obsidian-pastel';
 }
+
 export type WeekStart = 'monday' | 'sunday';
 export type MetacognitionDay = 'friday' | 'saturday' | 'sunday';
 
@@ -23,7 +60,7 @@ interface Settings {
 const isLinux = (window as any).electronAPI?.platform === 'linux';
 
 const defaultSettings: Settings = {
-    theme: 'pastel',
+    theme: 'obsidian-pastel',
     weekStart: 'monday',
     language: 'en',
     zoomLevel: 100,
@@ -32,7 +69,6 @@ const defaultSettings: Settings = {
 };
 
 interface SettingsContextType extends Settings {
-    isTerminal: boolean;
     setTheme: (t: Theme) => void;
     setWeekStart: (w: WeekStart) => void;
     setLanguage: (l: string) => void;
@@ -49,7 +85,8 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
         const saved = localStorage.getItem('study-buddy-settings');
         if (saved) {
             try {
-                return { ...defaultSettings, ...JSON.parse(saved) };
+                const merged = { ...defaultSettings, ...JSON.parse(saved) };
+                return { ...merged, theme: migrateTheme(merged.theme) };
             } catch (e) {
                 console.error("Failed to parse settings", e);
             }
@@ -65,6 +102,11 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
         (document.body.style as any).zoom = (settings.zoomLevel / 100).toString();
         document.documentElement.classList.toggle('linux-perf', settings.performanceMode);
     }, [settings]);
+
+    // Preload user-supplied custom sounds once at startup
+    useEffect(() => {
+        void preloadCustomSounds();
+    }, []);
 
     // Global Ctrl+Scroll listener
     useEffect(() => {
@@ -91,7 +133,6 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
     return (
         <SettingsContext.Provider value={{
             ...settings,
-            isTerminal: isTerminalTheme(settings.theme),
             setTheme: (t) => updateSetting('theme', t),
             setWeekStart: (w) => updateSetting('weekStart', w),
             setLanguage: (l) => updateSetting('language', l),

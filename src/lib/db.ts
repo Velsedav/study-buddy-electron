@@ -431,6 +431,18 @@ export async function resolveErrorLogEntry(id: string) {
   await db.execute(`UPDATE error_log SET resolved = 1 WHERE id = $1`, [id])
 }
 
+export async function renameChapterInDb(subjectId: string, oldName: string, newName: string) {
+  const db = await getDb()
+  await db.execute(
+    `UPDATE session_blocks SET chapter_name = $1 WHERE subject_id = $2 AND chapter_name = $3`,
+    [newName, subjectId, oldName]
+  )
+  await db.execute(
+    `UPDATE error_log SET chapter_name = $1 WHERE subject_id = $2 AND chapter_name = $3`,
+    [newName, subjectId, oldName]
+  )
+}
+
 export async function deleteAllData() {
   const db = await getDb()
   await db.execute(`DELETE FROM sessions`)

@@ -16,6 +16,8 @@
     align-items: center;
     justify-content: center;
     min-height: 70vh;
+    padding: 32px 16px;
+    box-sizing: border-box;
 }
 
 .session-panel {
@@ -27,6 +29,23 @@
     max-width: 600px;
     min-height: 520px;
     border-radius: 32px;
+    /* Don't let the flex parent shrink the panel below its content when the
+       prep checklist is tall — otherwise content spills past the rounded box. */
+    flex-shrink: 0;
+    box-sizing: border-box;
+}
+
+/* Narrow viewports: shrink the chunky padding so the panel + checklist fit */
+@media (max-width: 640px) {
+    .session-panel {
+        padding: 28px 18px;
+        border-radius: 20px;
+        min-height: 0;
+    }
+    .prep-checklist-card {
+        max-width: 100%;
+        padding: 16px;
+    }
 }
 
 .session-panel>* {

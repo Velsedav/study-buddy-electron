@@ -7,34 +7,35 @@ import { curriculum } from '../lib/learningContent';
 import type { Section, QuizOption } from '../lib/learningContent';
 import { isDevMode, isDevNavUnlocked } from '../lib/devMode';
 import { useTranslation } from '../lib/i18n';
+import ObsidianLearning from './ObsidianLearning';
 import './Learning.css';
 
 // ── Spaced Repetition Types & Constants ──
 
-interface SRSEntry {
+export interface SRSEntry {
     level: number;
     lastCompleted: string;
     nextReviewAt: string;
     lockedUntil?: string;
 }
 
-type SRSState = Record<string, SRSEntry>;
+export type SRSState = Record<string, SRSEntry>;
 
 const SRS_INTERVALS_DAYS = [7, 14, 30, 90];
-const MAX_SRS_LEVEL = SRS_INTERVALS_DAYS.length;
+export const MAX_SRS_LEVEL = SRS_INTERVALS_DAYS.length;
 
-function getIntervalDays(level: number): number {
+export function getIntervalDays(level: number): number {
     if (level <= 0) return 0;
     return SRS_INTERVALS_DAYS[Math.min(level - 1, SRS_INTERVALS_DAYS.length - 1)];
 }
 
-function addDays(date: Date, days: number): Date {
+export function addDays(date: Date, days: number): Date {
     const d = new Date(date);
     d.setDate(d.getDate() + days);
     return d;
 }
 
-function getNextDayStart(): Date {
+export function getNextDayStart(): Date {
     const d = new Date();
     d.setDate(d.getDate() + 1);
     d.setHours(0, 0, 0, 0);
@@ -42,11 +43,11 @@ function getNextDayStart(): Date {
 }
 
 
-function getSectionQuestionIds(section: Section): number[] {
+export function getSectionQuestionIds(section: Section): number[] {
     return section.chapters.flatMap(ch => ch.lessons.map(l => l.question.id));
 }
 
-function isSectionPerfect(section: Section, quizState: Record<number, Record<string, boolean>>): boolean {
+export function isSectionPerfect(section: Section, quizState: Record<number, Record<string, boolean>>): boolean {
     const qIds = getSectionQuestionIds(section);
     return qIds.every(qId => {
         const answers = quizState[qId];
@@ -55,7 +56,7 @@ function isSectionPerfect(section: Section, quizState: Record<number, Record<str
     });
 }
 
-function sectionHasWrongAnswer(section: Section, quizState: Record<number, Record<string, boolean>>): boolean {
+export function sectionHasWrongAnswer(section: Section, quizState: Record<number, Record<string, boolean>>): boolean {
     const qIds = getSectionQuestionIds(section);
     return qIds.some(qId => {
         const answers = quizState[qId];
@@ -64,18 +65,18 @@ function sectionHasWrongAnswer(section: Section, quizState: Record<number, Recor
     });
 }
 
-function isSectionDue(srsEntry: SRSEntry | undefined): boolean {
+export function isSectionDue(srsEntry: SRSEntry | undefined): boolean {
     if (!srsEntry || srsEntry.level === 0) return false;
     return new Date().getTime() >= new Date(srsEntry.nextReviewAt).getTime();
 }
 
-function isSectionLocked(srsEntry: SRSEntry | undefined): boolean {
+export function isSectionLocked(srsEntry: SRSEntry | undefined): boolean {
     if (isDevMode()) return false;
     if (!srsEntry?.lockedUntil) return false;
     return new Date().getTime() < new Date(srsEntry.lockedUntil).getTime();
 }
 
-function getTimeUntil(isoDateStr: string): string {
+export function getTimeUntil(isoDateStr: string): string {
     const now = new Date().getTime();
     const target = new Date(isoDateStr).getTime();
     const diffMs = target - now;
@@ -93,7 +94,7 @@ function getTimeUntil(isoDateStr: string): string {
     return `~${diffMonths} months`;
 }
 
-function getLevelLabel(level: number): string {
+export function getLevelLabel(level: number): string {
     switch (level) {
         case 1: return 'Level 1 · 1 week';
         case 2: return 'Level 2 · 2 weeks';
@@ -103,13 +104,13 @@ function getLevelLabel(level: number): string {
     }
 }
 
-function isSectionGraduated(srsEntry: SRSEntry | undefined): boolean {
+export function isSectionGraduated(srsEntry: SRSEntry | undefined): boolean {
     return (srsEntry?.level ?? 0) >= MAX_SRS_LEVEL;
 }
 
 // ── localStorage helpers ──
 
-function loadQuizState(): Record<number, Record<string, boolean>> {
+export function loadQuizState(): Record<number, Record<string, boolean>> {
     try {
         const saved = localStorage.getItem('study-buddy-quiz-state');
         if (saved) return JSON.parse(saved);
@@ -117,7 +118,7 @@ function loadQuizState(): Record<number, Record<string, boolean>> {
     return {};
 }
 
-function loadSRSState(): SRSState {
+export function loadSRSState(): SRSState {
     try {
         const saved = localStorage.getItem('study-buddy-srs-state');
         if (saved) return JSON.parse(saved);
@@ -127,15 +128,15 @@ function loadSRSState(): SRSState {
 
 // ── Observation Journal Types & Helpers ──
 
-interface LessonObservation {
+export interface LessonObservation {
     date: string; // ISO
     noticed: boolean | null; // true = noticed, false = not noticed, null = just journaled
     note: string;
 }
 
-type ObservationsState = Record<string, LessonObservation[]>; // keyed by lessonId
+export type ObservationsState = Record<string, LessonObservation[]>; // keyed by lessonId
 
-function loadObservationsState(): ObservationsState {
+export function loadObservationsState(): ObservationsState {
     try {
         const saved = localStorage.getItem('study-buddy-observations');
         if (saved) return JSON.parse(saved);
@@ -145,7 +146,7 @@ function loadObservationsState(): ObservationsState {
 
 // ── Giant Sailor Moon Celebration ──
 
-function CelebrationOverlay({ onDone }: { onDone: () => void }) {
+export function CelebrationOverlay({ onDone }: { onDone: () => void }) {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const [showText, setShowText] = useState(false);
 
@@ -376,7 +377,7 @@ function CelebrationOverlay({ onDone }: { onDone: () => void }) {
 
 // ── Observation Panel ──
 
-function ObservationPanel({ lessonId: _lessonId, observations, onAdd, t, theme }: {
+export function ObservationPanel({ lessonId: _lessonId, observations, onAdd, t, theme }: {
     lessonId: string;
     observations: LessonObservation[];
     onAdd: (obs: LessonObservation) => void;
@@ -455,670 +456,5 @@ function ObservationPanel({ lessonId: _lessonId, observations, onAdd, t, theme }
 // ── Main Component ──
 
 export default function LearningTab() {
-    const { theme, isTerminal } = useSettings();
-    const [selectedSection, setSelectedSection] = useState<Section | null>(null);
-    const [animating, setAnimating] = useState(false);
-    const [showCelebration, setShowCelebration] = useState(false);
-    const [enlargedImage, setEnlargedImage] = useState<string | null>(null);
-    const [activeLessonIdx, setActiveLessonIdx] = useState(0);
-    const [carouselHeight, setCarouselHeight] = useState(640);
-    const activePanelRef = useRef<HTMLDivElement>(null);
-
-    const [quizState, setQuizState] = useState<Record<number, Record<string, boolean>>>(loadQuizState);
-    const [srsState, setSRSState] = useState<SRSState>(loadSRSState);
-    const [observationsState, setObservationsState] = useState<ObservationsState>(loadObservationsState);
-    const { t } = useTranslation();
-
-    // Flat lesson list with chapter context — recomputes whenever selectedSection changes
-    const flatLessons = selectedSection
-        ? selectedSection.chapters.flatMap(ch => ch.lessons.map(l => ({ lesson: l, chapterTitle: ch.title })))
-        : [];
-    const currentLessonId = flatLessons[activeLessonIdx]?.lesson.id ?? null;
-
-    function handleDevReset() {
-        setSRSState({});
-        setQuizState({});
-    }
-
-    useEffect(() => {
-        localStorage.setItem('study-buddy-quiz-state', JSON.stringify(quizState));
-    }, [quizState]);
-
-    useEffect(() => {
-        localStorage.setItem('study-buddy-srs-state', JSON.stringify(srsState));
-    }, [srsState]);
-
-    useEffect(() => {
-        localStorage.setItem('study-buddy-observations', JSON.stringify(observationsState));
-    }, [observationsState]);
-
-    // On mount: clear quiz answers for due sections
-    useEffect(() => {
-        let quizCopy: Record<number, Record<string, boolean>> | null = null;
-        for (const section of curriculum) {
-            const entry = srsState[section.id];
-            if (isSectionDue(entry)) {
-                if (!quizCopy) quizCopy = { ...quizState };
-                const qIds = getSectionQuestionIds(section);
-                for (const qId of qIds) {
-                    delete quizCopy[qId];
-                }
-            }
-        }
-        if (quizCopy) setQuizState(quizCopy);
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, []);
-
-    const clearSectionQuiz = (section: Section) => {
-        setQuizState(prev => {
-            const next = { ...prev };
-            for (const qId of getSectionQuestionIds(section)) delete next[qId];
-            return next;
-        });
-    };
-
-    const handleSectionClick = (section: Section) => {
-        const entry = srsState[section.id];
-        if (isSectionLocked(entry)) return;
-
-        if (isDevMode()) {
-            clearSectionQuiz(section);
-        } else if (isSectionDue(entry) && entry?.lastCompleted) {
-            // Only clear quiz if the section is due AND it was previously completed.
-            // This ensures resuming a partially completed due section doesn't reset progress.
-            const isPerfect = isSectionPerfect(section, quizState);
-            if (isPerfect) clearSectionQuiz(section);
-        }
-
-        playSFX('glass_session_enter_lesson', theme);
-        setAnimating(true);
-        setTimeout(() => {
-            setSelectedSection(section);
-            setAnimating(false);
-            window.scrollTo(0, 0);
-        }, 300);
-    };
-
-    const handleBackClick = () => {
-        // On exit: if the section has any wrong answers AND all questions have been attempted,
-        // lock the section until the next day
-        if (selectedSection) {
-            const allAnswered = isSectionPerfect(selectedSection, quizState)
-                || getSectionQuestionIds(selectedSection).every(qId => {
-                    const answers = quizState[qId];
-                    return answers && Object.keys(answers).length > 0;
-                });
-            const hasWrong = sectionHasWrongAnswer(selectedSection, quizState);
-            const perfect = isSectionPerfect(selectedSection, quizState);
-
-            if (allAnswered && hasWrong) {
-                // Lock until tomorrow
-                const lockUntil = getNextDayStart().toISOString();
-                setSRSState(prev => ({
-                    ...prev,
-                    [selectedSection.id]: {
-                        ...(prev[selectedSection.id] || { level: 0, lastCompleted: '', nextReviewAt: '' }),
-                        lockedUntil: lockUntil,
-                    }
-                }));
-            } else if (perfect && !hasWrong) {
-                // Perfect and no wrong — update SRS (backup in case inline didn't fire)
-                const entry = srsState[selectedSection.id];
-                if (!entry || entry.lastCompleted === '') {
-                    const currentLevel = entry?.level ?? 0;
-                    const newLevel = Math.min(currentLevel + 1, MAX_SRS_LEVEL);
-                    const intervalDays = getIntervalDays(newLevel);
-                    const now = new Date();
-                    setSRSState(prev => ({
-                        ...prev,
-                        [selectedSection.id]: {
-                            level: newLevel,
-                            lastCompleted: now.toISOString(),
-                            nextReviewAt: addDays(now, intervalDays).toISOString(),
-                        }
-                    }));
-                }
-            }
-        }
-
-        playSFX('glass_ui_hover', theme);
-        setAnimating(true);
-        setTimeout(() => {
-            setSelectedSection(null);
-            setAnimating(false);
-            window.scrollTo(0, 0);
-        }, 300);
-    };
-
-    // Keep a ref to always call the latest handleBackClick from the popstate handler
-    const handleBackClickRef = useRef(handleBackClick);
-    useEffect(() => { handleBackClickRef.current = handleBackClick; });
-
-    // Reset carousel index when entering a new section
-    useEffect(() => {
-        setActiveLessonIdx(0);
-    }, [selectedSection?.id]);
-
-    // Sync carousel height with active panel via ResizeObserver
-    useEffect(() => {
-        const panel = activePanelRef.current;
-        if (!panel) return;
-        setCarouselHeight(panel.offsetHeight);
-        const obs = new ResizeObserver(([entry]) => {
-            setCarouselHeight(Math.ceil(entry.contentRect.height));
-        });
-        obs.observe(panel);
-        return () => obs.disconnect();
-    }, [activeLessonIdx, selectedSection?.id]);
-
-    // Keyboard arrow-key navigation within the carousel
-    useEffect(() => {
-        if (!selectedSection) return;
-        const total = selectedSection.chapters.reduce((n, ch) => n + ch.lessons.length, 0);
-        const handler = (e: KeyboardEvent) => {
-            // Don't intercept when a button/input has keyboard focus
-            const t = e.target as HTMLElement;
-            if (t instanceof HTMLButtonElement || t instanceof HTMLInputElement || t instanceof HTMLTextAreaElement) return;
-            if (e.key === 'ArrowLeft')  setActiveLessonIdx(prev => Math.max(0, prev - 1));
-            else if (e.key === 'ArrowRight') setActiveLessonIdx(prev => Math.min(total - 1, prev + 1));
-        };
-        window.addEventListener('keydown', handler);
-        return () => window.removeEventListener('keydown', handler);
-    }, [selectedSection]); // eslint-disable-line react-hooks/exhaustive-deps
-
-    // Intercept mouse back button / browser back gesture while inside a lesson
-    useEffect(() => {
-        if (!selectedSection) return;
-        window.history.pushState({ learningSection: true }, '');
-        const handler = () => handleBackClickRef.current();
-        window.addEventListener('popstate', handler);
-        return () => window.removeEventListener('popstate', handler);
-    }, [!!selectedSection]); // eslint-disable-line react-hooks/exhaustive-deps
-
-    const handleOptionClick = (questionId: number, option: QuizOption) => {
-        if (!selectedSection) return;
-        const currentEntry = srsState[selectedSection.id];
-        if (isSectionLocked(currentEntry)) return;
-
-        const qState = quizState[questionId] || {};
-        if (Object.values(qState).some(v => v === true)) return;
-        if (Object.values(qState).some(v => v === false)) return;
-        if (qState[option.id] !== undefined) return;
-
-        const newQState = { ...qState, [option.id]: option.isCorrect };
-        const newQuizState = { ...quizState, [questionId]: newQState };
-        setQuizState(newQuizState);
-
-        if (option.isCorrect) {
-            playSFX('glass_ui_check', theme);
-            // Check if this completes the section perfectly
-            const perfect = isSectionPerfect(selectedSection, newQuizState);
-            if (perfect) {
-                const hasWrong = sectionHasWrongAnswer(selectedSection, newQuizState);
-
-                if (!hasWrong) {
-                    // 🎉 PERFECT SCORE
-                    playSFX('glass_reward_perfect', theme);
-                    setShowCelebration(true);
-
-                    const entry = srsState[selectedSection.id];
-                    const currentLevel = entry?.level ?? 0;
-                    const newLevel = Math.min(currentLevel + 1, MAX_SRS_LEVEL);
-                    const intervalDays = getIntervalDays(newLevel);
-                    const now = new Date();
-                    setSRSState(prev => ({
-                        ...prev,
-                        [selectedSection.id]: {
-                            level: newLevel,
-                            lastCompleted: now.toISOString(),
-                            nextReviewAt: addDays(now, intervalDays).toISOString(),
-                        }
-                    }));
-                }
-                // If hasWrong: section is completed but imperfect
-                // Lockout will happen when user exits via handleBackClick
-            }
-        } else {
-            playSFX('glass_ui_cancel', theme);
-            // DON'T lock immediately — just record the wrong answer.
-            // The lockout happens on exit (handleBackClick).
-        }
-
-        // Auto-scroll to next unanswered question after 1s (only on correct answer)
-        if (!option.isCorrect) return;
-        setTimeout(() => {
-            if (!selectedSection) return;
-            const allLessons = selectedSection.chapters.flatMap(ch => ch.lessons);
-            const currentIdx = allLessons.findIndex(l => l.question.id === questionId);
-            const nextLesson = allLessons.slice(currentIdx + 1).find(l => {
-                const qs = newQuizState[l.question.id] || {};
-                return !Object.values(qs).some(v => v === true);
-            });
-            if (nextLesson) {
-                const nextIdx = allLessons.findIndex(l => l.id === nextLesson.id);
-                if (nextIdx >= 0) setActiveLessonIdx(nextIdx);
-            }
-        }, 1200);
-    };
-
-    // ── Lesson View ──
-
-    if (selectedSection) {
-        const entry = srsState[selectedSection.id];
-        const sectionPerfect = isSectionPerfect(selectedSection, quizState);
-        const hasWrong = sectionHasWrongAnswer(selectedSection, quizState);
-        const locked = isSectionLocked(entry);
-        const graduated = isSectionGraduated(entry);
-
-        return (
-            <>
-                {enlargedImage && createPortal(
-                    <div onClick={() => setEnlargedImage(null)} className="learning-lightbox">
-                        <img src={enlargedImage} alt="Enlarged view" className="learning-lightbox-img" />
-                    </div>,
-                    document.body
-                )}
-                <div className={`learning-lesson-view ${animating ? 'fade-out' : 'fade-in'}`}>
-                {showCelebration && (
-                    <CelebrationOverlay onDone={() => setShowCelebration(false)} />
-                )}
-
-                <div className="learning-header">
-                    <button className="btn-icon learning-header-btn" onClick={handleBackClick}>
-                        <ArrowLeft size={20} />
-                    </button>
-                    <div className="learning-header-title-container">
-                        <h2 className="learning-header-title">
-                            <span className="learning-header-icon" style={{ background: selectedSection.color }}>
-                                {isTerminal ? `[${String(curriculum.findIndex(s => s.id === selectedSection.id) + 1).padStart(2, '0')}]` : selectedSection.icon}
-                            </span>
-                            {selectedSection.title}
-                        </h2>
-                        <p className="learning-header-desc">{selectedSection.description}</p>
-                    </div>
-                    {entry && entry.level > 0 && (
-                        <div className={`srs-level-indicator ${graduated ? 'graduated' : ''}`}>
-                            {graduated ? <GraduationCap size={14} /> : <Trophy size={14} />}
-                            {graduated ? 'Graduated!' : getLevelLabel(entry.level)}
-                        </div>
-                    )}
-                </div>
-
-                {locked && (
-                    <div className="section-locked-banner">
-                        <Lock size={20} />
-                        <div>
-                            <strong>Section Locked</strong>
-                            <span> A wrong answer was given. Try again {entry?.lockedUntil ? `in ${getTimeUntil(entry.lockedUntil)}` : 'tomorrow'}.</span>
-                        </div>
-                    </div>
-                )}
-
-                {sectionPerfect && !hasWrong && (
-                    <div className="section-complete-banner slide-up">
-                        {graduated ? <GraduationCap size={20} /> : <Trophy size={20} />}
-                        <div>
-                            <strong>{graduated ? '🎓 Section Graduated!' : '✨ Perfect Score!'}</strong>
-                            {entry && entry.level > 0 && (
-                                <span> Next review in {getTimeUntil(entry.nextReviewAt)}</span>
-                            )}
-                        </div>
-                    </div>
-                )}
-
-                {sectionPerfect && hasWrong && (
-                    <div className="section-imperfect-banner slide-up">
-                        <RotateCcw size={20} />
-                        <div>
-                            <strong>Section Complete — but not perfect.</strong>
-                            <span> You had wrong answers. The section will be locked until tomorrow when you go back.</span>
-                        </div>
-                    </div>
-                )}
-
-                <div className="lesson-view-layout">
-                <nav className="lesson-nav">
-                    {selectedSection.chapters.map(chapter => (
-                        <div key={chapter.id} className="lesson-nav-chapter">
-                            <div className="lesson-nav-chapter-title">{chapter.title}</div>
-                            {chapter.lessons.map(lesson => {
-                                const qs = quizState[lesson.question.id] || {};
-                                const navSolved = Object.values(qs).some(v => v === true);
-                                const navWrong = !navSolved && Object.values(qs).some(v => v === false);
-                                const statusClass = navSolved ? 'correct' : navWrong ? 'wrong' : 'unanswered';
-                                return (
-                                    <button
-                                        key={lesson.id}
-                                        className={`lesson-nav-item status-${statusClass}${currentLessonId === lesson.id ? ' active' : ''}`}
-                                        onClick={() => {
-                                            playSFX('glass_ui_hover', theme);
-                                            const idx = flatLessons.findIndex(({ lesson: l }) => l.id === lesson.id);
-                                            if (idx >= 0) setActiveLessonIdx(idx);
-                                        }}
-                                    >
-                                        <span className="lesson-nav-item-dot" />
-                                        <span className="lesson-nav-item-title">{lesson.title}</span>
-                                    </button>
-                                );
-                            })}
-                        </div>
-                    ))}
-                </nav>
-
-                {/* ── Horizontal Carousel ── */}
-                <div className="lesson-carousel-wrapper">
-                    <div className="lesson-carousel-nav">
-                        <button
-                            className="btn-icon lesson-carousel-btn"
-                            onClick={() => { playSFX('glass_ui_hover', theme); setActiveLessonIdx(prev => Math.max(0, prev - 1)); }}
-                            disabled={activeLessonIdx === 0}
-                            aria-label="Previous lesson"
-                        >
-                            <ChevronLeft size={20} />
-                        </button>
-                        <div className="lesson-progress-dots" role="tablist" aria-label="Lesson progress">
-                            {flatLessons.map(({ lesson }, dotIdx) => {
-                                const qs = quizState[lesson.question.id] || {};
-                                const dotSolved = Object.values(qs).some(v => v === true);
-                                const dotWrong = !dotSolved && Object.values(qs).some(v => v === false);
-                                let dotClass = 'lesson-progress-dot';
-                                if (dotIdx === activeLessonIdx) dotClass += ' dot-active';
-                                else if (dotSolved) dotClass += ' dot-solved';
-                                else if (dotWrong) dotClass += ' dot-wrong';
-                                return (
-                                    <button
-                                        key={lesson.id}
-                                        className={dotClass}
-                                        onClick={() => { playSFX('glass_ui_hover', theme); setActiveLessonIdx(dotIdx); }}
-                                        aria-label={lesson.title}
-                                        aria-selected={dotIdx === activeLessonIdx}
-                                        role="tab"
-                                    />
-                                );
-                            })}
-                        </div>
-                        <button
-                            className="btn-icon lesson-carousel-btn"
-                            onClick={() => { playSFX('glass_ui_hover', theme); setActiveLessonIdx(prev => Math.min(flatLessons.length - 1, prev + 1)); }}
-                            disabled={activeLessonIdx === flatLessons.length - 1}
-                            aria-label="Next lesson"
-                        >
-                            <ChevronRight size={20} />
-                        </button>
-                    </div>
-                    <div
-                        className="lesson-carousel-viewport"
-                        style={{ '--carousel-height': `${carouselHeight}px` } as React.CSSProperties}
-                    >
-                        {flatLessons.map(({ lesson, chapterTitle }, idx) => {
-                            const diff = idx - activeLessonIdx;
-                            let panelClass = 'lesson-panel';
-                            if (diff === 0)       panelClass += ' panel-active';
-                            else if (diff === -1) panelClass += ' panel-prev';
-                            else if (diff === 1)  panelClass += ' panel-next';
-                            else if (diff < 0)    panelClass += ' panel-hidden-left';
-                            else                  panelClass += ' panel-hidden-right';
-
-                            const qState = quizState[lesson.question.id] || {};
-                            const isSolved = Object.values(qState).some(v => v === true);
-                            const isActive = diff === 0;
-
-                            return (
-                                <div
-                                    key={lesson.id}
-                                    ref={isActive ? activePanelRef : undefined}
-                                    className={panelClass}
-                                    onClick={!isActive ? () => setActiveLessonIdx(idx) : undefined}
-                                    aria-hidden={!isActive}
-                                >
-                                    {(() => {
-                                        // Compute image column content (null = no image for this lesson)
-                                        let imageCol: React.ReactNode = null;
-                                        if (lesson.id === 'lesson-1-1-a') {
-                                            imageCol = (
-                                                <div className="lesson-mascot-container">
-                                                    <img src="/assets/images/learning center/01_mascot-sleep.png" alt="The mascot sleeping — memory consolidation happens during sleep" onClick={() => setEnlargedImage('/assets/images/learning center/01_mascot-sleep.png')} className="lesson-mascot-img" />
-                                                    <p className="lesson-mascot-caption">Sleep is when your brain consolidates memories and grows new neural connections. <span className="lesson-mascot-caption-action">(Click to enlarge)</span></p>
-                                                </div>
-                                            );
-                                        } else if (lesson.id === 'lesson-1-1-b') {
-                                            imageCol = (
-                                                <div className="lesson-mascot-container">
-                                                    <img src="/assets/images/learning center/01_mascot-brainfertilizer.png" alt="The mascot after a workout — BDNF boosts brain connections" onClick={() => setEnlargedImage('/assets/images/learning center/01_mascot-brainfertilizer.png')} className="lesson-mascot-img" />
-                                                    <p className="lesson-mascot-caption">Exercise releases BDNF — the brain's own fertilizer for growing stronger neural connections. <span className="lesson-mascot-caption-action">(Click to enlarge)</span></p>
-                                                </div>
-                                            );
-                                        } else if (lesson.id === 'lesson-1-1-c') {
-                                            imageCol = (
-                                                <div className="lesson-mascot-container">
-                                                    <img src="/assets/images/learning center/01_mascot-brain-fuel.png" alt="The mascot fueling up — proper nutrition powers the brain" onClick={() => setEnlargedImage('/assets/images/learning center/01_mascot-brain-fuel.png')} className="lesson-mascot-img" />
-                                                    <p className="lesson-mascot-caption">Your brain runs on quality fuel — complex carbs, Omega-3s, and antioxidants sustain focus; sugar spikes crash it. <span className="lesson-mascot-caption-action">(Click to enlarge)</span></p>
-                                                </div>
-                                            );
-                                        } else if (lesson.id === 'lesson-1-2-a') {
-                                            imageCol = (
-                                                <div className="lesson-mascot-container">
-                                                    <img src="/assets/images/learning center/01_mascot-the-illusion-of-laziness.png" alt="The mascot exhausted in the evening — it's biology, not laziness" onClick={() => setEnlargedImage('/assets/images/learning center/01_mascot-the-illusion-of-laziness.png')} className="lesson-mascot-img" />
-                                                    <p className="lesson-mascot-caption">Evening brain fog isn't laziness — your prefrontal cortex has simply run out of energy for the day. <span className="lesson-mascot-caption-action">(Click to enlarge)</span></p>
-                                                </div>
-                                            );
-                                        } else if (lesson.id === 'lesson-1-2-c') {
-                                            imageCol = (
-                                                <div className="lesson-modes-grid">
-                                                    {[
-                                                        { src: '/assets/images/learning center/01_mascot_focused-mode.png', label: 'Focused Mode — tight, directed thinking along known neural paths.' },
-                                                        { src: '/assets/images/learning center/01_mascot-diffuse-mode.png', label: 'Diffuse Mode — relaxed, wandering thought that makes unexpected connections.' },
-                                                    ].map(img => (
-                                                        <div key={img.src} className="lesson-modes-item">
-                                                            <img src={img.src} alt={img.label} onClick={() => setEnlargedImage(img.src)} className="lesson-mascot-img full-width" />
-                                                            <p className="lesson-mascot-caption small">{img.label} <span className="lesson-mascot-caption-action">(Click to enlarge)</span></p>
-                                                        </div>
-                                                    ))}
-                                                </div>
-                                            );
-                                        } else if (lesson.id === 'lesson-2-2-a') {
-                                            imageCol = (
-                                                <div className="lesson-mascot-container">
-                                                    <img src="/assets/images/learning center/spaced_repetition.png" alt="The Forgetting Curve & Spaced Repetition" onClick={() => setEnlargedImage('/assets/images/learning center/spaced_repetition.png')} className="lesson-mascot-img full-width" />
-                                                    <p className="lesson-mascot-caption">The Forgetting Curve shows how memory decays without review. Spaced repetition resets the curve each time. <span className="lesson-mascot-caption-action">(Click to enlarge)</span></p>
-                                                </div>
-                                            );
-                                        }
-
-                                        const quizCol = (
-                                            <div className="lesson-card-quiz-col">
-                                                <div className="concept-check-container">
-                                                    <h5 className="concept-check-header">
-                                                        <Sparkles size={18} /> Concept Check
-                                                    </h5>
-                                                    <p className="concept-check-question">{lesson.question.question}</p>
-                                                    <div className="concept-check-options">
-                                                        {lesson.question.options.map(opt => {
-                                                            const clickedStatus = qState[opt.id];
-                                                            let optClass = 'quiz-option';
-                                                            if (clickedStatus === true) optClass += ' correct revealed';
-                                                            else if (clickedStatus === false) optClass += ' incorrect revealed';
-                                                            else if (isSolved) optClass += ' disabled';
-                                                            if (locked && clickedStatus === undefined) optClass += ' disabled';
-                                                            return (
-                                                                <div
-                                                                    key={opt.id}
-                                                                    className={optClass}
-                                                                    onMouseEnter={() => { if (!isSolved && !locked) playSFX(SFX.HOVER, theme); }}
-                                                                    onClick={() => handleOptionClick(lesson.question.id, opt)}
-                                                                >
-                                                                    <span>{opt.text}</span>
-                                                                    {clickedStatus === true && <CheckCircle2 size={24} className="quiz-icon-correct" />}
-                                                                    {clickedStatus === false && <XCircle size={24} className="quiz-icon-incorrect" />}
-                                                                </div>
-                                                            );
-                                                        })}
-                                                    </div>
-                                                    {isSolved && (
-                                                        <div className="quiz-success-msg slide-up">
-                                                            <strong>{t('learning.correct')}</strong> {t('learning.correct_desc')}
-                                                        </div>
-                                                    )}
-                                                    {isSolved && (
-                                                        <ObservationPanel
-                                                            lessonId={lesson.id}
-                                                            observations={observationsState[lesson.id] ?? []}
-                                                            onAdd={(obs) => {
-                                                                setObservationsState(prev => ({
-                                                                    ...prev,
-                                                                    [lesson.id]: [...(prev[lesson.id] ?? []), obs]
-                                                                }));
-                                                            }}
-                                                            t={t}
-                                                            theme={theme}
-                                                        />
-                                                    )}
-                                                </div>
-                                            </div>
-                                        );
-
-                                        return (
-                                            <div className={`glass lesson-card ${locked ? 'locked-section' : ''} ${isSolved ? 'solved' : ''}`}>
-                                                <div className={`lesson-card-columns${imageCol ? ' has-image' : ''}`}>
-                                                    {imageCol ? (
-                                                        <>
-                                                            <div className="lesson-card-left-col">
-                                                                <div className="lesson-card-content"
-                                                                    style={{ '--chapter-color': selectedSection.color } as React.CSSProperties}
-                                                                >
-                                                                    <div className="lesson-panel-chapter-label">{chapterTitle}</div>
-                                                                    <h4 className="lesson-card-title">
-                                                                        {lesson.title}
-                                                                        {isSolved && <CheckCircle2 size={20} className="lesson-card-title-icon" />}
-                                                                    </h4>
-                                                                    <div className="lesson-card-body">
-                                                                        <p className="lesson-card-desc">{lesson.content}</p>
-                                                                    </div>
-                                                                </div>
-                                                                {quizCol}
-                                                            </div>
-                                                            <div className="lesson-card-image-col">
-                                                                {imageCol}
-                                                            </div>
-                                                        </>
-                                                    ) : (
-                                                        <>
-                                                            <div className="lesson-card-content"
-                                                                style={{ '--chapter-color': selectedSection.color } as React.CSSProperties}
-                                                            >
-                                                                <div className="lesson-panel-chapter-label">{chapterTitle}</div>
-                                                                <h4 className="lesson-card-title">
-                                                                    {lesson.title}
-                                                                    {isSolved && <CheckCircle2 size={20} className="lesson-card-title-icon" />}
-                                                                </h4>
-                                                                <div className="lesson-card-body">
-                                                                    <p className="lesson-card-desc">{lesson.content}</p>
-                                                                </div>
-                                                            </div>
-                                                            {quizCol}
-                                                        </>
-                                                    )}
-                                                </div>
-                                            </div>
-                                        );
-                                    })()}
-                                </div>
-                            );
-                        })}
-                    </div>
-
-                </div>
-                </div>
-                </div>
-            </>
-        );
-    }
-
-    // ── Grid View ──
-
-    return (
-        <div className={`learning-page ${animating ? 'fade-out' : 'fade-in'}`}>
-            <div className="page-header">
-                <div className="page-title-group">
-                    <div className="icon-wrapper bg-accent"><Sparkles size={20} /></div>
-                    <h1>Learning Center</h1>
-                </div>
-            </div>
-            <div className="learning-tab">
-            <p className="learning-tab-desc">Master the science of learning to study smarter, not harder.</p>
-            {isDevNavUnlocked() && (
-                <button
-                    className="btn btn-secondary"
-                    style={{ marginTop: 8, fontSize: '0.8rem', background: '#ff444422', borderColor: '#ff4444', color: '#ff4444' }}
-                    onClick={handleDevReset}
-                >
-                    🛠 DEV: Reset all lessons
-                </button>
-            )}
-
-            <div className="learning-grid">
-                {curriculum.map((section, idx) => {
-                    const entry = srsState[section.id];
-                    const due = isSectionDue(entry);
-                    const locked = isSectionLocked(entry);
-                    const hasLevel = entry && entry.level > 0;
-                    const graduated = isSectionGraduated(entry);
-
-                    let cardClass = 'glass learning-section-card';
-                    if (due) cardClass += ' srs-due';
-                    if (locked) cardClass += ' srs-locked';
-                    if (graduated && !due) cardClass += ' srs-graduated';
-
-                    return (
-                        <div
-                            key={section.id}
-                            className={cardClass}
-                            style={{ '--animation-order': idx } as any}
-                            onClick={() => handleSectionClick(section)}
-                            onMouseEnter={() => { if (!locked) playSFX('glass_ui_hover', theme); }}
-                        >
-                            <div className="section-icon-badge" style={{ background: locked ? 'var(--text-muted)' : section.color }}>
-                                {locked ? <Lock size={20} /> : (isTerminal ? `[${String(idx + 1).padStart(2, '0')}]` : section.icon)}
-                            </div>
-                            <h3>{section.title}</h3>
-                            <p className="learning-section-card-desc">{section.description}</p>
-
-                            {locked && (
-                                <div className="srs-badge locked">
-                                    <Lock size={14} />
-                                    Locked until {entry?.lockedUntil ? getTimeUntil(entry.lockedUntil) : 'tomorrow'}
-                                </div>
-                            )}
-                            {!locked && due && (
-                                <div className="srs-badge due">
-                                    <RotateCcw size={14} />
-                                    Due for review
-                                </div>
-                            )}
-                            {!locked && !due && graduated && (
-                                <div className="srs-badge graduated">
-                                    <GraduationCap size={14} />
-                                    Graduated
-                                </div>
-                            )}
-                            {!locked && !due && hasLevel && !graduated && (
-                                <div className="srs-badge mastered">
-                                    <Trophy size={14} />
-                                    Review in {getTimeUntil(entry.nextReviewAt)}
-                                </div>
-                            )}
-
-                            <button
-                                className={`btn learning-section-card-action ${locked ? 'btn-disabled' : 'btn-secondary'}`}
-                                disabled={locked}
-                            >
-                                {locked ? 'Locked' : due ? 'Review Now' : graduated ? 'Review' : hasLevel ? 'Revisit' : 'Start Lesson'}
-                            </button>
-                        </div>
-                    );
-                })}
-            </div>
-            </div>
-        </div>
-    );
+    return <ObsidianLearning />;
 }

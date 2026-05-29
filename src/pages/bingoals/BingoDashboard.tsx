@@ -1,20 +1,23 @@
 import { memo, useEffect, useMemo, useState } from "react";
-import { Target, Pencil, ArrowUp, ArrowDown, ChevronLeft, ChevronRight } from "lucide-react";
+import { Pencil, ArrowUp, ArrowDown, ChevronLeft, ChevronRight, ExternalLink } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import BingoModal from "../../components/bingoals/BingoModal";
-import type { DashboardRow, Objective, Subobjective } from "../../lib/bingoals/db";
+import type { DashboardRow, Objective, ObjectiveMediaSummary, Subobjective } from "../../lib/bingoals/db";
 import {
   createObjectiveAndAssignSlot,
   ensureYearSlots,
   getBingoDb,
+  listDashboardMediaSummaries,
   listDashboardRows,
   updateObjective
 } from "../../lib/bingoals/db";
 import { daysAgo, formatDuration } from "../../lib/bingoals/format";
+import { computeObjectivePercent, progressLabel } from "../../lib/bingoals/progress";
 import { fileToCompressedDataUrl } from "../../lib/bingoals/image";
-import { computeObjectivePercent } from "../../lib/bingoals/progress";
 import { useTranslation } from "../../lib/i18n";
 import { playSFX, SFX } from "../../lib/sounds";
+
+const openExternal = (url: string) => (window as any).electronAPI.shell.openExternal(url)
 
 type Cell = {
   slot_index: number;
@@ -27,13 +30,6 @@ type Cell = {
 
 const CURRENT_YEAR = new Date().getFullYear();
 let DASH_CACHE: Record<number, Cell[]> = {};
-
-function statusTitle(status: string) {
-  if (status === "green") return "On track";
-  if (status === "orange") return "Due soon";
-  if (status === "red") return "Overdue";
-  return "";
-}
 
 function lastStatus(days: number | null, freqDays: number | null) {
   if (!freqDays || freqDays <= 0) return "neutral";
@@ -51,6 +47,7 @@ export default function BingoDashboard() {
   const [cells, setCells] = useState<Cell[]>(() => DASH_CACHE[CURRENT_YEAR] ?? []);
   const [createSlot, setCreateSlot] = useState<number | null>(null);
   const [editObj, setEditObj] = useState<Objective | null>(null);
+  const [mediaMap, setMediaMap] = useState<Map<string, ObjectiveMediaSummary>>(new Map())
 
   async function load(year = selectedYear) {
     await ensureYearSlots(year);
@@ -94,6 +91,11 @@ export default function BingoDashboard() {
 
     DASH_CACHE[year] = out;
     setCells(out);
+
+    const mediaSummaries = await listDashboardMediaSummaries(objectiveIds)
+    const newMediaMap = new Map<string, ObjectiveMediaSummary>()
+    for (const s of mediaSummaries) newMediaMap.set(s.objectiveId, s)
+    setMediaMap(newMediaMap)
   }
 
   useEffect(() => {
@@ -127,13 +129,7 @@ export default function BingoDashboard() {
 
   return (
     <div className="bingoals-root fade-in">
-      <div className="page-header">
-          <div className="page-title-group">
-            <div className="icon-wrapper bg-blue"><Target size={20} /></div>
-            <h1 className="page-header-title">
-              {t('bingoals.page_title')} <span className="bingo-title-year">{selectedYear}</span>
-            </h1>
-          </div>
+      <div className="bingo-toolbar">
           <div className="bingo-year-nav">
             {selectedYear !== CURRENT_YEAR && (
               <button
@@ -185,6 +181,7 @@ export default function BingoDashboard() {
                 setEditObj={setEditObj}
                 load={load}
                 t={t}
+                mediaSummary={c.objective_id ? mediaMap.get(c.objective_id) : undefined}
               />
             );
           })}
@@ -409,19 +406,21 @@ function EditObjectiveModal(props: { objective: Objective | null; onClose: () =>
 }
 
 const DashboardCard = memo(function DashboardCard({
-  c, nav, setEditObj, load, t
+  c, nav, setEditObj, load, t, mediaSummary
 }: {
   c: Cell;
   nav: (path: string) => void;
   setEditObj: (o: Objective) => void;
   load: () => Promise<void>;
   t: (key: string) => string;
+  mediaSummary: ObjectiveMediaSummary | undefined;
 }) {
   const d = daysAgo(c.last_progress_at);
   const status = lastStatus(d, c.objective!.frequency_days ?? null);
-  const percentText = c.percent === null ? "—" : `${Math.round(c.percent * 100)}%`;
   const pinned = !!c.objective!.pin_bottom;
   const cover = c.objective!.cover_data;
+  const firstLink = mediaSummary?.links[0] ?? null;
+  const label = progressLabel(c.percent, c.objective!.goal_kind, c.objective!.goal_target ?? null, c.objective!.goal_unit ?? null);
   const cardStyle = cover
     ? {
       backgroundImage: `linear-gradient(to top, rgba(0,0,0,.85), rgba(0,0,0,.25)), url(${cover})`,
@@ -429,13 +428,6 @@ const DashboardCard = memo(function DashboardCard({
       backgroundPosition: "center"
     }
     : undefined;
-
-  function lastLabel(days: number | null) {
-    if (days === null) return "—";
-    if (days <= 0) return t('bingoals.today');
-    if (days === 1) return t('bingoals.yesterday');
-    return t('bingoals.days_ago').replace('{n}', String(days));
-  }
 
   return (
     <div className="cardWrap">
@@ -450,22 +442,49 @@ const DashboardCard = memo(function DashboardCard({
         onKeyDown={(e) => { if (e.key === "Enter") { playSFX(SFX.ENTER_MENU); nav(`/bingoals/objective/${c.objective!.id}`); } }}
       >
         <div className="cardTitle">{c.objective!.title}</div>
-        <div className="cardMeta">
-          <div>
-            <span className="muted">{t('bingoals.last_label')}:</span>{" "}
-            <span className={`lastAge ${status}`} title={statusTitle(status)}>{lastLabel(d)}</span>
-          </div>
-          <div><span className="muted">{t('bingoals.time_label')}:</span> {formatDuration(c.total_ms)}</div>
+        <div className="cardProgressLine">
+          <span className={`cardStatusDot cardStatusDot--${status}`} />
+          <span className="cardProgressCount">{label}</span>
+          <span className="cardTimeBadge">· {formatDuration(c.total_ms)}</span>
         </div>
+        {firstLink && (
+          <button
+            className="cardLinkChip"
+            onClick={(e) => { e.stopPropagation(); openExternal(firstLink.url); }}
+            title={firstLink.url}
+          >
+            <ExternalLink size={10} />
+            <span>{firstLink.label || firstLink.url}</span>
+          </button>
+        )}
 
         <div className="cardProgressBar">
           <div className="cardProgressFill" style={{ width: `${(c.percent ?? 0) * 100}%` }} />
         </div>
 
         <div className="hoverProgress">
-          <div className="hoverRow">
-            <div className="muted">{t('bingoals.progress_label')}</div>
-            <div className="pill">{percentText}</div>
+          {mediaSummary?.lastImageDataUrl && (
+            <img className="hoverThumb" src={mediaSummary.lastImageDataUrl} alt="" />
+          )}
+          {mediaSummary && mediaSummary.links.length > 0 && (
+            <div className="hoverLinks">
+              {mediaSummary.links.map((link, i) => (
+                <button
+                  key={link.url}
+                  className="hoverLinkChip"
+                  onClick={(e) => { e.stopPropagation(); openExternal(link.url); }}
+                  title={link.url}
+                >
+                  <ExternalLink size={10} />
+                  <span>{link.label || link.url}</span>
+                </button>
+              ))}
+            </div>
+          )}
+          <div className="hoverProgressLine">
+            <span className={`cardStatusDot cardStatusDot--${status}`} />
+            <span>{label}</span>
+            <span className="cardTimeBadge">· {formatDuration(c.total_ms)}</span>
           </div>
         </div>
       </div>
@@ -498,5 +517,6 @@ const DashboardCard = memo(function DashboardCard({
     prev.c.objective?.pin_bottom === next.c.objective?.pin_bottom &&
     prev.c.objective?.frequency_days === next.c.objective?.frequency_days &&
     prev.c.objective_id === next.c.objective_id &&
-    prev.c.slot_index === next.c.slot_index;
+    prev.c.slot_index === next.c.slot_index &&
+    prev.mediaSummary === next.mediaSummary;
 });

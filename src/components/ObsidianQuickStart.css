@@ -1,0 +1,227 @@
+.oqs-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.oqs-modal {
+  background: var(--card-bg, #161b22);
+  border: 1px solid var(--border-color, #30363d);
+  border-radius: var(--border-radius, 6px);
+  padding: 20px 24px;
+  width: 360px;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.6);
+}
+
+.oqs-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.oqs-title {
+  font-size: 14px;
+  font-weight: 600;
+  color: var(--text-dark, #e6edf3);
+}
+
+.oqs-close {
+  background: none;
+  border: none;
+  color: var(--text-muted, #7d8590);
+  cursor: pointer;
+  padding: 4px;
+  display: flex;
+  align-items: center;
+  border-radius: 4px;
+}
+
+.oqs-close:hover {
+  color: var(--text-dark, #e6edf3);
+  background: var(--surface-raised, #21262d);
+}
+
+.oqs-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.oqs-label {
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-muted, #7d8590);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.oqs-optional {
+  font-weight: 400;
+  text-transform: none;
+  letter-spacing: 0;
+}
+
+.oqs-duration-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.oqs-preset {
+  padding: 6px 14px;
+  border: 1px solid var(--border-color, #30363d);
+  background: var(--surface-raised, #21262d);
+  color: var(--text-dark, #e6edf3);
+  border-radius: var(--border-radius-sm, 4px);
+  cursor: pointer;
+  font-size: 13px;
+  font-family: 'JetBrains Mono', monospace;
+  transition: border-color 0.1s;
+}
+
+.oqs-preset:hover {
+  border-color: var(--primary, #58a6ff);
+}
+
+.oqs-preset-active {
+  border-color: var(--primary, #58a6ff);
+  color: var(--primary, #58a6ff);
+  background: rgba(88, 166, 255, 0.1);
+}
+
+.oqs-custom-input {
+  width: 80px;
+  padding: 6px 8px;
+  border: 1px solid var(--border-color, #30363d);
+  background: var(--input-bg-focus, #0d1117);
+  color: var(--text-dark, #e6edf3);
+  border-radius: var(--border-radius-sm, 4px);
+  font-size: 13px;
+  font-family: 'JetBrains Mono', monospace;
+  outline: none;
+}
+
+.oqs-custom-input:focus {
+  border-color: var(--primary, #58a6ff);
+}
+
+.oqs-custom-input::placeholder {
+  color: var(--text-muted, #7d8590);
+}
+
+.oqs-select {
+  width: 100%;
+  padding: 7px 10px;
+  border: 1px solid var(--border-color, #30363d);
+  background: var(--surface-raised, #21262d);
+  color: var(--text-dark, #e6edf3);
+  border-radius: var(--border-radius-sm, 4px);
+  font-size: 13px;
+  outline: none;
+  cursor: pointer;
+}
+
+.oqs-select:focus {
+  border-color: var(--primary, #58a6ff);
+}
+
+.oqs-technique-card {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 10px 12px;
+  border: 1px solid var(--border-color, #30363d);
+  background: var(--surface-raised, #21262d);
+  color: var(--text-dark, #e6edf3);
+  border-radius: var(--border-radius-sm, 4px);
+  cursor: pointer;
+  text-align: left;
+  transition: border-color 0.15s;
+}
+
+.oqs-technique-card:hover {
+  border-color: var(--primary, #58a6ff);
+}
+
+.oqs-tech-info {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+.oqs-tech-name {
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-dark, #e6edf3);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.oqs-tech-meta {
+  display: flex;
+  gap: 8px;
+  font-size: 11px;
+}
+
+.oqs-tech-tier {
+  font-weight: 600;
+  font-family: var(--font-mono, 'JetBrains Mono', monospace);
+}
+
+.oqs-tech-cat {
+  opacity: 0.85;
+}
+
+.oqs-tech-none {
+  font-size: 13px;
+  color: var(--text-muted, #7d8590);
+}
+
+.oqs-tech-change {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 11px;
+  font-weight: 600;
+  color: var(--primary, #58a6ff);
+  white-space: nowrap;
+  flex-shrink: 0;
+  padding: 3px 8px;
+  border: 1px solid var(--primary, #58a6ff);
+  border-radius: 4px;
+}
+
+.oqs-launch {
+  margin-top: 4px;
+  width: 100%;
+  padding: 9px;
+  background: var(--primary, #58a6ff);
+  color: #0d1117;
+  border: none;
+  border-radius: var(--border-radius-sm, 4px);
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.1s;
+}
+
+.oqs-launch:hover {
+  background: var(--primary-hover, #79b8ff);
+}
+
+@media (max-width: 400px) {
+  .oqs-modal {
+    width: 90vw;
+  }
+}

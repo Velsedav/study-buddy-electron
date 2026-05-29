@@ -1,0 +1,282 @@
+/* ════════════════════════════════════════════════════════════════
+   Obsidian Settings — left-rail nav + 4 content panels
+   ════════════════════════════════════════════════════════════════ */
+
+.obs-settings-root {
+    display: block;
+    width: 100%;
+    height: 100%;
+    color: var(--text-dark);
+}
+
+.obs-settings-layout {
+    display: flex;
+    align-items: stretch;
+    min-height: 100%;
+}
+
+/* ── Left rail ── */
+
+.obs-settings-rail {
+    flex: 0 0 220px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    padding: 24px 12px;
+    border-right: 1px solid var(--border-color);
+    background: var(--card-bg);
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    overflow-y: auto;
+}
+
+.obs-settings-rail-header {
+    font-size: 0.7rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    color: var(--text-muted);
+    padding: 0 12px 12px;
+}
+
+.obs-settings-rail-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 12px;
+    background: transparent;
+    border: none;
+    border-left: 3px solid transparent;
+    border-radius: 4px;
+    color: var(--text-muted);
+    font-family: inherit;
+    font-size: 0.88rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 100ms ease, color 100ms ease;
+    text-align: left;
+    position: relative;
+}
+
+.obs-settings-rail-item:hover {
+    color: var(--text-dark);
+    background: rgba(255, 255, 255, 0.04);
+}
+
+.obs-settings-rail-item--active {
+    background: var(--card-bg);
+    border-left-color: var(--primary);
+    color: var(--text-light);
+}
+
+.obs-settings-rail-icon {
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.obs-settings-rail-label {
+    flex: 1;
+    min-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* ── Right panel ── */
+
+.obs-settings-panel {
+    flex: 1;
+    min-width: 0;
+    padding: 32px;
+    overflow-y: auto;
+    animation: obsSettingsFadeIn 180ms ease;
+}
+
+@keyframes obsSettingsFadeIn {
+    from { opacity: 0; transform: translateY(4px); }
+    to   { opacity: 1; transform: translateY(0); }
+}
+
+.obs-settings-panel-content {
+    max-width: 720px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 32px;
+}
+
+/* Wider container for panels (like Audio) that benefit from a two-column grid */
+.obs-settings-panel-content--wide {
+    max-width: 1080px;
+}
+
+/* Two-column grid for sound rows inside an audio group */
+.obs-settings-sfx-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 6px 24px;
+}
+
+@media (max-width: 1100px) {
+    .obs-settings-sfx-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+.obs-settings-sfx-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    padding: 4px 0;
+    min-width: 0;
+}
+
+.obs-settings-sfx-row__label {
+    flex: 1 1 0;
+    min-width: 0;
+    font-size: 0.82rem;
+    color: var(--text-dark);
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.obs-settings-sfx-row__label--custom {
+    color: var(--primary);
+}
+
+.obs-settings-sfx-row__volume {
+    flex: 0 0 110px;
+    accent-color: var(--primary);
+}
+
+.obs-settings-sfx-row__pct {
+    flex: 0 0 32px;
+    font-size: 0.74rem;
+    color: var(--text-muted);
+    text-align: right;
+}
+
+.obs-settings-panel-title {
+    font-size: 1.6rem;
+    font-weight: 700;
+    margin: 0 0 4px;
+    color: var(--text-dark);
+}
+
+.obs-settings-panel-subtitle {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    margin: 0;
+}
+
+/* ── Section blocks inside a panel ── */
+
+.obs-settings-section {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.obs-settings-section-label {
+    font-size: 0.72rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    color: var(--text-muted);
+    margin: 0;
+}
+
+.obs-settings-hint {
+    font-size: 0.78rem;
+    color: var(--text-muted);
+    margin: 4px 0 0;
+}
+
+.obs-settings-toggle {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    cursor: pointer;
+    padding: 10px 0;
+}
+
+.obs-settings-toggle input[type="checkbox"] {
+    margin-left: auto;
+    width: 18px;
+    height: 18px;
+    accent-color: var(--primary);
+    cursor: pointer;
+}
+
+.obs-settings-toggle-icon {
+    color: var(--text-muted);
+    flex-shrink: 0;
+}
+
+.obs-settings-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.obs-settings-danger-rule {
+    border: 0;
+    border-top: 1px solid var(--danger);
+    opacity: 0.45;
+    margin: 16px 0 8px;
+}
+
+/* ── Responsive: < 900px → collapsed rail ── */
+
+.obs-settings-rail-tooltip {
+    display: none;
+}
+
+@media (max-width: 899.98px) {
+    .obs-settings-rail {
+        flex-basis: 56px;
+        padding: 16px 6px;
+    }
+    .obs-settings-rail-header,
+    .obs-settings-rail-label {
+        display: none;
+    }
+    .obs-settings-rail-item {
+        justify-content: center;
+        padding: 12px 6px;
+        position: relative;
+    }
+    .obs-settings-rail-tooltip {
+        display: block;
+        position: absolute;
+        left: calc(100% + 8px);
+        top: 50%;
+        transform: translateY(-50%);
+        background: var(--surface-raised);
+        color: var(--text-dark);
+        padding: 6px 10px;
+        font-size: 0.78rem;
+        border-radius: 4px;
+        white-space: nowrap;
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 120ms ease;
+        box-shadow: var(--shadow-md);
+        z-index: 10;
+    }
+    .obs-settings-rail-item:hover .obs-settings-rail-tooltip { opacity: 1; }
+    .obs-settings-panel {
+        padding: 24px;
+    }
+}
+
+/* ── Theme picker grid inside the panel ── */
+.obs-settings-theme-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}

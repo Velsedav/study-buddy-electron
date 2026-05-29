@@ -43,7 +43,7 @@ function getImageLuminance(src: string): Promise<number> {
 }
 
 export default function SubjectCard({ subject, tags, coverUrl, onDelete, onTogglePin, onClick }: SubjectCardProps) {
-    const { theme, isTerminal } = useSettings();
+    const { theme } = useSettings();
     const days = daysSince(subject.last_studied_at);
     const isNever = days === null;
     const [isDarkImage, setIsDarkImage] = useState(true);
@@ -64,7 +64,7 @@ export default function SubjectCard({ subject, tags, coverUrl, onDelete, onToggl
 
     const hasCover = !!coverUrl;
     const textColor = hasCover
-        ? (isTerminal ? 'var(--primary)' : (isDarkImage ? '#ffffff' : 'var(--text-dark)'))
+        ? (isDarkImage ? '#ffffff' : 'var(--text-dark)')
         : null;
 
     return (
@@ -120,18 +120,18 @@ export default function SubjectCard({ subject, tags, coverUrl, onDelete, onToggl
 
                 {subject.deadline && (
                     <div className="subject-card-deadline">
-                        {isTerminal ? '[!]' : '⏳'} Deadline: {new Date(subject.deadline).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
+                        ⏳ Deadline: {new Date(subject.deadline).toLocaleDateString(undefined, { month: 'short', day: 'numeric', year: 'numeric' })}
                     </div>
                 )}
 
                 <div className={`subject-card-chapter-count${textColor ? ' with-cover' : ''}`}>
                     {isMusic ? (
                         <>
-                            {isTerminal ? '>>' : '🎵'} {pieceCount} morceau{pieceCount !== 1 ? 'x' : ''}
+                            🎵 {pieceCount} morceau{pieceCount !== 1 ? 'x' : ''}
                             {skillCount > 0 && ` · ${skillCount} compétence${skillCount !== 1 ? 's' : ''}`}
                         </>
                     ) : (
-                        <>{isTerminal ? '>>' : '📖'} {chapterCount} chapitre{chapterCount !== 1 ? 's' : ''}</>
+                        <>📖 {chapterCount} chapitre{chapterCount !== 1 ? 's' : ''}</>
                     )}
                 </div>
 

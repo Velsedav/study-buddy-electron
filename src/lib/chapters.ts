@@ -107,6 +107,13 @@ export function deleteChapter(id: string) {
     saveAll(all);
 }
 
+export function renameChapter(id: string, newName: string) {
+    const all = loadAll();
+    const ch = all.find(c => c.id === id);
+    if (ch) ch.name = newName;
+    saveAll(all);
+}
+
 export function incrementStudyCount(id: string) {
     const all = loadAll();
     const ch = all.find(c => c.id === id);

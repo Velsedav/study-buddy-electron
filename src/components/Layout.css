@@ -133,3 +133,265 @@
 .close-overlay-force:hover {
     opacity: 1;
 }
+
+/* ── Obsidian Layout ── */
+
+.obsidian-layout {
+  display: flex;
+  flex-direction: row;
+  height: 100vh;
+  overflow: hidden;
+  background: var(--bg-color, #0d1117);
+}
+
+.obsidian-sidebar {
+  width: 64px;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 12px 0;
+  gap: 4px;
+  background: var(--card-bg, #161b22);
+  border-right: 1px solid var(--border-color, #30363d);
+  height: 100vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.obsidian-nav-link {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 44px;
+  height: 44px;
+  border-radius: 6px;
+  color: var(--text-muted, #7d8590);
+  text-decoration: none;
+  transition: color 0.1s, background 0.1s;
+}
+
+.obsidian-nav-link .nav-review-dot {
+  position: absolute;
+  top: 6px;
+  right: 6px;
+  margin-left: 0;
+}
+
+.obsidian-nav-link:hover {
+  color: var(--text-dark, #e6edf3);
+  background: var(--surface-raised, #21262d);
+}
+
+.obsidian-nav-active {
+  color: var(--primary, #58a6ff);
+  background: rgba(var(--primary-rgb, 88, 166, 255), 0.1);
+}
+
+.obsidian-nav-active::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 3px;
+  height: 20px;
+  background: var(--primary, #58a6ff);
+  border-radius: 0 2px 2px 0;
+}
+
+.obsidian-main-wrapper {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  height: 100vh;
+  overflow: hidden;
+}
+
+.obsidian-main-wrapper .main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  background: var(--bg-color, #0d1117);
+  min-height: 0; /* override global min-height: 100vh so quote bar stays in viewport */
+  padding: 0;
+}
+
+.obsidian-main-wrapper .page-route-transition {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+
+.obsidian-main-wrapper .top-decoration {
+  display: none;
+}
+
+.obsidian-quote-bar {
+  flex-shrink: 0;
+  height: 28px;
+  display: flex;
+  align-items: center;
+  padding: 0 12px;
+  background: var(--card-bg, #161b22);
+  border-top: 1px solid var(--border-color, #30363d);
+  gap: 8px;
+}
+
+.obsidian-quote-text {
+  flex: 1;
+  font-size: 12px;
+  font-style: italic;
+  color: var(--text-muted, #7d8590);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.obsidian-quote-text.quote-exit {
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.obsidian-quote-text.quote-enter {
+  opacity: 0;
+  animation: obsidian-quote-in 0.5s ease forwards;
+}
+
+.obsidian-quote-text.quote-visible {
+  opacity: 1;
+}
+
+@keyframes obsidian-quote-in {
+  to { opacity: 1; }
+}
+
+.obsidian-quote-edit {
+  background: none;
+  border: none;
+  color: var(--text-muted, #7d8590);
+  cursor: pointer;
+  padding: 2px 4px;
+  display: flex;
+  align-items: center;
+  border-radius: 3px;
+  flex-shrink: 0;
+}
+
+.obsidian-quote-edit:hover {
+  color: var(--text-dark, #e6edf3);
+  background: var(--surface-raised, #21262d);
+}
+
+/* Invisible dev-mode unlock target — fills the bottom of the obsidian sidebar.
+   No visual cue: just a generous click area so the user can rapid-click here
+   to unlock dev mode the same way the classic mascot does. */
+.obsidian-dev-tap {
+  margin-top: auto;
+  width: 100%;
+  flex-shrink: 0;
+  /* Reach all the way to the sidebar's bottom edge, regardless of its padding */
+  height: 96px;
+  margin-bottom: -12px;
+  background: transparent;
+  border: none;
+  padding: 0;
+  cursor: default;
+  outline: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.obsidian-dev-tap:focus { outline: none; }
+.obsidian-dev-tap:focus-visible { outline: none; }
+
+/* ════════════════════════════════════════════════════════════════
+   Obsidian — Starry Night: wide classic-style sidebar driving the
+   redesign pages. Keeps the Van Gogh painting backdrop + mascot.
+   ════════════════════════════════════════════════════════════════ */
+
+.obsidian-sidebar--starry {
+  width: 220px;
+  align-items: stretch;
+  padding: 20px 12px 12px;
+  gap: 4px;
+  background:
+    linear-gradient(to bottom, rgba(6, 12, 38, 0.60) 0%, rgba(5, 10, 30, 0.72) 100%),
+    url('/assets/images/Starry_Night.jpg') center top / cover no-repeat;
+  border-right: 1px solid rgba(74, 143, 200, 0.22);
+}
+
+.obsidian-sb-logo {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 10px 18px;
+}
+
+.obsidian-sb-logo h2 {
+  margin: 0;
+  font-family: var(--font-heading, 'IBM Plex Sans', sans-serif);
+  font-size: 1.3rem;
+  font-weight: 800;
+  line-height: 1.05;
+  color: #f0e8d4;
+  text-shadow: 0 1px 8px rgba(5, 12, 40, 0.80), 0 0 16px rgba(232, 200, 74, 0.18);
+}
+
+/* Wide nav rows with labels (override the 44px icon-only rail) */
+.obsidian-sidebar--starry .obsidian-nav-link {
+  width: 100%;
+  justify-content: flex-start;
+  gap: 12px;
+  height: 42px;
+  padding: 0 14px;
+  border-radius: 8px;
+  color: rgba(200, 220, 240, 0.82);
+  text-shadow: 0 1px 4px rgba(5, 12, 40, 0.70);
+}
+
+.obsidian-sidebar--starry .obsidian-nav-label {
+  font-size: 0.9rem;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.obsidian-sidebar--starry .obsidian-nav-link:hover {
+  color: #f0e8d4;
+  background: rgba(74, 143, 200, 0.16);
+}
+
+.obsidian-sidebar--starry .obsidian-nav-active,
+.obsidian-sidebar--starry .obsidian-nav-active:hover {
+  color: #e8c84a;
+  background: rgba(232, 200, 74, 0.12);
+  text-shadow: 0 0 10px rgba(232, 200, 74, 0.40);
+}
+
+.obsidian-sidebar--starry .obsidian-nav-active::before {
+  background: #e8c84a;
+}
+
+.obsidian-sidebar--starry .nav-review-dot {
+  margin-left: auto;
+  position: static;
+}
+
+/* Mascot at the bottom — reuses global .mascot-img / .mascot-bubble */
+.obsidian-sb-mascot {
+  margin-top: auto;
+  position: relative;
+  text-align: center;
+  padding-top: 36px;
+}
+
+.obsidian-sb-mascot .mascot-img {
+  width: 140px;
+  height: auto;
+  animation: float 9s ease-in-out infinite;
+  cursor: pointer;
+}
