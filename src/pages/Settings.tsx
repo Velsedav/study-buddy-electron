@@ -17,6 +17,7 @@ import {
     pickExportFolder, pickSaveFilePath, pickImportFilePath,
     importBackup,
 } from '../lib/export';
+import ObsidianSettings from './ObsidianSettings';
 import './Settings.css';
 
 function DefaultSettings() {
@@ -705,5 +706,7 @@ function DefaultSettings() {
 }
 
 export default function SettingsTab() {
+    const { theme } = useSettings();
+    if (theme.startsWith('obsidian')) return <ObsidianSettings />;
     return <DefaultSettings />;
 }
