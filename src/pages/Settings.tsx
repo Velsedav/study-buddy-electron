@@ -163,7 +163,19 @@ export default function SettingsTab() {
                     name: 'Obsidian',
                     color: '#58a6ff',
                     background: 'linear-gradient(135deg, #0d1117 0%, #161b22 50%, #58a6ff 100%)'
-                }
+                },
+                { id: 'obsidian-terminal-green',     name: 'Obsidian — Terminal Green',     color: '#39ff14', background: 'linear-gradient(135deg, #0a1a0c 0%, #0f2412 50%, #39ff14 100%)' },
+                { id: 'obsidian-terminal-orange',    name: 'Obsidian — Terminal Orange',    color: '#ff9e1f', background: 'linear-gradient(135deg, #1a0f00 0%, #261800 50%, #ff9e1f 100%)' },
+                { id: 'obsidian-designers-republic', name: 'Obsidian — TDR',                color: '#ff0066', background: 'linear-gradient(135deg, #0a0a14 0%, #14142e 50%, #ff0066 100%)' },
+                { id: 'obsidian-cyberpunk',          name: 'Obsidian — Cyberpunk',          color: '#fcee0a', background: 'linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 50%, #fcee0a 100%)' },
+                { id: 'obsidian-dracula',            name: 'Obsidian — Dracula',            color: '#bd93f9', background: 'linear-gradient(135deg, #282a36 0%, #383a47 50%, #bd93f9 100%)' },
+                { id: 'obsidian-nord',               name: 'Obsidian — Nord',               color: '#88c0d0', background: 'linear-gradient(135deg, #2e3440 0%, #3b4252 50%, #88c0d0 100%)' },
+                { id: 'obsidian-monokai',            name: 'Obsidian — Monokai',            color: '#f92672', background: 'linear-gradient(135deg, #272822 0%, #3e3d32 50%, #f92672 100%)' },
+                { id: 'obsidian-tokyo-night',        name: 'Obsidian — Tokyo Night',        color: '#7aa2f7', background: 'linear-gradient(135deg, #1a1b26 0%, #24283b 50%, #7aa2f7 100%)' },
+                { id: 'obsidian-solarized-dark',     name: 'Obsidian — Solarized',          color: '#268bd2', background: 'linear-gradient(135deg, #002b36 0%, #073642 50%, #268bd2 100%)' },
+                { id: 'obsidian-gruvbox',            name: 'Obsidian — Gruvbox',            color: '#fe8019', background: 'linear-gradient(135deg, #282828 0%, #3c3836 50%, #fe8019 100%)' },
+                { id: 'obsidian-catppuccin',         name: 'Obsidian — Catppuccin',         color: '#cba6f7', background: 'linear-gradient(135deg, #1e1e2e 0%, #313244 50%, #cba6f7 100%)' },
+                { id: 'obsidian-ayu',                name: 'Obsidian — Ayu',                color: '#ffcc66', background: 'linear-gradient(135deg, #1f2430 0%, #232834 50%, #ffcc66 100%)' },
             ]
         }
     ] as const;
