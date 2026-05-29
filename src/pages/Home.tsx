@@ -456,7 +456,7 @@ export default function Home() {
         );
     }
 
-    if (theme === 'obsidian') {
+    if (theme.startsWith('obsidian')) {
         return <ObsidianHome />;
     }
 

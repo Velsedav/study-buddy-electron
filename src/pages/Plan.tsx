@@ -524,7 +524,7 @@ export default function Plan() {
         return () => document.removeEventListener('mousedown', handleClickOutside);
     }, [tagFilterOpen]);
 
-    if (theme === 'obsidian') {
+    if (theme.startsWith('obsidian')) {
         return <ObsidianPlanner />
     }
 

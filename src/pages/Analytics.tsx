@@ -38,7 +38,7 @@ function getWeekStart(date: Date): Date {
 
 export default function AnalyticsTab() {
     const { theme } = useSettings();
-    if (theme === 'obsidian') return <ObsidianAnalytics />;
+    if (theme.startsWith('obsidian')) return <ObsidianAnalytics />;
     return <DefaultAnalytics />;
 }
 
