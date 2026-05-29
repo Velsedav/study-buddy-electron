@@ -12,7 +12,7 @@ import { isDevNavUnlocked, toggleDevNav } from '../lib/devMode';
 import './Layout.css';
 
 const MASCOT_DEFAULT_QUOTE = "The exam is won at home, not on exam day 🏠";
-const DEV_NAV_CLICKS = 10;
+const DEV_NAV_CLICKS = 4;
 
 interface PathEntry { path: string; status: 'saving' | 'ok' | 'error'; slot: 1 | 2; }
 
@@ -96,14 +96,12 @@ export default function Layout() {
     const location = useLocation();
     const navigate = useNavigate();
     const { t } = useTranslation();
-    const { theme, isTerminal } = useSettings();
+    const { theme } = useSettings();
     const [quotes, setQuotes] = useState<Quote[]>([]);
     const [currentIdx, setCurrentIdx] = useState(0);
     const [animClass, setAnimClass] = useState('quote-visible');
     const [editorOpen, setEditorOpen] = useState(false);
     const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-    const glitchTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-    const [glitchVariant, setGlitchVariant] = useState<'a' | 'b' | 'c' | null>(null);
     const [navWarningStep, setNavWarningStep] = useState<'none' | 'confirm-stop' | 'confirm-save'>('none');
     const [pendingNavPath, setPendingNavPath] = useState<string | null>(null);
     const [devNavVisible, setDevNavVisible] = useState(isDevNavUnlocked);
@@ -233,13 +231,6 @@ export default function Layout() {
 
     function handleNavClick(e: React.MouseEvent, path: string) {
         playSFX('glass_enter_menu', theme);
-        if (isTerminal) {
-            const variants = ['a', 'b', 'c'] as const;
-            const picked = variants[Math.floor(Math.random() * variants.length)];
-            if (glitchTimerRef.current) clearTimeout(glitchTimerRef.current);
-            setGlitchVariant(picked);
-            glitchTimerRef.current = setTimeout(() => setGlitchVariant(null), 300);
-        }
         if (localStorage.getItem('activeSession')) {
             e.preventDefault();
             setPendingNavPath(path);
@@ -317,33 +308,17 @@ export default function Layout() {
         setPendingNavPath(null);
     }
 
-    // Terminal typing effect
-    const [typedText, setTypedText] = useState('');
-    const typingRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-    useEffect(() => {
-        if (!isTerminal) return;
-        if (typingRef.current) clearTimeout(typingRef.current);
-        setTypedText('');
-
-        let i = 0;
-        const full = currentQuote;
-        function typeNext() {
-            i++;
-            setTypedText(full.slice(0, i));
-            if (i < full.length) {
-                typingRef.current = setTimeout(typeNext, 12);
-            }
-        }
-        typingRef.current = setTimeout(typeNext, 80);
-        return () => { if (typingRef.current) clearTimeout(typingRef.current); };
-    }, [currentQuote, isTerminal]);
-
-    // ── Obsidian layout (also applies to every obsidian-* variant) ────────
-    if (theme.startsWith('obsidian')) {
-        return (
-            <div className="layout obsidian-layout">
-                <nav className="obsidian-sidebar">
+    // ── Obsidian layout (unconditional — every theme is obsidian-*) ──────────
+    const starry = theme === 'obsidian-starry-night';
+    return (
+        <div className={`layout obsidian-layout${starry ? ' obsidian-layout--starry' : ''}`}>
+                <nav className={`obsidian-sidebar${starry ? ' obsidian-sidebar--starry' : ''}`}>
+                    {starry && (
+                        <div className="obsidian-sb-logo">
+                            <Sparkles className="icon-gold" size={26} />
+                            <h2>Study Buddy</h2>
+                        </div>
+                    )}
                     {navItems.map(item => {
                         const Icon = item.icon;
                         const active = location.pathname === item.path || (item.path !== '/' && location.pathname.startsWith(item.path));
@@ -353,15 +328,46 @@ export default function Layout() {
                                 to={item.path}
                                 className={`obsidian-nav-link${active ? ' obsidian-nav-active' : ''}`}
                                 title={item.label}
+                                onMouseEnter={() => playSFX('glass_ui_hover', theme)}
                                 onClick={(e) => handleNavClick(e, item.path)}
                             >
                                 <Icon size={20} />
+                                {starry && <span className="obsidian-nav-label">{item.label}</span>}
                                 {item.path === '/learning' && learningReviewDue && (
                                     <span className="nav-review-dot" aria-label="Review available" />
                                 )}
                             </Link>
                         );
                     })}
+                    {starry ? (
+                        <div className="obsidian-sb-mascot">
+                            <div className="mascot-bubble-wrapper">
+                                <div className={`mascot-bubble ${animClass}`} key={currentIdx}>
+                                    {currentQuote}
+                                </div>
+                                <button
+                                    className="quote-edit-btn"
+                                    onClick={() => setEditorOpen(true)}
+                                    title="Edit quotes"
+                                >
+                                    <Pencil size={12} />
+                                </button>
+                            </div>
+                            <img
+                                src="/mascot.png"
+                                alt="Study Buddy Mascot"
+                                className="mascot-img"
+                                onClick={handleMascotClick}
+                            />
+                        </div>
+                    ) : (
+                        <button
+                            type="button"
+                            className="obsidian-dev-tap"
+                            onClick={handleMascotClick}
+                            aria-label={devNavVisible ? 'Disable dev mode' : 'Activate dev mode'}
+                        />
+                    )}
                 </nav>
 
                 <div className="obsidian-main-wrapper">
@@ -370,19 +376,21 @@ export default function Layout() {
                             <Outlet />
                         </div>
                     </main>
-                    <div className="obsidian-quote-bar">
-                        <span className={`obsidian-quote-text ${animClass}`}>
-                            {currentQuote}
-                        </span>
-                        <button
-                            className="obsidian-quote-edit"
-                            onClick={() => setEditorOpen(true)}
-                            title="Edit quotes"
-                            aria-label="Edit quotes"
-                        >
-                            <Pencil size={12} />
-                        </button>
-                    </div>
+                    {!starry && (
+                        <div className="obsidian-quote-bar">
+                            <span className={`obsidian-quote-text ${animClass}`}>
+                                {currentQuote}
+                            </span>
+                            <button
+                                className="obsidian-quote-edit"
+                                onClick={() => setEditorOpen(true)}
+                                title="Edit quotes"
+                                aria-label="Edit quotes"
+                            >
+                                <Pencil size={12} />
+                            </button>
+                        </div>
+                    )}
                 </div>
 
                 {editorOpen && (
@@ -422,139 +430,4 @@ export default function Layout() {
                 )}
             </div>
         );
-    }
-    // ── end Obsidian layout ──────────────────────────────────────────────────
-
-    return (
-        <div className="layout">
-            {/* Sidebar Navigation */}
-            <nav className="glass sidebar">
-                <div className="logo">
-                    {isTerminal ? (
-                        <span className="logo-code-icon">{'</>'}</span>
-                    ) : (
-                        <Sparkles className="icon-gold" size={32} />
-                    )}
-                    <h2>Study Buddy</h2>
-                </div>
-
-                <ul className="nav-links">
-                    {navItems.map(item => {
-                        const Icon = item.icon;
-                        const active = location.pathname === item.path || (item.path !== '/' && location.pathname.startsWith(item.path));
-                        return (
-                            <li key={item.path}>
-                                <Link
-                                    to={item.path}
-                                    className={`nav-link ${active ? 'active' : ''}`}
-                                    aria-current={active ? 'page' : undefined}
-                                    onMouseEnter={() => playSFX('glass_ui_hover', theme)}
-                                    onClick={(e) => handleNavClick(e, item.path)}
-                                >
-                                    <Icon size={20} />
-                                    <span>{item.label}</span>
-                                    {item.path === '/learning' && learningReviewDue && (
-                                        <span className="nav-review-dot" aria-label="Review available" />
-                                    )}
-                                </Link>
-                            </li>
-                        );
-                    })}
-                </ul>
-
-                {isTerminal ? (
-                    <div className="terminal-quote-container">
-                        <div className="terminal-quote-line">
-                            <span className="terminal-prompt">&gt; </span>
-                            <span className="terminal-typed">{typedText}<span className="terminal-cursor">█</span></span>
-                        </div>
-                        <button
-                            className="quote-edit-btn terminal-edit-btn"
-                            onClick={() => setEditorOpen(true)}
-                            title="Edit quotes"
-                        >
-                            <Pencil size={12} />
-                        </button>
-                    </div>
-                ) : (
-                    <div className="mascot-container">
-                        <div className="mascot-bubble-wrapper">
-                            <div className={`mascot-bubble ${animClass}`} key={currentIdx}>
-                                {currentQuote}
-                            </div>
-                            <button
-                                className="quote-edit-btn"
-                                onClick={() => setEditorOpen(true)}
-                                title="Edit quotes"
-                            >
-                                <Pencil size={12} />
-                            </button>
-                        </div>
-                        <img
-                            src="/mascot.png"
-                            alt="Study Buddy Mascot"
-                            className="mascot-img"
-                            onClick={handleMascotClick}
-                        />
-                    </div>
-                )}
-            </nav>
-
-            {/* Main Content Area */}
-            <main className={`main-content${glitchVariant ? ` terminal-glitch-${glitchVariant}` : ''}`}>
-                <div className="top-decoration"></div>
-                <div key={location.pathname} className="page-route-transition">
-                    <Outlet />
-                </div>
-            </main>
-
-            {editorOpen && (
-                <QuoteEditorModal
-                    onClose={() => setEditorOpen(false)}
-                    onChanged={loadQuotes}
-                />
-            )}
-
-            <CloseOverlay />
-
-            {navWarningStep !== 'none' && (
-                <div className="modal-overlay" onClick={() => { setNavWarningStep('none'); setPendingNavPath(null); }}>
-                    <div className="modal-content confirm-modal-content" role="dialog" aria-modal="true" aria-labelledby="nav-confirm-title" onClick={e => e.stopPropagation()}>
-                        {navWarningStep === 'confirm-stop' && (
-                            <>
-                                <h2 id="nav-confirm-title" className="confirm-modal-title">⏸️ Stop studying?</h2>
-                                <p className="confirm-modal-text">
-                                    Are you sure you want to end this session early?
-                                </p>
-                                <div className="confirm-modal-actions">
-                                    <button className="btn btn-primary" onClick={() => { setNavWarningStep('none'); setPendingNavPath(null); }}>
-                                        Keep studying
-                                    </button>
-                                    <button className="btn btn-secondary confirm-btn-danger" onClick={() => setNavWarningStep('confirm-save')}>
-                                        Yes, stop
-                                    </button>
-                                </div>
-                            </>
-                        )}
-                        {navWarningStep === 'confirm-save' && (
-                            <>
-                                <h2 className="confirm-modal-title">💾 Save your progress?</h2>
-                                <p className="confirm-modal-text">
-                                    Do you want to record the time you studied so far during this session?
-                                </p>
-                                <div className="confirm-modal-actions">
-                                    <button className="btn btn-primary" onClick={() => finishSessionFromLayout(true)}>
-                                        Save progress
-                                    </button>
-                                    <button className="btn btn-secondary" onClick={() => finishSessionFromLayout(false)}>
-                                        Discard
-                                    </button>
-                                </div>
-                            </>
-                        )}
-                    </div>
-                </div>
-            )}
-        </div>
-    );
 }
