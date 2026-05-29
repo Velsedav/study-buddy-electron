@@ -1,11 +1,12 @@
 import { useState, useEffect } from 'react';
-import { Palette, Brain, Volume2, Database, Power, Zap } from 'lucide-react';
+import { Palette, Brain, Volume2, Database, Power, Zap, Keyboard } from 'lucide-react';
 import { useTranslation } from '../lib/i18n';
 import { useSettings } from '../lib/settings';
 import type { Theme, WeekStart, MetacognitionDay } from '../lib/settings';
 import { getAutostart, setAutostart } from '../lib/autostart';
 import { CustomSelect } from '../components/CustomSelect';
 import { playSFX, SFX } from '../lib/sounds';
+import { getDefaultSpacing, setDefaultSpacing, parseSpacing, DEFAULT_SPACING } from '../lib/chapters';
 import { THEME_GROUPS } from './settingsThemeGroups';
 import './ObsidianSettings.css';
 
@@ -193,11 +194,80 @@ function LookAndFeelPanel() {
 
 function LearningPanel() {
     const { t } = useTranslation();
+    const [defaultSpacing, setDefaultSpacingState] = useState(() => getDefaultSpacing());
+    const [spacingError, setSpacingError] = useState('');
+
+    const handleSpacingChange = (val: string) => {
+        setDefaultSpacingState(val);
+        const parsed = parseSpacing(val);
+        if (parsed.length === 0) {
+            setSpacingError(t('settings.sr_error'));
+        } else {
+            setSpacingError('');
+            setDefaultSpacing(val);
+        }
+    };
+
     return (
         <>
             <h1 className="obs-settings-panel-title">{t('settings.learning') || 'Learning'}</h1>
-            <p className="obs-settings-panel-subtitle">Spaced repetition and keyboard shortcuts.</p>
+
+            <section className="obs-settings-section">
+                <h2 className="obs-settings-section-label">{t('settings.spaced_repetition')}</h2>
+                <p className="obs-settings-hint">{t('settings.sr_desc')}</p>
+                <div>
+                    <p className="obs-settings-hint">{t('settings.review_intervals')}</p>
+                    <div className="obs-settings-row">
+                        <input
+                            type="text"
+                            value={defaultSpacing}
+                            onChange={e => handleSpacingChange(e.target.value)}
+                            placeholder={DEFAULT_SPACING}
+                            style={{ flex: 1 }}
+                        />
+                        <button
+                            className="btn btn-secondary"
+                            style={{ fontSize: '0.8rem', whiteSpace: 'nowrap' }}
+                            onMouseEnter={() => playSFX(SFX.HOVER)}
+                            onClick={() => handleSpacingChange(DEFAULT_SPACING)}
+                        >
+                            {t('settings.reset')}
+                        </button>
+                    </div>
+                    {spacingError && (
+                        <p className="obs-settings-hint" style={{ color: 'var(--danger)' }}>{spacingError}</p>
+                    )}
+                </div>
+            </section>
+
+            <section className="obs-settings-section">
+                <h2 className="obs-settings-section-label">
+                    <Keyboard size={14} style={{ verticalAlign: '-2px', marginRight: 6, color: 'var(--text-muted)' }} />
+                    {t('settings.shortcuts')}
+                </h2>
+                <ShortcutList />
+            </section>
         </>
+    );
+}
+
+function ShortcutList() {
+    const { t } = useTranslation();
+    const shortcuts: { key: string; label: string }[] = [
+        { key: 'Cmd/Ctrl + K', label: t('settings.shortcut_search') || 'Quick search' },
+        { key: 'Cmd/Ctrl + Enter', label: t('settings.shortcut_save') || 'Save current form' },
+        { key: 'Esc', label: t('settings.shortcut_dismiss') || 'Dismiss modal / overlay' },
+        { key: 'Space', label: t('settings.shortcut_play') || 'Toggle timer / slideshow' },
+    ];
+    return (
+        <ul style={{ listStyle: 'none', padding: 0, margin: 0, display: 'flex', flexDirection: 'column', gap: 8 }}>
+            {shortcuts.map(s => (
+                <li key={s.key} style={{ display: 'flex', justifyContent: 'space-between', padding: '8px 0', borderBottom: '1px solid var(--border-color)' }}>
+                    <span style={{ color: 'var(--text-muted)' }}>{s.label}</span>
+                    <code style={{ fontFamily: 'monospace', fontSize: '0.78rem', color: 'var(--text-dark)' }}>{s.key}</code>
+                </li>
+            ))}
+        </ul>
     );
 }
 
