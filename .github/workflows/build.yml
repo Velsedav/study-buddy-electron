@@ -1,6 +1,9 @@
 name: Build & Release Study Buddy (Electron)
 
 on:
+  pull_request:
+    branches:
+      - master
   push:
     tags:
       - 'v*'
@@ -54,7 +57,7 @@ jobs:
 
       - name: Package (Windows)
         if: runner.os == 'Windows'
-        run: npx electron-builder --win nsis --publish never
+        run: npx electron-builder --win nsis --publish never --config.win.signAndEditExecutable=false
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
