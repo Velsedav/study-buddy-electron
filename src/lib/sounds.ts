@@ -339,7 +339,7 @@ export function playSFX(effectName: SoundEffect, theme: string = currentTheme) {
         const custom = customAudioCache[effectName];
         const audio = custom ?? (() => {
             const resolved = resolveFileName(effectName, theme);
-            const filePath = `/audio/${resolved}.mp3`;
+            const filePath = `audio/${resolved}.mp3`;
             if (!audioCache[filePath]) audioCache[filePath] = new Audio(filePath);
             return audioCache[filePath];
         })();
