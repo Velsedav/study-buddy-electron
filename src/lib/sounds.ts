@@ -170,9 +170,30 @@ loadVolumeSettings();
 let currentTheme: string = 'glassmorphism';
 export function setAudioTheme(theme: string) { currentTheme = theme; }
 
-/** Terminal-theme variants that have been recorded and are available on disk */
-const TERM_SOUNDS = new Set([
-    // UI
+/** Built-in sound files that are recorded and available on disk, without extension. */
+const BUILT_IN_SOUNDS = new Set([
+    // Glass UI
+    'glass_ui_hover',
+    'glass_ui_check',
+    'glass_ui_cancel',
+    'glass_ui_drop',
+    'glass_ui_drag_up',
+    'glass_ui_drag_down',
+    'glass_enter_menu',
+    // Glass Session
+    'glass_session_start',
+    'glass_session_switch',
+    'glass_session_end',
+    'glass_session_finish',
+    'glass_session_enter_lesson',
+    // Glass Timer
+    'glass_timer_warn10',
+    // Glass Rewards
+    'glass_reward_correct',
+    'glass_reward_perfect',
+    // Glass Bingoals
+    'glass_bingo_check',
+    // Terminal UI
     'term_ui_hover',
     'term_ui_check',
     'term_ui_cancel',
@@ -188,11 +209,21 @@ const TERM_SOUNDS = new Set([
     'term_session_enter_lesson',
     // Timer
     'term_timer_warn10',
+    'term_timer_five_min',
     'term_timer_interval_work',
     'term_timer_interval_rest',
     // Bingo
     'term_bingo_check',
 ]);
+
+const MISSING_SOUND_FALLBACKS: Partial<Record<SoundEffect, { glass: string; terminal: string }>> = {
+    glass_timer_five_min: { glass: 'term_timer_five_min', terminal: 'term_timer_five_min' },
+    glass_timer_interval_work: { glass: 'term_timer_interval_work', terminal: 'term_timer_interval_work' },
+    glass_timer_interval_rest: { glass: 'term_timer_interval_rest', terminal: 'term_timer_interval_rest' },
+    glass_bingo_line: { glass: 'glass_bingo_check', terminal: 'term_bingo_check' },
+    glass_bingo_complete: { glass: 'glass_bingo_check', terminal: 'term_bingo_check' },
+    glass_bingo_add: { glass: 'glass_bingo_check', terminal: 'term_bingo_check' },
+};
 
 /** Resolve the actual file name to play, swapping glass_ → term_ when the active profile requests terminal */
 function resolveFileName(effectName: SoundEffect, theme: string): string {
@@ -202,9 +233,15 @@ function resolveFileName(effectName: SoundEffect, theme: string): string {
     else if (profile === 'terminal') wantTerminal = true;
     else wantTerminal = theme.includes('terminal');
 
-    if (!wantTerminal) return effectName;
+    if (!wantTerminal) {
+        if (BUILT_IN_SOUNDS.has(effectName)) return effectName;
+        return MISSING_SOUND_FALLBACKS[effectName]?.glass ?? effectName;
+    }
+
     const termVariant = effectName.replace(/^glass_/, 'term_');
-    return TERM_SOUNDS.has(termVariant) ? termVariant : effectName;
+    if (BUILT_IN_SOUNDS.has(termVariant)) return termVariant;
+    if (BUILT_IN_SOUNDS.has(effectName)) return effectName;
+    return MISSING_SOUND_FALLBACKS[effectName]?.terminal ?? effectName;
 }
 
 // ── Custom user-supplied sounds ──
