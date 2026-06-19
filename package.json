@@ -1,6 +1,6 @@
 {
   "name": "study-buddy-electron",
-  "version": "2.0.0",
+  "version": "2.0.1",
   "private": true,
   "author": {
     "name": "Velsedav",
@@ -13,7 +13,7 @@
     "build": "electron-vite build --config electron-vite.config.mjs",
     "preview": "electron-vite preview --config electron-vite.config.mjs",
     "postinstall": "electron-rebuild -f -w better-sqlite3",
-    "dist": "npm run build && electron-builder",
+    "dist": "npm run build && electron-builder --config.win.signAndEditExecutable=false",
     "test": "vitest",
     "test:run": "vitest run"
   },
